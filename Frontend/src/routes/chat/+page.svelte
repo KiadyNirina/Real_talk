@@ -1,77 +1,10 @@
 <script>
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
-
-    let user = null;
-
-    onMount(async () => {
-        try {
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    });
-
-    async function logout() {
-        const token = localStorage.getItem('auth_token');
-
-        // Envoyer une requête de déconnexion à Laravel
-        const response = await fetch('http://localhost:8000/api/logout', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-            // Supprimer le token du stockage local
-            localStorage.removeItem('auth_token');
-            goto('/');
-        } else {
-            console.error('Failed to logout');
-        }
-    }
+    import NavChat from "../../lib/navlat/navChat.svelte";
 </script>
 
 <div class="body">
     <div class="content">
-        <div class="left">
-            {#if user}
-            <div class="profile">
-                <img src="/utilisateur.png" alt="">
-                <p>Welcome <b>{user.name}</b></p>
-            </div>
-            {:else}
-                <p>Loading...</p>
-                <button><a href="/">Login</a></button>
-            {/if}
-            <hr>
-            <div class="list">
-                <a href="">
-                    <li>Chat</li>
-                </a>
-                <a href="">
-                    <li>Settings</li>
-                </a>
-                <button on:click={logout} onclick="return confirm('Vous êtes sûr de vouloir vous déconnecter?')">
-                    <li>Logout</li>
-                </button>
-            </div>
-        </div>
+        <NavChat/>
         <div class="right">
             <div class="profile">
                 <img src="/utilisateur.png" alt="">
@@ -99,7 +32,7 @@
 
             <div class="input">
                 <textarea name="" id="" placeholder="Enter the message"></textarea>
-                <button>Send</button>
+                <button><img src="/message.png" alt=""></button>
             </div>
 
         </div>
@@ -121,7 +54,7 @@
     .right{
         width: 75%;
     }
-    .right, .left{
+    .right{
         border: 1px solid rgba(255, 255, 255, 0.381);
         margin: 5px;
         padding: 15px;
@@ -131,41 +64,12 @@
         display: flex;
         align-items: center;
     }
-    .profile b{
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    }
     .profile img{
         border: 1px solid white;
         border-radius: 100%;
         padding: 2px;
         height: 40px;
         margin-right: 15px;
-    }
-    .list li{
-        border: 1px solid rgba(255, 255, 255, 0.094);
-        margin: 0;
-        padding: 15px;
-        margin-top: 5px;
-        border-radius: 5px;
-        list-style: none;
-    }
-    .list li:hover{
-        background-color: rgba(255, 255, 255, 0.097);
-    }
-    .list a{
-        text-decoration: none;
-        color: white;
-        width: 100%;
-    }
-    .list button{
-        width: 100%;
-        background-color: transparent;
-        color: white;
-        border: none;
-        margin: 0;
-        border-radius: 5px;
-        text-align: left;
-        font-size: 17px;
     }
     .message{
         border: 1px solid rgba(255, 255, 255, 0.139);
@@ -205,12 +109,24 @@
         align-items: center;
         margin-top: 5px;
     }
+    .input button{
+        background-color: transparent;
+        border: none;
+        border-radius: 15px;
+    }
+    .input img{
+        height: auto;
+    }
+    .input button:hover{
+        background-color: rgba(255, 255, 255, 0.13);
+        cursor: pointer;
+    }
     .input textarea{
         width: 100%;
         border-radius: 15px;
         background: transparent;
         padding: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.139);
+        border: none;
         color: white;
     }
 </style>
