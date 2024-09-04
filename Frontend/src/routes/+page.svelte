@@ -1,4 +1,6 @@
 <script>
+    import {goto} from "$app/navigation";
+
     let email = "";
     let password = "";
     let error = "";
@@ -30,6 +32,7 @@
         localStorage.setItem('auth_token', token);
         error = "";
         successMessage = "Registration successful! You are now logged in.";
+        goto('/home');
       } catch (err) {
         error = err.message;
       }
