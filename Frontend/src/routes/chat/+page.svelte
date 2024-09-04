@@ -61,7 +61,7 @@
             {/if}
             <hr>
             <div class="list">
-                <a href="/chat">
+                <a href="">
                     <li>Chat</li>
                 </a>
                 <a href="">
@@ -73,7 +73,35 @@
             </div>
         </div>
         <div class="right">
-            <p>Bonjour</p>
+            <div class="profile">
+                <img src="/utilisateur.png" alt="">
+                <p>Chat name</p>
+            </div>
+            <div class="message">
+                <div class="content-message">
+                    <img src="/utilisateur.png" alt="">
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
+                    </p>
+                </div>
+
+                <div class="content-message-send">
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
+                    </p>
+                </div>
+                <div class="content-message-send">
+                    <p>
+                        Lorem ipsum dolor
+                    </p>
+                </div>
+            </div>
+
+            <div class="input">
+                <textarea name="" id="" placeholder="Enter the message"></textarea>
+                <button>Send</button>
+            </div>
+
         </div>
     </div>
 </div>
@@ -138,5 +166,51 @@
         border-radius: 5px;
         text-align: left;
         font-size: 17px;
+    }
+    .message{
+        border: 1px solid rgba(255, 255, 255, 0.139);
+        border-radius: 10px;
+        padding: 10px;
+    }
+    .content-message{
+        display: flex;
+        align-items: center;
+        width: 60%;
+    }
+    .content-message img{
+        height: 40px;
+    }
+    .content-message p{
+        background-color: rgba(255, 255, 255, 0.404);
+        padding: 15px;
+        border-radius: 15px;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 20px;
+        margin: 5px;
+    }
+    .content-message-send p{
+        background-color: green;
+        padding: 15px;
+        border-radius: 15px;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 20px;
+        margin: 5px;
+    }
+    .content-message-send{
+        width: 60%;
+        margin-left: auto;
+    }
+    .input{
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+    }
+    .input textarea{
+        width: 100%;
+        border-radius: 15px;
+        background: transparent;
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.139);
+        color: white;
     }
 </style>
