@@ -55,13 +55,32 @@
         <img src="/utilisateur.png" alt="">
         <p>Welcome <b>{user.name}</b></p>
     </div>
-    {:else}
-        <p>Loading...</p>
-        <button><a href="/">Login</a></button>
-    {/if}
     <hr>
     <div class="list">
+        <a href="/home">
+            <li><img src="/accueil.png" alt="">Home</li>
+        </a>
+        <a href="/chat/room">
+            <li id="active"><img src="/message-active.png" alt="">Chat <span>1500</span></li>
+        </a>
         <a href="">
+            <li><img src="/parametre.png" alt="">Settings</li>
+        </a>
+        <button on:click={logout}>
+            <li>Logout</li>
+        </button>
+    </div>
+    {:else}
+    <div class="profile">
+        <img src="/utilisateur.png" alt="">
+        <p>Loading...</p>
+    </div>
+    <hr>
+    <div class="list">
+        <a href="/home">
+            <li><img src="/accueil.png" alt="">Home</li>
+        </a>
+        <a href="/chat/room">
             <li id="active"><img src="/message-active.png" alt="">Chat</li>
         </a>
         <a href="">
@@ -71,6 +90,7 @@
             <li>Logout</li>
         </button>
     </div>
+    {/if}
 </div>
 
 <style>
@@ -132,5 +152,15 @@
         border-radius: 5px;
         text-align: left;
         font-size: 17px;
+    }
+    .list span{
+        margin-left: auto;
+        color: white;
+        background: rgb(255, 35, 35);
+        padding: 5px;
+        text-align: center;
+        border-radius: 100%;
+        font-size: 17px;
+        font-weight: bold;
     }
 </style>

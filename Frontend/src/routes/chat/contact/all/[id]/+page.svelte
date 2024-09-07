@@ -1,41 +1,68 @@
 <script>
-    import NavChat from "../../../lib/navlat/navChat.svelte";
+    import NavChat from "../../../../../lib/navlat/navChat.svelte";
+    import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
+
+    let user = null;
+    let dmSend = false;
+
+    function send() {
+        if(dmSend == true)
+        {
+            dmSend = false;
+        } else {
+            dmSend = true;
+        }
+    }
+
+    onMount(async () => {
+        try {
+            const token = localStorage.getItem('auth_token');
+
+            const response = await fetch('http://localhost:8000/api/user', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                user = data;
+            } else {
+                console.error("Failed to fetch user data");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
 </script>
 
 <div class="body">
     <div class="content">
         <NavChat/>
+        {#if user}
         <div class="right">
             <div class="col1">
-                <h1>Participants in this chat</h1>
+                <h1>Contact online</h1>
                 <div class="list">
-                    <a href="/chat/2" class="profile">
+                    <a href="/chat/contact/friend/2" class="profile">
                         <img src="/utilisateur.png" alt="">
                         <div class="name">
                             <p>John Doe</p>
                             <p class="part">
-                                Friend
+                                online
                                 <img src="/accepter.png" alt="">
                             </p>
                         </div>
                     </a>
-                    <a href="/chat/2" class="profile">
+                    <a href="/chat/contact/friend/2" class="profile">
                         <img src="/utilisateur.png" alt="">
                         <div class="name">
                             <p>John Doe</p>
                             <p class="part">
-                                Friend
-                                <img src="/refuser.png" alt="">
-                            </p>
-                        </div>
-                    </a>
-                    <a href="/chat/2" class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <div class="name">
-                            <p>John Doe</p>
-                            <p class="part">
-                                Friend
-                                <img src="/en_cours.png" alt="">
+                                online
+                                <img src="/accepter.png" alt="">
                             </p>
                         </div>
                     </a>
@@ -66,12 +93,36 @@
                     </div>
                 </div>
                 <div class="input">
+                    {#if !dmSend}
+                        <button on:click={send} id="add">Ajouter</button>
+                    {:else}
+                        <button on:click={send} id="cancel">Invitation envoyé</button> 
+                    {/if}
+                </div>
+            </div>
+
+        </div>
+        {:else}
+        <div class="right">
+            <div class="col1">
+                <h1>Contact online</h1>
+                <div class="list">
+                    <p>Loading...</p>
+                </div>
+            </div>
+            <div class="col2">
+                <div class="profile">
+                    <img src="/utilisateur.png" alt="">
+                    <p>Loading...</p>
+                </div>
+                <div class="input">
                     <textarea name="" id="" placeholder="Enter the message"></textarea>
                     <button><img src="/message-sender.png" alt=""></button>
                 </div>
             </div>
 
         </div>
+        {/if}
     </div>
 </div>
 
@@ -203,5 +254,21 @@
         padding: 10px;
         border: none;
         color: white;
+    }
+    #add{
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.287);
+        padding: 10px;
+        color: white;
+        font-size: 15px;
+        transition: 1s;
+    }
+    #cancel{
+        width: 100%;
+        background: rgb(0, 81, 255);
+        padding: 10px;
+        color: white;
+        font-size: 15px;
+        transition: 1s;
     }
 </style>

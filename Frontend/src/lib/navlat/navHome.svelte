@@ -1,7 +1,6 @@
 <script>
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import NavHome from "../../lib/navlat/navHome.svelte";
 
     let user = null;
 
@@ -28,6 +27,8 @@
     });
 
     async function logout() {
+        confirm('Vous êtes sûr de vouloir vous déconnecter?');
+
         const token = localStorage.getItem('auth_token');
 
         // Envoyer une requête de déconnexion à Laravel
@@ -48,31 +49,57 @@
     }
 </script>
 
-<div class="body">
-    <div class="content">
-        <NavHome/>
-        <div class="right">
-            <p>Bonjour</p>
+<div class="left">
+    {#if user}
+        <div class="profile">
+            <img src="/utilisateur.png" alt="">
+            <p>Welcome <b>{user.name}</b></p>
         </div>
-    </div>
+        <hr>
+        <div class="list">
+            <a href="/home">
+                <li id="active"><img src="/accueil-active.png" alt="">Home</li>
+            </a>
+            <a href="/chat/room">
+                <li><img src="/message.png" alt="">Chat <span>1500</span></li>
+            </a>
+            <a href="">
+                <li><img src="/parametre.png" alt="">Settings</li>
+            </a>
+            <button on:click={logout}>
+                <li>Logout</li>
+            </button>
+        </div>
+    {:else}
+        <div class="profile">
+            <img src="/utilisateur.png" alt="">
+            <p>Loading...</p>
+        </div>
+        <hr>
+        <div class="list">
+            <a href="/home">
+                <li id="active"><img src="/accueil-active.png" alt="">Home</li>
+            </a>
+            <a href="/chat/room">
+                <li><img src="/message.png" alt="">Chat</li>
+            </a>
+            <a href="">
+                <li><img src="/parametre.png" alt="">Settings</li>
+            </a>
+            <button on:click={logout}>
+                <li>Logout</li>
+            </button>
+        </div>
+    {/if}
+    
 </div>
 
 <style>
-    .body{
-        color: white;
-    }
-    .content{
-        padding: 15px;
-        display: flex;
-        font-size: 20px;
-    }
+    
     .left{
         width: 25%;
     }
-    .right{
-        width: 75%;
-    }
-    .right, .left{
+    .left{
         border: 1px solid rgba(255, 255, 255, 0.165);
         margin: 5px;
         padding: 15px;
@@ -86,9 +113,8 @@
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
     .profile img{
-        border: 1px solid white;
+        border: 1px solid rgba(255, 255, 255, 0.485);
         border-radius: 100%;
-        padding: 2px;
         height: 40px;
         margin-right: 15px;
     }
@@ -97,8 +123,14 @@
         margin: 0;
         padding: 15px;
         margin-top: 5px;
-        border-radius: 5px;
+        border-radius: 20px;
         list-style: none;
+        display: flex;
+        align-items: center;
+    }
+    .list img{
+        height: 25px;
+        margin-right: 10px;
     }
     .list li:hover{
         background-color: rgba(255, 255, 255, 0.097);
@@ -117,5 +149,21 @@
         border-radius: 5px;
         text-align: left;
         font-size: 17px;
+    }
+    
+    #active{
+        color: green;
+        border: 1px solid green;
+    }
+    
+    .list span{
+        margin-left: auto;
+        color: white;
+        background: rgb(255, 35, 35);
+        padding: 5px;
+        text-align: center;
+        border-radius: 100%;
+        font-size: 17px;
+        font-weight: bold;
     }
 </style>

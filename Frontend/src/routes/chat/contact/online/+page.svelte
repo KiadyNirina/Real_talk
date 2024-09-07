@@ -1,49 +1,114 @@
 <script>
-    import NavChat from "../../lib/navlat/navChat.svelte";
+    import NavChat from "../../../../lib/navlat/navChat.svelte";
+    import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
+
+    let user = null;
+
+    onMount(async () => {
+        try {
+            const token = localStorage.getItem('auth_token');
+
+            const response = await fetch('http://localhost:8000/api/user', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                user = data;
+            } else {
+                console.error("Failed to fetch user data");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
 </script>
 
 <div class="body">
     <div class="content">
         <NavChat/>
+        {#if user}
+            
         <div class="right">
             <div class="nav">
-                <a id="active" href="/1"><p>Room</p></a>
-                <a href="/2"><p>Contact</p></a>
+                <a href="/chat/room"><p>Room</p></a>
+                <a id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
-                <input type="search" name="" id="" placeholder="Enter the room name">
+                <input type="search" name="" id="" placeholder="Enter the user name">
             </div>
                 <button class="add">
-                    <a href="" >
-                        <img src="/ajouter.png" alt="">
-                        <span>Create room</span>
+                    <a href="/chat/contact/all" >
+                        <img src="/all.png" alt="">
+                        <span>All users</span>
+                    </a>
+                </button>
+                <button class="add">
+                    <a href="/chat/contact/friend" >
+                        <img src="/amis.png" alt="">
+                        <span>Contact</span>
+                    </a>
+                </button>
+                <button class="add">
+                    <a href="/chat/contact/online" class="active">
+                        <img src="/online-active.png" alt="">
+                        <span>Contact online</span>
                     </a>
                 </button>
             <div class="list">
-                <a href="/chat/2" class="profile">
+                <a href="/chat/contact/friend/2" class="profile">
                     <img src="/utilisateur.png" alt="">
                     <div class="name">
-                        <p>Chat name</p>
-                        <p class="part">25 participants</p>
+                        <p class="smallName">
+                            name
+                        </p>
+                        <p class="part">
+                            Friend
+                            <img src="/accepter.png" alt="">
+                        </p>
                     </div>
-                </a>
-                <a href="" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p>Chat name</p>
-                        <p class="part">25 participants</p>
-                    </div>
-                </a>
-                <a href="" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p>Chat name</p>
-                        <p class="part">25 participants</p>
-                    </div>
+                    <p class="onLine">.</p>
                 </a>
             </div>
 
         </div>
+        {:else}
+        <div class="right">
+            <div class="nav">
+                <a href="/chat/room"><p>Room</p></a>
+                <a id="active" href="/chat/contact"><p>Contact</p></a>
+            </div>
+            <div class="input">
+                <input type="search" name="" id="" placeholder="Enter the room name">
+            </div>
+            <button class="add">
+                <a href="/chat/contact/all" >
+                    <img src="/all.png" alt="">
+                    <span>All users</span>
+                </a>
+            </button>
+            <button class="add">
+                <a href="/chat/contact/friend" >
+                    <img src="/amis.png" alt="">
+                    <span>Contact</span>
+                </a>
+            </button>
+            <button class="add">
+                <a href="/chat/contact/online" class="active">
+                    <img src="/online-active.png" alt="">
+                    <span>Contact online</span>
+                </a>
+            </button>
+            <div class="list">
+                <p>Loading...</p>
+            </div>
+
+        </div>
+        {/if}
     </div>
 </div>
 
@@ -86,17 +151,17 @@
     #active{
         color: white;
         background-color: rgba(255, 255, 255, 0.064);
-        border-radius: 20px 0px 0px 20px;
+        border-radius: 0px 20px 20px 0px;
     }
     .add{
-        border: 1px solid white;
+        border: none;
         border-radius: 20px;
         background-color: transparent;
         padding: 0;
     }
     .add img{
-        height: 30px;
-        margin-right: 10px;
+        height: 20px;
+        margin-right: 5px;
     }
     .add a{
         text-decoration: none;
@@ -104,9 +169,10 @@
         color: white;
         align-items: center;
         display: flex;
+        transition: 0.2s;
     }
-    .add:hover{
-        background-color: rgba(255, 255, 255, 0.196);
+    .add a:hover{
+        color: rgb(0, 90, 0);
     }
     .profile{
         display: flex;
@@ -134,6 +200,23 @@
     .part{
         font-size: 13px;
         color: rgba(255, 255, 255, 0.575);
+        display: flex;
+        align-items: center;
+    }
+    .part img{
+        border: none;
+        height: 10px;
+        margin-left: 5px;
+    }
+    .onLine{
+        color: rgb(0, 198, 0);
+        margin: 0 0 0 auto;
+        font-weight: bold;
+        font-size: 50px;
+    }
+    .active span{
+        color: green;
+        font-weight: 900;
     }
     .message{
         border: 1px solid rgba(255, 255, 255, 0.139);
