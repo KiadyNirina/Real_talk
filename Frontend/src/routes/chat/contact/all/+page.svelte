@@ -3,7 +3,28 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
 
+    let members = [];
     let user = null;
+
+    async function fetchMembers() {
+        try {
+            const token = localStorage.getItem('auth_token'); // Récupérer le token d'auth
+            const response = await fetch('http://localhost:8000/api/members', {
+                method: 'GET',
+                headers: {
+                'Authorization': `Bearer ${token}`,  // Envoie du token d'authentification
+                }
+            });
+
+            if (response.ok) {
+                members = await response.json();  // Stocker la liste des membres
+            } else {
+                error = "Failed to fetch members.";
+            }
+        } catch (e) {
+        error = "An error occurred while fetching members.";
+        }
+    }
 
     onMount(async () => {
         try {
@@ -22,6 +43,8 @@
             } else {
                 console.error("Failed to fetch user data");
             }
+            // Appeler la fonction lors du chargement du composant
+            fetchMembers();
         } catch (error) {
             console.error("Error:", error);
         }
@@ -60,39 +83,23 @@
                     </a>
                 </button>
             <div class="list">
-                <a href="/chat/contact/all/2" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p class="smallName">
-                            name
-                        </p>
-                        <p class="part">
-                            Friend
-                            <img src="/refuser.png" alt="">
-                        </p>
-                    </div>
-                    <p class="onLine">.</p>
-                </a>
-                <a href="" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p>name</p>
-                        <p class="part">
-                            Friend
-                            <img src="/accepter.png" alt="">
-                        </p>
-                    </div>
-                </a>
-                <a href="" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p>name</p>
-                        <p class="part">
-                            Friend
-                            <img src="/en_cours.png" alt="">
-                        </p>
-                    </div>
-                </a>
+                {#if members.length > 0}
+                    {#each members as member}
+                        <a href="/chat/contact/all/2" class="profile">
+                            <img src="/utilisateur.png" alt="">
+                            <div class="name">
+                                <p class="smallName">
+                                    {member.name}
+                                </p>
+                                <p class="part">
+                                    Friend
+                                    <img src="/refuser.png" alt="">
+                                </p>
+                            </div>
+                            <p class="onLine">.</p>
+                        </a>        
+                    {/each}
+                {/if}
             </div>
 
         </div>
