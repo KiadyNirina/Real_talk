@@ -1,51 +1,6 @@
 <script>
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
-    import NavHome from "../../lib/navlat/navHome.svelte";
+    import NavHome from '../../lib/navlat/navHome.svelte';
 
-    let user = null;
-
-    onMount(async () => {
-        try {
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    });
-
-    async function logout() {
-        const token = localStorage.getItem('auth_token');
-
-        // Envoyer une requête de déconnexion à Laravel
-        const response = await fetch('http://localhost:8000/api/logout', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-            // Supprimer le token du stockage local
-            localStorage.removeItem('auth_token');
-            goto('/');
-        } else {
-            console.error('Failed to logout');
-        }
-    }
 </script>
 
 <div class="body">

@@ -1,59 +1,43 @@
 <script>
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
+    import axios from 'axios';
+    import { onMount } from 'svelte';
+    import { user } from '../store';
 
-    let user = null;
+    let currentUser = null;
 
     onMount(async () => {
         try {
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
+            const token = localStorage.getItem('token');
+            if(token){
+                const response = await axios.get('http://localhost:8000/api/user', {
                 headers: {
                     'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
+                    }
+                });
+                currentUser = response.data.user
+                user.set(currentUser);
             }
+            
         } catch (error) {
-            console.error("Error:", error);
+            console.error('Error fetching user data:', error);
         }
     });
 
-    async function logout() {
-        confirm('Vous êtes sûr de vouloir vous déconnecter?');
+    /*function logout() {
+        // Supprimer le token JWT et vider les infos de l'utilisateur
+        localStorage.removeItem('token');
+        user.set(null);
 
-        const token = localStorage.getItem('auth_token');
-
-        // Envoyer une requête de déconnexion à Laravel
-        const response = await fetch('http://localhost:8000/api/logout', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-            // Supprimer le token du stockage local
-            localStorage.removeItem('auth_token');
-            goto('/');
-        } else {
-            console.error('Failed to logout');
-        }
-    }
+        // Rediriger vers la page de connexion
+        goto('/');
+    }*/
 </script>
 
 <div class="left">
-    {#if user}
+    {#if $user}
         <div class="profile">
             <img src="/utilisateur.png" alt="">
-            <p>Welcome <b>{user.name}</b></p>
+            <p>Welcome <b>{$user.name}</b></p>
         </div>
         <hr>
         <div class="list">
@@ -66,7 +50,7 @@
             <a href="">
                 <li><img src="/parametre.png" alt="">Settings</li>
             </a>
-            <button on:click={logout}>
+            <button>
                 <li>Logout</li>
             </button>
         </div>
@@ -86,7 +70,7 @@
             <a href="">
                 <li><img src="/parametre.png" alt="">Settings</li>
             </a>
-            <button on:click={logout}>
+            <button>
                 <li>Logout</li>
             </button>
         </div>

@@ -1,28 +1,21 @@
 <script>
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
+    import axios from 'axios';
+    import { onMount } from 'svelte';
+    import { user } from '../store';
 
-    let user = null;
+    let currentUser = null;
 
     onMount(async () => {
         try {
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
+            const response = await axios.get('http://localhost:8000/api/user', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
+            currentUser = response.data.user
+            user.set(currentUser);
         } catch (error) {
-            console.error("Error:", error);
+            console.error('Error fetching user data:', error);
         }
     });
 
@@ -50,10 +43,10 @@
 </script>
 
 <div class="left">
-    {#if user}
+    {#if $user}
     <div class="profile">
         <img src="/utilisateur.png" alt="">
-        <p>Welcome <b>{user.name}</b></p>
+        <p>Welcome <b>{$user.name}</b></p>
     </div>
     <hr>
     <div class="list">

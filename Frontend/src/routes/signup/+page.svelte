@@ -1,4 +1,6 @@
 <script>
+    import axios from 'axios';
+
     let showPassword = false;
 
     let name = "";
@@ -8,41 +10,46 @@
     let error = "";
     let successMessage = "";
 
+     // Fonction pour l'inscription
     async function register() {
-        // Vider le message d'erreur ou de succès
-        error = "";
-        successMessage = "";
-
         try {
-        const response = await fetch('http://localhost:8000/api/register', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password,
-            password_confirmation: password_confirmation,
-            }),
-        });
+            await axios.post('http://localhost:8000/api/register', {
+                name,
+                email,
+                password,
+                password_confirmation: password_confirmation,
+            });
+    
+            successMessage = "Registration successful! You can now log in.";
 
-        // Si la réponse est OK
-        if (response.ok) {
+            /*const response = await fetch('http://localhost:8000/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    name, 
+                    email, 
+                    password, 
+                }),
+            });
+
             const data = await response.json();
+
+            if (response.ok) {
+                error = "";
+                successMessage = "Registration successful! You can now log in.";
+            } else {
+                error = "kely sisa";
+            }*/
+
             
-            // Stocker le token dans localStorage
-            localStorage.setItem('auth_token', data.token);
-            successMessage = "Registration successful! You are now logged in.";
-        } else {
-            // En cas d'erreur (validation ou autre)
-            const errorData = await response.json();
-            error = errorData.message || "An error occurred during registration.";
-        }
         } catch (err) {
-        error = "An unexpected error occurred.";
+            console.error('Registration error:', err);
+            error = "ts mety";
         }
-    }
+    };
+
 </script>
 
 <div class="body">
@@ -69,7 +76,7 @@
                     <input type="checkbox" name="" id="checkbox" bind:checked={showPassword}>
                     <span>Show password</span>
                 </div>
-                <button>Signup</button> 
+                <button type="submit">Signup</button> 
                 <p>or</p>
                 <p>Already have an account? <a href="/">Sign In</a></p>
             </form>

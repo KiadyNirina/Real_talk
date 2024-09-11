@@ -1,41 +1,29 @@
 <script>
+    import axios from "axios";
     import {goto} from "$app/navigation";
+    import { user, token } from "../lib/store";
 
-    let email = "";
-    let password = "";
     let error = "";
     let successMessage = "";
-    let token = null;
     let showPassword = false;
-  
+    
+    let email = '';
+    let password = '';
+
     async function login() {
-      try {
-        const response = await fetch('http://localhost:8000/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error("Invalid credentials");
+        try {
+            const response = await axios.post('http://localhost:8000/api/login', { 
+                email, password 
+            });
+            localStorage.setItem('token', response.data.access_token);
+            
+            // Mettre à jour l'utilisateur connecté
+            user.set(response.data.user);
+            goto('/home');
+        } catch (err) {
+            console.error(err);
+            error = err.message;
         }
-  
-        const data = await response.json();
-        token = data.token;
-  
-        // Stocker le token dans localStorage
-        localStorage.setItem('auth_token', token);
-        error = "";
-        successMessage = "Registration successful! You are now logged in.";
-        goto('/home');
-      } catch (err) {
-        error = err.message;
-      }
     }
 </script>
 

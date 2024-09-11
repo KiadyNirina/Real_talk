@@ -1,60 +1,57 @@
 <script>
     import NavChat from "../../../../lib/navlat/navChat.svelte";
-    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import Echo from 'laravel-echo';
+    import Pusher from 'pusher-js';
+    import { onMount } from 'svelte';
+    import { user, users, friends } from "../../../../lib/store";
+    import axios from "axios";
 
-    let members = [];
-    let user = null;
+    let currentUser = null;
 
-    async function fetchMembers() {
-        try {
-            const token = localStorage.getItem('auth_token'); // Récupérer le token d'auth
-            const response = await fetch('http://localhost:8000/api/members', {
-                method: 'GET',
-                headers: {
-                'Authorization': `Bearer ${token}`,  // Envoie du token d'authentification
-                }
-            });
-
-            if (response.ok) {
-                members = await response.json();  // Stocker la liste des membres
-            } else {
-                error = "Failed to fetch members.";
-            }
-        } catch (e) {
-        error = "An error occurred while fetching members.";
-        }
+    let error = null;     // Gestion des erreurs
+    
+    /*function isFriend(user) {
+        return friends.some(friend => friend.id === user.id);
     }
+
+    // Fonction pour vérifier si un utilisateur est en ligne
+    function isOnline(user) {
+        return user.is_online;  // Suppose que cette donnée est renvoyée par l'API
+    }*/
 
     onMount(async () => {
         try {
-            const token = localStorage.getItem('auth_token');
+            const response = await axios.get('http://localhost:8000/api/users', { withCredentials: true });
+            users.set(response.data);
+        } catch (error) {
+            console.error('Failed to fetch users:', error);
+        }
+    })
 
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
+    /*onMount(async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if(token){
+                const response = await axios.get('http://localhost:8000/api/user', {
                 headers: {
                     'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
+                    }
+                });
+                currentUser = response.data.user
+                user.set(currentUser);
             }
-            // Appeler la fonction lors du chargement du composant
-            fetchMembers();
+            
         } catch (error) {
-            console.error("Error:", error);
-        }
-    });
+            console.error('Error fetching user data:', error);
+        };
+    });*/
 </script>
 
 <div class="body">
     <div class="content">
         <NavChat/>
-        {#if user}
+        {#if $user}
             
         <div class="right">
             <div class="nav">
@@ -83,13 +80,13 @@
                     </a>
                 </button>
             <div class="list">
-                {#if members.length > 0}
-                    {#each members as member}
+                {#if $users.length > 0}
+                    {#each $users as user}
                         <a href="/chat/contact/all/2" class="profile">
                             <img src="/utilisateur.png" alt="">
                             <div class="name">
                                 <p class="smallName">
-                                    {member.name}
+                                    {user.name}
                                 </p>
                                 <p class="part">
                                     Friend
@@ -99,6 +96,8 @@
                             <p class="onLine">.</p>
                         </a>        
                     {/each}
+                {:else}
+                    <p>Tsisy</p>
                 {/if}
             </div>
 

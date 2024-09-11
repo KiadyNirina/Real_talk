@@ -76,7 +76,7 @@
         <div class="right">
             <div class="nav">
                 <a id="active" href="/chat/room/"><p>Room</p></a>
-                <a href="/chat/contact/"><p>Contact</p></a>
+                <a href="/chat/contact/friend/"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the room name">
