@@ -1,57 +1,50 @@
 <script>
-    import NavChat from "../../../../lib/navlat/navChat.svelte";
-    import { goto } from "$app/navigation";
-    import Echo from 'laravel-echo';
-    import Pusher from 'pusher-js';
     import { onMount } from 'svelte';
-    import { user, users, friends } from "../../../../lib/store";
-    import axios from "axios";
+    import { getUserInfo, getAllUser } from '../../../../lib/auth';
+    import NavChat from '../../../../lib/navlat/navChat.svelte';
 
     let currentUser = null;
+    let allUser = [];
+    let intervalId;
 
-    let error = null;     // Gestion des erreurs
-    
-    /*function isFriend(user) {
-        return friends.some(friend => friend.id === user.id);
-    }
-
-    // Fonction pour vérifier si un utilisateur est en ligne
-    function isOnline(user) {
-        return user.is_online;  // Suppose que cette donnée est renvoyée par l'API
-    }*/
-
-    onMount(async () => {
+    const fetchUser = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/users', { withCredentials: true });
-            users.set(response.data);
-        } catch (error) {
-            console.error('Failed to fetch users:', error);
-        }
-    })
-
-    /*onMount(async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if(token){
-                const response = await axios.get('http://localhost:8000/api/user', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                    }
-                });
-                currentUser = response.data.user
-                user.set(currentUser);
-            }
-            
+            currentUser = await getUserInfo();
+            console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
+        }
+    }
+
+    const fetchAllUser = async () => {
+        try {
+            allUser = await getAllUser();
+            console.log('Informations des utilisateur récupérées', allUser);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    onMount(async () => {
+
+        // Récupérer les données utilisateurs
+        await fetchUser();
+        await fetchAllUser();
+
+        // Polling toutes les 5 secondes
+        intervalId = setInterval(fetchAllUser, 1000);
+
+        // Nettoyer l'intervalle au démontage
+        return () => {
+        clearInterval(intervalId);
         };
-    });*/
+    });
 </script>
 
 <div class="body">
     <div class="content">
         <NavChat/>
-        {#if $user}
+        {#if currentUser}
             
         <div class="right">
             <div class="nav">
@@ -80,8 +73,8 @@
                     </a>
                 </button>
             <div class="list">
-                {#if $users.length > 0}
-                    {#each $users as user}
+                {#if allUser.length > 0}
+                    {#each allUser as user}
                         <a href="/chat/contact/all/2" class="profile">
                             <img src="/utilisateur.png" alt="">
                             <div class="name">
@@ -93,7 +86,11 @@
                                     <img src="/refuser.png" alt="">
                                 </p>
                             </div>
-                            <p class="onLine">.</p>
+                            {#if user.is_online === true}
+                                <p class="onLine">.</p>
+                            {:else}
+                                <p class="ofline">{user.last_seen}</p>
+                            {/if}
                         </a>        
                     {/each}
                 {:else}
@@ -239,6 +236,14 @@
         margin: 0 0 0 auto;
         font-weight: bold;
         font-size: 50px;
+    }
+    .ofline{
+        color: rgba(255, 255, 255, 0.546);
+        margin: 0 0 0 auto;
+        font-weight: bold;
+        font-size: 10px;
+        letter-spacing: 0.2px;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
     .active span{
         color: green;

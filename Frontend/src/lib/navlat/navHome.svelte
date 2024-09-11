@@ -2,22 +2,14 @@
     import axios from 'axios';
     import { onMount } from 'svelte';
     import { user } from '../store';
+    import { getUserInfo } from '../auth';
 
     let currentUser = null;
 
     onMount(async () => {
         try {
-            const token = localStorage.getItem('token');
-            if(token){
-                const response = await axios.get('http://localhost:8000/api/user', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                    }
-                });
-                currentUser = response.data.user
-                user.set(currentUser);
-            }
-            
+            currentUser = await getUserInfo();
+            console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
@@ -34,10 +26,10 @@
 </script>
 
 <div class="left">
-    {#if $user}
+    {#if currentUser}
         <div class="profile">
             <img src="/utilisateur.png" alt="">
-            <p>Welcome <b>{$user.name}</b></p>
+            <p>Welcome <b>{currentUser.name}</b></p>
         </div>
         <hr>
         <div class="list">

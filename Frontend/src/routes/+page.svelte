@@ -2,29 +2,27 @@
     import axios from "axios";
     import {goto} from "$app/navigation";
     import { user, token } from "../lib/store";
+    import { login } from "../lib/auth";
 
-    let error = "";
     let successMessage = "";
     let showPassword = false;
     
-    let email = '';
-    let password = '';
-
-    async function login() {
-        try {
-            const response = await axios.post('http://localhost:8000/api/login', { 
-                email, password 
-            });
-            localStorage.setItem('token', response.data.access_token);
-            
-            // Mettre à jour l'utilisateur connecté
-            user.set(response.data.user);
-            goto('/home');
-        } catch (err) {
-            console.error(err);
-            error = err.message;
-        }
+    let formData = {
+        email : '',
+        password : '',
     }
+
+    let error;
+
+    const handleLogin = async() => {
+            const response = await login(formData);
+            if(response){
+                goto('/home');
+            } else {
+                error
+            }
+    }
+    
 </script>
 
 <div class="body">
@@ -38,12 +36,12 @@
                 <p style="color: green;">{successMessage}</p>
             {/if}
 
-            <form on:submit|preventDefault={login}>
-                <input type="email" name="" id="" placeholder="Email" bind:value={email}>
+            <form on:submit|preventDefault={handleLogin}>
+                <input type="email" name="" id="" placeholder="Email" bind:value={formData.email}>
                 {#if showPassword}
-                    <input type="text" placeholder="Password" bind:value={password}>
+                    <input type="text" placeholder="Password" bind:value={formData.password}>
                 {:else}
-                    <input type="password" placeholder="Password" bind:value={password}>
+                    <input type="password" placeholder="Password" bind:value={formData.password}>
                 {/if}
                 <div class="check">
                     <input type="checkbox" name="" id="checkbox" bind:checked={showPassword}>

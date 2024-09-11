@@ -1,52 +1,28 @@
 <script>
-    import axios from 'axios';
     import { onMount } from 'svelte';
-    import { user } from '../store';
+    import { getUserInfo } from '../auth';
 
     let currentUser = null;
 
-    onMount(async () => {
+    const fetchUser = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/user', {
-                headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            currentUser = response.data.user
-            user.set(currentUser);
+            currentUser = await getUserInfo();
+            console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
-    });
-
-    async function logout() {
-        confirm('Vous êtes sûr de vouloir vous déconnecter?');
-
-        const token = localStorage.getItem('auth_token');
-
-        // Envoyer une requête de déconnexion à Laravel
-        const response = await fetch('http://localhost:8000/api/logout', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-            // Supprimer le token du stockage local
-            localStorage.removeItem('auth_token');
-            goto('/');
-        } else {
-            console.error('Failed to logout');
-        }
     }
+
+    onMount(async () => {
+        fetchUser();
+    });
 </script>
 
 <div class="left">
-    {#if $user}
+    {#if currentUser}
     <div class="profile">
         <img src="/utilisateur.png" alt="">
-        <p>Welcome <b>{$user.name}</b></p>
+        <p>Welcome <b>{currentUser.name}</b></p>
     </div>
     <hr>
     <div class="list">
@@ -59,7 +35,7 @@
         <a href="">
             <li><img src="/parametre.png" alt="">Settings</li>
         </a>
-        <button on:click={logout}>
+        <button>
             <li>Logout</li>
         </button>
     </div>
@@ -79,7 +55,7 @@
         <a href="">
             <li><img src="/parametre.png" alt="">Settings</li>
         </a>
-        <button on:click={logout}>
+        <button>
             <li>Logout</li>
         </button>
     </div>
