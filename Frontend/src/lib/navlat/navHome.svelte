@@ -2,7 +2,8 @@
     import axios from 'axios';
     import { onMount } from 'svelte';
     import { user } from '../store';
-    import { getUserInfo } from '../auth';
+    import { getUserInfo, logout } from '../auth';
+    import {goto} from "$app/navigation";
 
     let currentUser = null;
 
@@ -14,6 +15,21 @@
             console.error('Error fetching user data:', error);
         }
     });
+
+    let alertLogout = false;
+
+    const handleLogout = () => {
+        alertLogout = true;
+    }
+
+    const logoutYes = () => {
+        logout();
+        goto('/');
+    }
+
+    const logoutNo = () => {
+        alertLogout = false;
+    }
 
     /*function logout() {
         // Supprimer le token JWT et vider les infos de l'utilisateur
@@ -42,9 +58,19 @@
             <a href="">
                 <li><img src="/parametre.png" alt="">Settings</li>
             </a>
-            <button>
-                <li>Logout</li>
+            <button on:click={handleLogout}>
+                <li><img src="/déconnexion.png" alt="">Logout</li>
             </button>
+            {#if alertLogout}
+            <div class="overlay"></div>
+            <div class="alertLogout">
+                <p>Do you really want to log out?</p>
+                <div class="action">
+                    <button id="yes" on:click={logoutYes}>Yes</button>
+                    <button on:click={logoutNo}>No</button>
+                </div>
+            </div>
+        {/if}
         </div>
     {:else}
         <div class="profile">
@@ -62,9 +88,9 @@
             <a href="">
                 <li><img src="/parametre.png" alt="">Settings</li>
             </a>
-            <button>
-                <li>Logout</li>
-            </button>
+            <a href="/">
+                <li>Login</li>
+            </a>
         </div>
     {/if}
     
@@ -141,5 +167,41 @@
         border-radius: 100%;
         font-size: 17px;
         font-weight: bold;
+    }
+    .alertLogout{
+        position: fixed;
+        right: 40%;
+        left: 40%;
+        border: 1px solid rgba(255, 255, 255, 0.19);
+        background-color: rgb(37, 37, 37);
+        text-align: center;
+        top: 40%;
+        border-radius: 15px;
+        padding: 5px;
+        z-index: 9;
+    }
+    .alertLogout .action{
+        display: flex;
+    }
+    .alertLogout .action button{
+        text-align: center;
+        padding: 10px;
+    }
+    #yes:hover{
+        background-color: rgba(255, 0, 0, 0.496);
+    }
+    .alertLogout .action button:hover{
+        cursor: pointer;
+        background-color: rgba(128, 128, 128, 0.692);
+        border-radius: 15px;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
+        z-index: 5;
     }
 </style>

@@ -58,12 +58,11 @@ class User extends Authenticatable
         $lastSeen = $this->last_seen; // ou une autre variable contenant une date
         $lastSeen = Carbon::parse($lastSeen); // Conversion en objet Carbon
 
-        // Vous pouvez maintenant utiliser diffInMinutes()
         $minutesAgo = $lastSeen->diffInMinutes(now());
 
         // Si l'utilisateur a été actif dans les 5 dernières minutes, il est considéré comme en ligne
         //return $this->last_seen && $this->last_seen->diffInMinutes(Carbon::now()) <= 5;
-        return $minutesAgo <= 5;
+        return $minutesAgo <= 1;
     }
 }
 

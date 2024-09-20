@@ -1,5 +1,5 @@
 <script>
-    import NavChat from "../../../../lib/navlat/navChat.svelte";
+    import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
 

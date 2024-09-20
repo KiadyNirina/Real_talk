@@ -10,8 +10,11 @@
     let error = "";
     let successMessage = "";
 
+    let clicked = false;
+
      // Fonction pour l'inscription
     async function register() {
+        clicked = true;
         try {
             await axios.post('http://localhost:8000/api/register', {
                 name,
@@ -21,6 +24,8 @@
             });
     
             successMessage = "Registration successful! You can now log in.";
+            error = "";
+            clicked = false;
 
             /*const response = await fetch('http://localhost:8000/api/register', {
                 method: 'POST',
@@ -45,8 +50,10 @@
 
             
         } catch (err) {
+            clicked = false;
             console.error('Registration error:', err);
-            error = "ts mety";
+            error = err.message;
+            successMessage = "";
         }
     };
 
@@ -76,7 +83,11 @@
                     <input type="checkbox" name="" id="checkbox" bind:checked={showPassword}>
                     <span>Show password</span>
                 </div>
-                <button type="submit">Signup</button> 
+                {#if !clicked}
+                    <button type="submit">Signup</button> 
+                {:else}
+                    <button type="submit">Loading...</button> 
+                {/if}
                 <p>or</p>
                 <p>Already have an account? <a href="/">Sign In</a></p>
             </form>

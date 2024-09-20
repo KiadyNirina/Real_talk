@@ -6,6 +6,7 @@
 
     let successMessage = "";
     let showPassword = false;
+    let clicked = false;
     
     let formData = {
         email : '',
@@ -15,11 +16,13 @@
     let error;
 
     const handleLogin = async() => {
+        clicked = true;
             const response = await login(formData);
             if(response){
                 goto('/home');
             } else {
-                error
+                clicked = false;
+                error;
             }
     }
     
@@ -48,7 +51,11 @@
                     <span>Show password</span>
                 </div>
                 <p id="forget"><a href="">Forget password?</a></p>
-                <button>Login</button> 
+                {#if clicked}
+                    <button disabled>Loading...</button> 
+                {:else}
+                    <button>Login</button> 
+                {/if}
                 <p>or</p>
                 <p>Have not an account yet? <a href="/signup">Sign Up</a></p>
             </form>
@@ -107,6 +114,13 @@
         font-size: 15px;
         margin-top: 20px;
     }
+    .content button:disabled{
+        color: gray;
+    }
+    .content button:disabled:hover{
+        cursor: not-allowed;
+        background-color: rgb(23, 23, 23);
+    }
     .content button:hover{
         cursor: pointer;
         background-color: green;
@@ -129,4 +143,5 @@
     #error{
         color: rgb(250, 57, 57);
     }
+    
 </style>

@@ -26,6 +26,10 @@ export const registerUser = async (formData) => {
     }
 };
 
+export const logout = async () => {
+    localStorage.setItem('token', null);
+}
+
 export const getUserInfo = async () => {
     try {
         const response = await apiClient.get('/users'); // Route pour obtenir les infos de l'utilisateur connecté

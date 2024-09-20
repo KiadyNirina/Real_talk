@@ -2,8 +2,9 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import { getUserInfo } from "../../../../../lib/auth";
 
-    let user = null;
+    let currentUser = null;
     let dmSend = false;
 
     function send() {
@@ -15,33 +16,24 @@
         }
     }
 
-    onMount(async () => {
+    const fetchUser = async () => {
         try {
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
+            currentUser = await getUserInfo();
+            console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
-            console.error("Error:", error);
+            console.error('Error fetching user data:', error);
         }
+    }
+
+    onMount(async () => {
+        await fetchUser();
     });
 </script>
 
 <div class="body">
     <div class="content">
         <NavChat/>
-        {#if user}
+        {#if currentUser}
         <div class="right">
             <div class="col1">
                 <h1>Contact online</h1>
@@ -261,7 +253,6 @@
         padding: 10px;
         color: white;
         font-size: 15px;
-        transition: 1s;
     }
     #cancel{
         width: 100%;
@@ -269,6 +260,5 @@
         padding: 10px;
         color: white;
         font-size: 15px;
-        transition: 1s;
     }
 </style>

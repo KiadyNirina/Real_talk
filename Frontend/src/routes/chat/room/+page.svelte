@@ -1,37 +1,29 @@
 <script>
     import NavChat from "../../../lib/navlat/navChat.svelte";
+    import { getUserInfo } from "../../../lib/auth";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
 
-    let user = null;
+    let currentUser = null;
+
+    const fetchUser = async () => {
+        try {
+            currentUser = await getUserInfo();
+            console.log('Informations de l’utilisateur récupérées', currentUser);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
 
     onMount(async () => {
-        try {
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
+        await fetchUser();
     });
 </script>
 
 <div class="body">
     <div class="content">
         <NavChat/>
-        {#if user}
+        {#if currentUser}
             
         <div class="right">
             <div class="nav">
