@@ -31,4 +31,18 @@ class UserController extends Controller
             'other_users' => $otherUsers,
         ]);
     }
+
+    public function show($id)
+    {
+        // Récupérer l'utilisateur par son ID
+        $user = User::find($id);
+
+        // Vérifier si l'utilisateur existe
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Retourner les informations de l'utilisateur
+        return response()->json($user);
+    }
 }
