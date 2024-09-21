@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FriendController;
 
 
 Route::post('register', [AuthController::class, 'register']);
@@ -30,3 +31,8 @@ Route::middleware('auth:sanctum')->get('/users', [UserController::class, 'getUse
 Route::get('/user/{id}', [UserController::class, 'show']);
 Route::middleware('auth:sanctum')->get('/usersOnline', [UserController::class, 'getUserOnline']);
 
+Route::post('/invitations', [FriendController::class, 'sendInvitation'])->middleware('auth:sanctum');
+Route::post('/invitations/{invitation}/accept', [FriendController::class, 'acceptInvitation'])->middleware('auth:sanctum');
+Route::post('/invitations/{invitation}/reject', [FriendController::class, 'rejectInvitation'])->middleware('auth:sanctum');
+
+Route::get('/friends/status/{selectedUserId}', [FriendController::class, 'checkFriendStatus'])->middleware('auth:sanctum');

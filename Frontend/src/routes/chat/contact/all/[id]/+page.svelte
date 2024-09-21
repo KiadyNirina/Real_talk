@@ -2,25 +2,21 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo, getAllUserOnline, getUserSelectedInfo } from "../../../../../lib/auth";
+    import { getUserInfo, getAllUserOnline, getUserSelectedInfo, sendInvitation, checkFriend } from "../../../../../lib/auth";
     import { page } from "$app/stores";
 
     let intervalId;
     let currentUser = null;
-    let dmSend = false;
+    let invitationSended;
     let alluser = [];
     let userSelectedId = null;
     let userSelected = null;
+    let userSelected2 = null;
 
     $: userSelectedId = $page.params.id;
 
-    function send() {
-        if(dmSend == true)
-        {
-            dmSend = false;
-        } else {
-            dmSend = true;
-        }
+    let formData = {
+        receiver_id: userSelectedId,
     }
 
     const fetchUser = async () => {
@@ -50,12 +46,32 @@
         }
     }
 
+    const sendFriendRequest = async() => {
+        try {
+            invitationSended = await sendInvitation(formData);
+            console.log('Friend request sending with success!', invitationSended);
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+        }
+    }
+
+    const seeFriendStatus = async (id) => {
+        try {
+            userSelected2 = await checkFriend(id);
+            console.log('Informations de l’utilisateur friend séléctionné récupérées', userSelected2);
+            
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
     onMount(async () => {
         await fetchUser();
         await fetchAllUser();
 
         if(userSelectedId) {
             fetchUserSelected(userSelectedId);
+            seeFriendStatus(userSelectedId);
         }
 
         // Polling toutes les 5 secondes
@@ -96,7 +112,7 @@
                     {/if}
                 </div>
             </div>
-            {#if userSelected}
+            {#if userSelected && userSelected2}
                 <div class="col2">
                     <div class="profile">
                         <img src="/utilisateur.png" alt="">
@@ -122,10 +138,12 @@
                         </div>
                     </div>
                     <div class="input">
-                        {#if !dmSend}
-                            <button on:click={send} id="add">Ajouter</button>
+                        {#if userSelected2 === 'pending'}
+                            <button on:click={sendFriendRequest} id="cancel">Invitation envoyé</button> 
+                        {:else if userSelected2 === 'friends'}
+                            <button on:click={sendFriendRequest} id="cancel">Amis</button>
                         {:else}
-                            <button on:click={send} id="cancel">Invitation envoyé</button> 
+                            <button on:click={sendFriendRequest} id="add">Ajouter</button>
                         {/if}
                     </div>
                 </div>

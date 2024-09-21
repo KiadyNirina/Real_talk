@@ -78,3 +78,24 @@ export const getUserSelectedInfo = async (id) => {
         throw error;
     }
 }
+
+export const sendInvitation = async (formData) => {
+    try {
+        const response = await apiClient.get('/invitations', formData);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de l envoie de l invitation:", error);
+        throw error;
+    }
+}
+
+export const checkFriend = async (id) => {
+    try {
+        const response = await apiClient.get(`/friends/status/${id}`);
+
+        // Traitement du statut retourné
+        return response.data.status;
+    } catch (error) {
+        console.error('Erreur lors de la vérification du statut d\'amitié', error);
+    }
+}
