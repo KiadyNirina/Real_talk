@@ -32,6 +32,16 @@ class UserController extends Controller
         ]);
     }
 
+    public function getUserOnline(Request $request)
+    {
+        $user = $request -> user();
+
+        // Récupérer tous les utilisateurs qui sont en ligne
+        $onlineUsers = User::where('is_online', '=', true)->get();
+
+        return response()->json($onlineUsers);
+    }
+
     public function show($id)
     {
         // Récupérer l'utilisateur par son ID

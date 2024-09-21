@@ -12,6 +12,7 @@ class UpdateLastSeen
     {
         if (auth()->check()) {
             $user = auth()->user();
+            $user->is_online = true;
             $user->last_seen = now();
             $user->save();
         }

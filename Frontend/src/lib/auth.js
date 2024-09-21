@@ -27,7 +27,16 @@ export const registerUser = async (formData) => {
 };
 
 export const logout = async () => {
-    localStorage.setItem('token', null);
+    try {
+        const response = await apiClient.post('/logout');
+
+        // Sauvegarde du token dans le localStorage ou le sessionStorage
+        localStorage.removeItem('token');
+
+        return response;
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 export const getUserInfo = async () => {
@@ -42,10 +51,30 @@ export const getUserInfo = async () => {
 
 export const getAllUser = async () => {
     try {
-        const response = await apiClient.get('/users'); // Route pour obtenir les infos de l'utilisateur connecté
+        const response = await apiClient.get('/users'); // Route pour obtenir les infos des utilisateurs
         return response.data.other_users;
     } catch (error) {
         console.error("Erreur lors de la récupération des utilisateurs", error);
         throw error;
     }
 };
+
+export const getAllUserOnline = async () => {
+    try {
+        const response = await apiClient.get(`/usersOnline`); // Route pour obtenir les infos des utilisateurs online
+        return response.data;
+    }catch (error) {
+        console.error("Erreur lors de la récupération des informations des utilisateurs online", error);
+        throw error;
+    }
+}
+
+export const getUserSelectedInfo = async (id) => {
+    try {
+        const response = await apiClient.get(`/user/${id}`); // Route pour obtenir les infos des utilisateurs
+        return response.data;
+    }catch (error) {
+        console.error("Erreur lors de la récupération des informations de l'utilisateur séléctionné", error);
+        throw error;
+    }
+}

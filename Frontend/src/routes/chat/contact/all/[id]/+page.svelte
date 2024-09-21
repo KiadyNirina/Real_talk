@@ -2,10 +2,17 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo } from "../../../../../lib/auth";
+    import { getUserInfo, getAllUserOnline, getUserSelectedInfo } from "../../../../../lib/auth";
+    import { page } from "$app/stores";
 
+    let intervalId;
     let currentUser = null;
     let dmSend = false;
+    let alluser = [];
+    let userSelectedId = null;
+    let userSelected = null;
+
+    $: userSelectedId = $page.params.id;
 
     function send() {
         if(dmSend == true)
@@ -25,8 +32,39 @@
         }
     }
 
+    const fetchAllUser = async () => {
+        try {
+            alluser = await getAllUserOnline();
+            console.log('Informations des utilisateurs online récupérées', alluser);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const fetchUserSelected = async (id) => {
+        try {
+            userSelected = await getUserSelectedInfo(id);
+            console.log('Informations de l’utilisateur séléctionné récupérées', userSelected);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
     onMount(async () => {
         await fetchUser();
+        await fetchAllUser();
+
+        if(userSelectedId) {
+            fetchUserSelected(userSelectedId);
+        }
+
+        // Polling toutes les 5 secondes
+        intervalId = setInterval(fetchAllUser, 5000);
+
+        // Nettoyer l'intervalle au démontage
+        return () => {
+        clearInterval(intervalId);
+        };
     });
 </script>
 
@@ -38,60 +76,71 @@
             <div class="col1">
                 <h1>Contact online</h1>
                 <div class="list">
-                    <a href="/chat/contact/friend/2" class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <div class="name">
-                            <p>John Doe</p>
-                            <p class="part">
-                                online
-                                <img src="/accepter.png" alt="">
-                            </p>
-                        </div>
-                    </a>
-                    <a href="/chat/contact/friend/2" class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <div class="name">
-                            <p>John Doe</p>
-                            <p class="part">
-                                online
-                                <img src="/accepter.png" alt="">
-                            </p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col2">
-                <div class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <p>Chat name</p>
-                </div>
-                <div class="message">
-                    <div class="content-message">
-                        <img src="/utilisateur.png" alt="">
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
-                        </p>
-                    </div>
-    
-                    <div class="content-message-send">
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
-                        </p>
-                    </div>
-                    <div class="content-message-send">
-                        <p>
-                            Lorem ipsum dolor
-                        </p>
-                    </div>
-                </div>
-                <div class="input">
-                    {#if !dmSend}
-                        <button on:click={send} id="add">Ajouter</button>
+                    {#if alluser.length > 0}
+                        {#each alluser as user}
+                            <a href="/chat/contact/friend/2" class="profile">
+                                <img src="/utilisateur.png" alt="">
+                                <div class="name">
+                                    <p>{user.name} {#if user.name == currentUser.name}
+                                        (You)
+                                    {/if}</p>
+                                    <p class="part">
+                                        online
+                                        <img src="/accepter.png" alt="">
+                                    </p>
+                                </div>
+                            </a>
+                        {/each}
                     {:else}
-                        <button on:click={send} id="cancel">Invitation envoyé</button> 
+                        <p>No user online</p>    
                     {/if}
                 </div>
             </div>
+            {#if userSelected}
+                <div class="col2">
+                    <div class="profile">
+                        <img src="/utilisateur.png" alt="">
+                        <p>{userSelected.name}</p>
+                    </div>
+                    <div class="message">
+                        <div class="content-message">
+                            <img src="/utilisateur.png" alt="">
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
+                            </p>
+                        </div>
+        
+                        <div class="content-message-send">
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
+                            </p>
+                        </div>
+                        <div class="content-message-send">
+                            <p>
+                                Lorem ipsum dolor
+                            </p>
+                        </div>
+                    </div>
+                    <div class="input">
+                        {#if !dmSend}
+                            <button on:click={send} id="add">Ajouter</button>
+                        {:else}
+                            <button on:click={send} id="cancel">Invitation envoyé</button> 
+                        {/if}
+                    </div>
+                </div>
+            {:else}
+                <div class="col2">
+                    <div class="profile">
+                        <img src="/utilisateur.png" alt="">
+                        <p>User not found</p>
+                    </div>
+                    <div class="input">
+                        <textarea name="" id="" placeholder="Enter the message"></textarea>
+                        <button><img src="/message-sender.png" alt=""></button>
+                    </div>
+                </div>
+            {/if}
 
         </div>
         {:else}

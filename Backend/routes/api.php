@@ -28,4 +28,5 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 Route::middleware('auth:sanctum')->get('/users', [UserController::class, 'getUser']);
 Route::get('/user/{id}', [UserController::class, 'show']);
+Route::middleware('auth:sanctum')->get('/usersOnline', [UserController::class, 'getUserOnline']);
 
