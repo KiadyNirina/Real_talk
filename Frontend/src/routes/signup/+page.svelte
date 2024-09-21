@@ -86,7 +86,7 @@
                 {#if !clicked}
                     <button type="submit">Signup</button> 
                 {:else}
-                    <button type="submit">Loading...</button> 
+                    <button disabled type="submit">Loading...</button> 
                 {/if}
                 <p>or</p>
                 <p>Already have an account? <a href="/">Sign In</a></p>
@@ -134,7 +134,7 @@
         width: 100%;
         height: 40px;
         background-color: rgb(23, 23, 23);
-        margin-top: 8px;
+        margin-top: 5px;
         border: none;
         border-radius: 5px;
         color: white;
@@ -149,6 +149,13 @@
     .content button:hover{
         cursor: pointer;
         background-color: green;
+    }
+    .content button:disabled{
+        color: gray;
+    }
+    .content button:disabled:hover{
+        cursor: not-allowed;
+        background-color: rgb(23, 23, 23);
     }
     .check{
         display: flex;

@@ -162,7 +162,8 @@
         position: fixed;
         right: 40%;
         left: 40%;
-        border: 1px solid white;
+        border: 1px solid rgba(255, 255, 255, 0.19);
+        background-color: rgb(37, 37, 37);
         text-align: center;
         top: 40%;
         border-radius: 15px;

@@ -10,7 +10,7 @@
     const fetchUser = async () => {
         try {
             currentUser = await getUserInfo();
-            console.log('Informations de l’utilisateur récupérées', currentUser);
+            // console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
@@ -19,7 +19,7 @@
     const fetchAllUser = async () => {
         try {
             allUser = await getAllUser();
-            console.log('Informations des utilisateur récupérées', allUser);
+            // console.log('Informations des utilisateur récupérées', allUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
@@ -32,7 +32,7 @@
         await fetchAllUser();
 
         // Polling toutes les 5 secondes
-        intervalId = setInterval(fetchAllUser, 1000);
+        intervalId = setInterval(fetchAllUser, 5000);
 
         // Nettoyer l'intervalle au démontage
         return () => {
@@ -75,7 +75,7 @@
             <div class="list">
                 {#if allUser.length > 0}
                     {#each allUser as user}
-                        <a href="/chat/contact/all/2" class="profile">
+                        <a href="/chat/contact/all/{user.id}" class="profile">
                             <img src="/utilisateur.png" alt="">
                             <div class="name">
                                 <p class="smallName">
@@ -94,7 +94,7 @@
                         </a>        
                     {/each}
                 {:else}
-                    <p>Tsisy</p>
+                    <p>No user found</p>
                 {/if}
             </div>
 
