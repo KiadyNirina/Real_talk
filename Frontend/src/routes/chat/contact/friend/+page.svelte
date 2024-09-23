@@ -2,29 +2,21 @@
     import NavChat from "../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import { getUserInfo } from "../../../../lib/auth";
 
     let user = null;
 
-    onMount(async () => {
+    const fetchUser = async () => {
         try {
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
+            user = await getUserInfo();
+            // console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
-            console.error("Error:", error);
+            console.error('Error fetching user data:', error);
         }
+    }
+
+    onMount(async () => {
+        await fetchUser();
     });
 </script>
 

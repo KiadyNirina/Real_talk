@@ -22,7 +22,7 @@
                 goto('/home');
             } else {
                 clicked = false;
-                error;
+                error = "Invalid email or password";
             }
     }
     

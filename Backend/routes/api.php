@@ -36,3 +36,4 @@ Route::post('/invitations/{invitation}/accept', [FriendController::class, 'accep
 Route::post('/invitations/{invitation}/reject', [FriendController::class, 'rejectInvitation'])->middleware('auth:sanctum');
 
 Route::get('/friends/status/{selectedUserId}', [FriendController::class, 'checkFriendStatus'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->get('/friends', [FriendController::class, 'getFriends']);

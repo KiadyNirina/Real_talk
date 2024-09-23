@@ -64,5 +64,24 @@ class FriendController extends Controller
     
         return response()->json(['status' => 'not_friends']);
     }
+
+    public function getFriends() {
+        $user = auth()->id();
+    
+        // Chercher une relation d'amitié existante
+        $friendship = Invitation::where(function($query) use ($user) {
+                $query->where('sender_id', $user)
+                ->orWhere('receiver_id', $user);
+            })
+            ->where('status', 'accepted')
+            ->get();
+
+        // On va récupérer les informations des amis
+        $friendUsers = $friendship->map(function($friend) use ($user) {
+            return $friend->sender_id == $user ? $friend->receiver : $friend->sender;
+        });
+    
+        return response()->json($friendUsers);
+    }
     
 }
