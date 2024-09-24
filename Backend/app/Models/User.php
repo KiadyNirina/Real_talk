@@ -64,5 +64,15 @@ class User extends Authenticatable
         //return $this->last_seen && $this->last_seen->diffInMinutes(Carbon::now()) <= 5;
         return $minutesAgo <= 1;
     }
+
+    public function sentInvitations()
+    {
+        return $this->hasMany(Invitation::class, 'sender_id');
+    }
+
+    public function receivedInvitations()
+    {
+        return $this->hasMany(Invitation::class, 'receiver_id');
+    }
 }
 

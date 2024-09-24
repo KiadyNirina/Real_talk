@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { getUserInfo, getAllUser } from '../../../../lib/auth';
+    import { getUserInfo, checkUsersWithFriendStatus } from '../../../../lib/auth';
     import NavChat from '../../../../lib/navlat/navChat.svelte';
 
     let currentUser = null;
@@ -16,9 +16,9 @@
         }
     }
 
-    const fetchAllUser = async () => {
+    const fetchAllUserWithFriendStatus = async () => {
         try {
-            allUser = await getAllUser();
+            allUser = await checkUsersWithFriendStatus();
             // console.log('Informations des utilisateur récupérées', allUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -29,7 +29,7 @@
 
         // Récupérer les données utilisateurs
         await fetchUser();
-        await fetchAllUser();
+        await fetchAllUserWithFriendStatus();
 
         // Polling toutes les 5 secondes
         intervalId = setInterval(fetchAllUser, 5000);
@@ -83,7 +83,14 @@
                                 </p>
                                 <p class="part">
                                     Friend
-                                    <img src="/refuser.png" alt="">
+                                    {#if user.friend_status == "not_friends"}
+                                        <img src="/refuser.png" alt="">
+                                    {:else if user.friend_status == "pending"}
+                                        <img src="/en_cours.png" alt="">
+                                    {:else}
+                                        <img src="/accepter.png" alt="">
+                                    {/if}
+                                    
                                 </p>
                             </div>
                             {#if user.is_online === true}

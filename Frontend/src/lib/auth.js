@@ -98,3 +98,14 @@ export const checkFriend = async (id) => {
         console.error('Erreur lors de la vérification du statut d\'amitié', error);
     }
 }
+
+export const checkUsersWithFriendStatus = async () => {
+    try {
+        const response = await apiClient.get(`/friends/status`);
+
+        // Traitement du statut retourné
+        return response.data.users;
+    } catch (error) {
+        console.error('Erreur lors de la vérification du statut d\'amitié', error);
+    }
+}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Invitation;
+use App\Models\User;
 
 class FriendController extends Controller
 {
@@ -35,7 +36,8 @@ class FriendController extends Controller
         return response()->json(['message' => 'Invitation rejected!']);
     }
 
-    public function checkFriendStatus($selectedUserId) {
+    public function checkFriendStatus($selectedUserId) 
+    {
         $user = auth()->id();
     
         // Chercher une relation d'amitié existante
@@ -65,7 +67,8 @@ class FriendController extends Controller
         return response()->json(['status' => 'not_friends']);
     }
 
-    public function getFriends() {
+    public function getFriends() 
+    {
         $user = auth()->id();
     
         // Chercher une relation d'amitié existante
@@ -82,6 +85,33 @@ class FriendController extends Controller
         });
     
         return response()->json($friendUsers);
+    }
+
+    public function checkAllUsersFriendStatus() 
+    {
+        $currentUser = auth()->user();
+        $users = User::where('id', '!=', $currentUser->id)->get();
+    
+        foreach ($users as $user) {
+            $invitationSent = Invitation::where('sender_id', $currentUser->id)
+                                        ->where('receiver_id', $user->id)
+                                        ->first();
+            $invitationReceived = Invitation::where('receiver_id', $currentUser->id)
+                                            ->where('sender_id', $user->id)
+                                            ->first();
+    
+            if ($invitationSent) {
+                $user -> friend_status = $invitationSent -> status; // 'pending', 'accepted', etc.
+            } elseif ($invitationReceived) {
+                $user -> friend_status = $invitationReceived -> status;
+            } else {
+                $user -> friend_status = 'not_friends'; // pas encore d'invitation
+            }
+        }
+    
+        return response()->json([
+            'users' => $users
+        ]);
     }
     
 }
