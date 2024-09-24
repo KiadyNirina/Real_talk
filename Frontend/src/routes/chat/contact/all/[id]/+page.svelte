@@ -16,7 +16,7 @@
     $: userSelectedId = $page.params.id;
 
     let formData = {
-        receiver_id: userSelectedId,
+        receiver_id : 2,
     }
 
     const fetchUser = async () => {
@@ -70,12 +70,15 @@
         await fetchAllUser();
 
         if(userSelectedId) {
-            fetchUserSelected(userSelectedId);
-            seeFriendStatus(userSelectedId);
+            await fetchUserSelected(userSelectedId);
+            await seeFriendStatus(userSelectedId);
         }
 
         // Polling toutes les 5 secondes
-        intervalId = setInterval(fetchAllUser, 5000);
+        intervalId = setInterval(() => {
+            fetchAllUser();
+            seeFriendStatus(userSelectedId);
+        }, 10000);
 
         // Nettoyer l'intervalle au démontage
         return () => {
@@ -137,15 +140,27 @@
                             </p>
                         </div>
                     </div>
-                    <div class="input">
-                        {#if userSelected2 === 'pending'}
-                            <button on:click={sendFriendRequest} id="cancel">Invitation envoyé</button> 
-                        {:else if userSelected2 === 'friends'}
-                            <button on:click={sendFriendRequest} id="cancel">Amis</button>
-                        {:else}
-                            <button on:click={sendFriendRequest} id="add">Ajouter</button>
-                        {/if}
-                    </div>
+                    {#if userSelected2 === "pending"}
+                        <form>
+                            <div class="input">
+                                <button id="cancel">Invitation envoyé</button>
+                            </div>
+                        </form>
+                    {:else if userSelected2 === "friends"}
+                        <form>
+                            <div class="input">
+                                <textarea name="" id="" placeholder="Enter the message"></textarea>
+                                <button><img src="/message-sender.png" alt=""></button>
+                            </div>
+                        </form>
+                    {:else}
+                        <form on:submit={sendFriendRequest}>
+                            <div class="input">
+                                <input type="text" value={userSelectedId}>
+                                <button id="add">Ajouter</button>
+                            </div>
+                        </form>
+                    {/if}
                 </div>
             {:else}
                 <div class="col2">

@@ -2,21 +2,40 @@
     import NavChat from "../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo } from "../../../../lib/auth";
+    import { getUserInfo, getUserFriends } from "../../../../lib/auth";
 
     let user = null;
+    let friends = [];
+    let intervalId;
 
     const fetchUser = async () => {
         try {
             user = await getUserInfo();
-            // console.log('Informations de l’utilisateur récupérées', currentUser);
+            console.log('Informations de l’utilisateur récupérées: ', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     }
 
+    const fetchUserFriend = async () => {
+        try {
+            friends = await getUserFriends();
+        } catch(err) {
+            console.error('Error fetching user friends: ', err);
+        }
+    }
+
     onMount(async () => {
         await fetchUser();
+        await fetchUserFriend();
+
+        intervalId = setInterval(() => {
+            fetchUserFriend();
+        }, 10000);
+
+        return () => {
+            clearInterval(intervalId);
+        }
     });
 </script>
 
@@ -52,40 +71,26 @@
                     </a>
                 </button>
             <div class="list">
-                <a href="/chat/contact/friend/2" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p class="smallName">
-                            name
-                            <span>1</span>
-                        </p>
-                        <p class="part">
-                            Friend
-                            <img src="/accepter.png" alt="">
-                        </p>
-                    </div>
-                    <p class="onLine">.</p>
-                </a>
-                <a href="" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p>name</p>
-                        <p class="part">
-                            Friend
-                            <img src="/accepter.png" alt="">
-                        </p>
-                    </div>
-                </a>
-                <a href="" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p>name</p>
-                        <p class="part">
-                            Friend
-                            <img src="/accepter.png" alt="">
-                        </p>
-                    </div>
-                </a>
+                {#if friends.length > 0}
+                    {#each friends as friend}
+                    <a href="/chat/contact/friend/2" class="profile">
+                        <img src="/utilisateur.png" alt="">
+                        <div class="name">
+                            <p class="smallName">
+                                {friend.name}
+                                <span>1</span>
+                            </p>
+                            <p class="part">
+                                Friend
+                                <img src="/accepter.png" alt="">
+                            </p>
+                        </div>
+                        {#if friend.is_online == true}
+                            <p class="onLine">.</p>
+                        {/if}
+                    </a>
+                    {/each}
+                {/if}
             </div>
 
         </div>

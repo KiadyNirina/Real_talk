@@ -32,7 +32,7 @@
         await fetchAllUserWithFriendStatus();
 
         // Polling toutes les 5 secondes
-        intervalId = setInterval(fetchAllUser, 5000);
+        intervalId = setInterval(fetchAllUserWithFriendStatus, 5000);
 
         // Nettoyer l'intervalle au démontage
         return () => {

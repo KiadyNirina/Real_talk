@@ -80,7 +80,7 @@ export const getUserSelectedInfo = async (id) => {
 
 export const sendInvitation = async (formData) => {
     try {
-        const response = await apiClient.get('/invitations', formData);
+        const response = await apiClient.post('/invitations', formData);
         return response.data;
     } catch (error) {
         console.error("Erreur lors de l envoie de l invitation:", error);
@@ -107,5 +107,15 @@ export const checkUsersWithFriendStatus = async () => {
         return response.data.users;
     } catch (error) {
         console.error('Erreur lors de la vérification du statut d\'amitié', error);
+    }
+}
+
+export const getUserFriends = async () => {
+    try {
+        const response = await apiClient.get(`/friends`);
+
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors de la récupération d amis: ', error);
     }
 }

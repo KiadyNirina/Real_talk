@@ -26,28 +26,6 @@
             successMessage = "Registration successful! You can now log in.";
             error = "";
             clicked = false;
-
-            /*const response = await fetch('http://localhost:8000/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    name, 
-                    email, 
-                    password, 
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                error = "";
-                successMessage = "Registration successful! You can now log in.";
-            } else {
-                error = "kely sisa";
-            }*/
-
             
         } catch (err) {
             clicked = false;
