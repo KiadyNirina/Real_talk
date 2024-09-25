@@ -73,7 +73,7 @@
             <div class="list">
                 {#if friends.length > 0}
                     {#each friends as friend}
-                    <a href="/chat/contact/friend/2" class="profile">
+                    <a href="/chat/contact/friend/{friend.id}" class="profile">
                         <img src="/utilisateur.png" alt="">
                         <div class="name">
                             <p class="smallName">

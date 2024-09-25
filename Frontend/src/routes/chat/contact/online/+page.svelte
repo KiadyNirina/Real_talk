@@ -74,7 +74,7 @@
             <div class="list">
                 {#if alluser.length > 0}
                     {#each alluser as user}
-                    <a href="/chat/contact/friend/2" class="profile">
+                    <a href="/chat/contact/online/{user.id}" class="profile">
                         <img src="/utilisateur.png" alt="">
                         <div class="name">
                             <p class="smallName">

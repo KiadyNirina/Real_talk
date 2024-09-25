@@ -2,107 +2,276 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation } from "../../../../../lib/auth";
+    import { page } from "$app/stores";
 
-    let user = null;
+    let intervalId;
+    let currentUser = null;
+    let invitationSended;
+    let invitationAccepted;
+    let invitationRejected;
+    let alluser = [];
+    let userSelectedId = null;
+    let userSelected = null;
+    let userSelected2 = null;
+
+    $: userSelectedId = $page.params.id;
+
+    let formData = {
+        receiver_id : $page.params.id,
+    }
+
+    const fetchUser = async () => {
+        try {
+            currentUser = await getUserInfo();
+            console.log('Informations de l’utilisateur récupérées', currentUser);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const fetchAllUser = async () => {
+        try {
+            alluser = await getUserFriendOnline();
+            console.log('Informations des utilisateurs online récupérées', alluser);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const fetchUserSelected = async (id) => {
+        try {
+            userSelected = await getUserSelectedInfo(id);
+            console.log('Informations de l’utilisateur séléctionné récupérées', userSelected);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const sendFriendRequest = async() => {
+        try {
+            invitationSended = await sendInvitation(formData);
+            console.log('Friend request sent with success!', invitationSended);
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+        }
+    }
+
+    const acceptFriendRequest = async (invitation) => {
+        try {
+            invitationAccepted = await acceptInvitation(invitation);
+            console.log('Friend request accepted with success!', invitationAccepted);
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+        }
+    }
+
+    const rejectFriendRequest = async (invitation) => {
+        try {
+            invitationRejected = await rejectInvitation(invitation);
+            console.log('Friend request accepted with success!', invitationRejected);
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+        }
+    }
+
+    const seeFriendStatus = async (id) => {
+        try {
+            userSelected2 = await checkFriend(id);
+            console.log('Informations de l’utilisateur friend séléctionné récupérées', userSelected2);
+            
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    let loading = false;
+
+    function handleClick() {
+        loading = true; 
+        setTimeout(async () => {
+            await sendFriendRequest(); 
+            loading = false;
+        }, 5000);
+    }
+
+    function handleClickAccept () {
+        loading = true;
+        setTimeout(async () => {
+            await acceptFriendRequest(userSelected2.id); 
+            loading = false;
+        }, 5000);
+    }
+
+    function handleClickReject () {
+        loading = true;
+        setTimeout(async () => {
+            await rejectFriendRequest(userSelected2.id); 
+            loading = false;
+        }, 5000);
+    }
+
 
     onMount(async () => {
-        try {
-            const token = localStorage.getItem('auth_token');
+        await fetchUser();
+        await fetchAllUser();
 
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
-        } catch (error) {
-            console.error("Error:", error);
+        if(userSelectedId) {
+            await fetchUserSelected(userSelectedId);
+            await seeFriendStatus(userSelectedId);
         }
+
+        // Polling toutes les 5 secondes
+        intervalId = setInterval(() => {
+            fetchAllUser();
+            seeFriendStatus(userSelectedId);
+        }, 5000);
+
+        // Nettoyer l'intervalle au démontage
+        return () => {
+        clearInterval(intervalId);
+        };
     });
+
+    let alertUnfriend = false;
+
+    const handleUnfriend = () => {
+        alertUnfriend = true;
+    }
+
+    const unfriendYes = () => {
+        goto('/');
+    }
+
+    const unfriendNo = () => {
+        alertUnfriend = false;
+    }
 </script>
 
 <div class="body">
     <div class="content">
+        {#if alertUnfriend}
+            <div class="overlay"></div>
+            <div class="alertLogout">
+                <p>Do you really want to unfriend this user?</p>
+                <div class="action">
+                    <button id="yes" on:click={unfriendYes}>Yes</button>
+                    <button on:click={unfriendNo}>No</button>
+                </div>
+            </div>
+        {/if}
         <NavChat/>
-        {#if user}
+        {#if currentUser}
         <div class="right">
             <div class="col1">
-                <h1>Participants in this chat</h1>
+                <h1>Contact online</h1>
                 <div class="list">
-                    <a href="/chat/2" class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <div class="name">
-                            <p>John Doe</p>
-                            <p class="part">
-                                Friend
-                                <img src="/accepter.png" alt="">
-                            </p>
-                        </div>
-                    </a>
-                    <a href="/chat/2" class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <div class="name">
-                            <p>John Doe</p>
-                            <p class="part">
-                                Friend
-                                <img src="/refuser.png" alt="">
-                            </p>
-                        </div>
-                    </a>
-                    <a href="/chat/2" class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <div class="name">
-                            <p>John Doe</p>
-                            <p class="part">
-                                Friend
-                                <img src="/en_cours.png" alt="">
-                            </p>
-                        </div>
-                    </a>
+                    {#if alluser.length > 0}
+                        {#each alluser as user}
+                            <a href="/chat/contact/friend/2" class="profile">
+                                <img src="/utilisateur.png" alt="">
+                                <div class="name">
+                                    <p>{user.name} {#if user.name == currentUser.name}
+                                        (You)
+                                    {/if}</p>
+                                    <p class="part">
+                                        online
+                                        <img src="/accepter.png" alt="">
+                                    </p>
+                                </div>
+                            </a>
+                        {/each}
+                    {:else}
+                        <p>No user online</p>    
+                    {/if}
                 </div>
             </div>
-            <div class="col2">
-                <div class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <p>Chat name</p>
-                </div>
-                <div class="message">
-                    <div class="content-message">
+            {#if userSelected && userSelected2}
+                <div class="col2">
+                    <div class="profile">
                         <img src="/utilisateur.png" alt="">
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
-                        </p>
+                        <p>{userSelected.name}</p>
+                        {#if userSelected2.status == 'accepted'}
+                            <button on:click={handleUnfriend}>Friend ✔️</button>
+                        {/if}
                     </div>
-    
-                    <div class="content-message-send">
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
-                        </p>
+                    <div class="message">
+                        <div class="content-message">
+                            <img src="/utilisateur.png" alt="">
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
+                            </p>
+                        </div>
+        
+                        <div class="content-message-send">
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
+                            </p>
+                        </div>
+                        <div class="content-message-send">
+                            <p>
+                                Lorem ipsum dolor
+                            </p>
+                        </div>
                     </div>
-                    <div class="content-message-send">
-                        <p>
-                            Lorem ipsum dolor
-                        </p>
+                    {#if userSelected2.status === "pending" && userSelected2.sender_id === currentUser.id}
+                        <form>
+                            <div class="input">
+                                <button id="cancel">Invitation envoyé</button>
+                            </div>
+                        </form>
+                    {:else if userSelected2.status === "pending" && userSelected2.receiver_id === currentUser.id}
+                            <div class="input">
+                                {#if loading == false}
+                                    <button id="cancel" on:click={handleClickAccept}>Accepter</button>
+                                {:else}
+                                    <button id="cancel">Loading...</button>
+                                {/if}
+
+                                {#if loading == false}
+                                    <button id="add" on:click={handleClickReject}>Reffuser</button>
+                                {:else}
+                                    <button id="add">Loading...</button>
+                                {/if}
+                            </div>
+                            
+                    {:else if userSelected2.status === "accepted"}
+                        <form>
+                            <div class="input">
+                                <textarea name="" id="" placeholder="Enter the message"></textarea>
+                                <button><img src="/message-sender.png" alt=""></button>
+                            </div>
+                        </form>
+                    {:else}
+                        <form on:submit={handleClick}>
+                            <div class="input">
+                                {#if loading == false}
+                                    <button id="add">Ajouter</button>
+                                {:else}
+                                    <button id="disable" disabled>Loading...</button>
+                                {/if}
+                            </div>
+                        </form>
+                    {/if}
+                </div>
+            {:else}
+                <div class="col2">
+                    <div class="profile">
+                        <img src="/utilisateur.png" alt="">
+                        <p>User not found</p>
+                    </div>
+                    <div class="input">
+                        <textarea name="" id="" placeholder="Enter the message"></textarea>
+                        <button><img src="/message-sender.png" alt=""></button>
                     </div>
                 </div>
-                <div class="input">
-                    <textarea name="" id="" placeholder="Enter the message"></textarea>
-                    <button><img src="/message-sender.png" alt=""></button>
-                </div>
-            </div>
+            {/if}
 
         </div>
         {:else}
         <div class="right">
             <div class="col1">
-                <h1>Participants in this chat</h1>
+                <h1>Contact online</h1>
                 <div class="list">
                     <p>Loading...</p>
                 </div>
@@ -179,6 +348,16 @@
     .profile:hover{
         background-color: rgba(255, 255, 255, 0.097);
     }
+    .profile button{
+        margin-left: auto;
+        background-color: rgb(59, 59, 254);
+        color: white;
+        font-size: small;
+        border: none;
+        padding: 7px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
     .name{
         line-height: 5px;
     }
@@ -251,5 +430,67 @@
         padding: 10px;
         border: none;
         color: white;
+    }
+    #add{
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.287);
+        padding: 10px;
+        color: white;
+        font-size: 15px;
+    }
+    #disable{
+        cursor: not-allowed;
+        color: grey;
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.287);
+        padding: 10px;
+        font-size: 15px;
+    }
+    #cancel{
+        width: 100%;
+        background: rgb(0, 81, 255);
+        padding: 10px;
+        color: white;
+        font-size: 15px;
+    }
+    .alertLogout{
+        position: fixed;
+        right: 40%;
+        left: 40%;
+        border: 1px solid rgba(255, 255, 255, 0.19);
+        background-color: rgb(37, 37, 37);
+        text-align: center;
+        top: 40%;
+        border-radius: 15px;
+        padding: 5px;
+        z-index: 9;
+    }
+    .alertLogout .action{
+        display: flex;
+    }
+    .alertLogout .action button{
+        text-align: center;
+        padding: 10px;
+        width: 50%;
+        background-color: transparent;
+        border: none;
+        color: white;
+    }
+    #yes:hover{
+        background-color: rgba(255, 0, 0, 0.496);
+    }
+    .alertLogout .action button:hover{
+        cursor: pointer;
+        background-color: rgba(128, 128, 128, 0.692);
+        border-radius: 15px;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
+        z-index: 5;
     }
 </style>
