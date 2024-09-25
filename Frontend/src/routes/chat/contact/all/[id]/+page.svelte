@@ -2,13 +2,14 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo, getAllUserOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation } from "../../../../../lib/auth";
+    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation } from "../../../../../lib/auth";
     import { page } from "$app/stores";
 
     let intervalId;
     let currentUser = null;
     let invitationSended;
     let invitationAccepted;
+    let invitationRejected;
     let alluser = [];
     let userSelectedId = null;
     let userSelected = null;
@@ -31,7 +32,7 @@
 
     const fetchAllUser = async () => {
         try {
-            alluser = await getAllUserOnline();
+            alluser = await getUserFriendOnline();
             console.log('Informations des utilisateurs online récupérées', alluser);
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -65,6 +66,15 @@
         }
     }
 
+    const rejectFriendRequest = async (invitation) => {
+        try {
+            invitationRejected = await rejectInvitation(invitation);
+            console.log('Friend request accepted with success!', invitationRejected);
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+        }
+    }
+
     const seeFriendStatus = async (id) => {
         try {
             userSelected2 = await checkFriend(id);
@@ -92,6 +102,15 @@
             loading = false;
         }, 5000);
     }
+
+    function handleClickReject () {
+        loading = true;
+        setTimeout(async () => {
+            await rejectFriendRequest(userSelected2.id); 
+            loading = false;
+        }, 5000);
+    }
+
 
     onMount(async () => {
         await fetchUser();
@@ -172,7 +191,9 @@
                     <div class="profile">
                         <img src="/utilisateur.png" alt="">
                         <p>{userSelected.name}</p>
-                        <button on:click={handleUnfriend}>Friend ✔️</button>
+                        {#if userSelected2.status == 'accepted'}
+                            <button on:click={handleUnfriend}>Friend ✔️</button>
+                        {/if}
                     </div>
                     <div class="message">
                         <div class="content-message">
@@ -200,23 +221,19 @@
                             </div>
                         </form>
                     {:else if userSelected2.status === "pending" && userSelected2.receiver_id === currentUser.id}
-                            
-                                <form on:submit={handleClickAccept}>
-                                    {#if loading == false}
-                                        <div class="input" >
-                                            <button id="cancel">Accepter</button>
-                                        </div>
-                                    {:else}
-                                        <div class="input" >
-                                            <button id="cancel">Loading...</button>
-                                        </div>
-                                    {/if}
-                                </form>
-                                <form>
-                                    <div class="input">
-                                        <button id="add">Reffuser</button>
-                                    </div>
-                                </form>
+                            <div class="input">
+                                {#if loading == false}
+                                    <button id="cancel" on:click={handleClickAccept}>Accepter</button>
+                                {:else}
+                                    <button id="cancel">Loading...</button>
+                                {/if}
+
+                                {#if loading == false}
+                                    <button id="add" on:click={handleClickReject}>Reffuser</button>
+                                {:else}
+                                    <button id="add">Loading...</button>
+                                {/if}
+                            </div>
                             
                     {:else if userSelected2.status === "accepted"}
                         <form>

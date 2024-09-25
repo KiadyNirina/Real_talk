@@ -38,11 +38,20 @@ class FriendController extends Controller
         return response()->json($invitation);
     }
 
-    public function rejectInvitation(Invitation $invitation)
+    public function rejectInvitation($invitationId)
     {
-        $invitation->update(['status' => 'rejected']);
+        $invitation = Invitation::where('id', $invitationId)
+                            ->where('receiver_id', auth()->id())
+                            ->first();
 
-        return response()->json(['message' => 'Invitation rejected!']);
+        if (!$invitation) {
+            return response()->json(['message' => 'Invitation not found or not authorized'], 404);
+        }
+
+        $invitation->status = 'rejected'; // Mettre à jour le statut de l'invitation à "rejected"
+        $invitation->save();
+
+        return response()->json($invitation);
     }
 
     public function checkFriendStatus($selectedUserId) 
@@ -83,6 +92,33 @@ class FriendController extends Controller
         return response()->json($friendUsers);
     }
 
+    public function getUserFriendOnline()
+    {
+
+        $userId = auth()->id();
+
+        // Récupérer les invitations acceptées où l'utilisateur est soit l'expéditeur soit le destinataire
+        $friendIds = Invitation::where(function($query) use ($userId) {
+                $query->where('sender_id', $userId)
+                    ->orWhere('receiver_id', $userId);
+            })
+            ->where('status', 'accepted') // Filtrer les amitiés acceptées
+            ->pluck('sender_id', 'receiver_id')
+            ->toArray(); // Récupérer sous forme d'un tableau
+
+        // Fusionner les IDs d'amis en excluant l'utilisateur lui-même
+        $friendIds = array_unique(array_merge(array_keys($friendIds), array_values($friendIds)));
+        $friendIds = array_filter($friendIds, fn($id) => $id != $userId);
+
+        // Récupérer les amis qui sont en ligne
+        $onlineFriends = User::whereIn('id', $friendIds)
+                            ->where('is_online', true)
+                            ->get();
+
+        // Retourner la liste des amis en ligne
+        return response()->json($onlineFriends);
+    }
+
     public function checkAllUsersFriendStatus() 
     {
         $currentUser = auth()->user();
@@ -97,8 +133,10 @@ class FriendController extends Controller
                                             ->first();
     
             if ($invitationSent) {
+                $user -> sender_id = $invitationSent -> sender_id;
                 $user -> friend_status = $invitationSent -> status; // 'pending', 'accepted', etc.
             } elseif ($invitationReceived) {
+                $user -> sender_id = $invitationReceived -> sender_id;
                 $user -> friend_status = $invitationReceived -> status;
             } else {
                 $user -> friend_status = 'not_friends'; // pas encore d'invitation

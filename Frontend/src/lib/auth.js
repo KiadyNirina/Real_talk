@@ -58,7 +58,7 @@ export const getAllUser = async () => {
     }
 };
 
-export const getAllUserOnline = async () => {
+export const getUserFriendOnline = async () => {
     try {
         const response = await apiClient.get(`/usersOnline`); // Route pour obtenir les infos des utilisateurs online
         return response.data;
@@ -94,6 +94,16 @@ export const acceptInvitation = async (invitation) => {
         return response.data;
     } catch (err) {
         console.error("Erreur lors de l'acceptation de l'invitation:", err);
+        throw err;
+    }
+}
+
+export const rejectInvitation = async (invitation) => {
+    try {
+        const response = await apiClient.post(`/invitations/${invitation}/reject`, {});
+        return response.data;
+    } catch (err) {
+        console.error("Erreur lors du refus de l'invitation:", err);
         throw err;
     }
 }

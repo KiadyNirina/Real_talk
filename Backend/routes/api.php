@@ -30,7 +30,7 @@ Route::get('/users', [UserController::class, 'getUser'])->middleware('auth:sanct
 Route::get('/user/{id}', [UserController::class, 'show']);
 
 /* All users online */
-Route::get('/usersOnline', [UserController::class, 'getUserOnline'])->middleware('auth:sanctum');
+Route::get('/usersOnline', [FriendController::class, 'getUserFriendOnline'])->middleware('auth:sanctum');
 
 /* Send friend request */
 Route::post('/invitations', [FriendController::class, 'sendInvitation'])->middleware('auth:sanctum');

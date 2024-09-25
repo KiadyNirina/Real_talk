@@ -1,29 +1,41 @@
 <script>
     import NavChat from "../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
+    import { getUserInfo, getUserFriendOnline } from "../../../../lib/auth";
     import { goto } from "$app/navigation";
+    import { all } from "axios";
 
     let user = null;
+    let alluser = [];
+
+    const fetchUser = async () => {
+        try {
+            user = await getUserInfo();
+            console.log('Informations de l’utilisateur récupérées: ', user);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    const fetchFriendOnline = async () => {
+        try {
+            alluser = await getUserFriendOnline();
+            console.log('Informations des utilisateurs online récupérées', alluser);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
 
     onMount(async () => {
-        try {
-            const token = localStorage.getItem('auth_token');
+        await fetchUser();
+        await fetchFriendOnline();
 
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+        intervalId = setInterval(() => {
+            fetchFriendOnline();
+        }, 10000);
 
-            if (response.ok) {
-                const data = await response.json();
-                user = data;
-            } else {
-                console.error("Failed to fetch user data");
-            }
-        } catch (error) {
-            console.error("Error:", error);
+        return () => {
+            clearInterval(intervalId);
         }
     });
 </script>
@@ -60,19 +72,25 @@
                     </a>
                 </button>
             <div class="list">
-                <a href="/chat/contact/friend/2" class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <div class="name">
-                        <p class="smallName">
-                            name
-                        </p>
-                        <p class="part">
-                            Friend
-                            <img src="/accepter.png" alt="">
-                        </p>
-                    </div>
-                    <p class="onLine">.</p>
-                </a>
+                {#if alluser.length > 0}
+                    {#each alluser as user}
+                    <a href="/chat/contact/friend/2" class="profile">
+                        <img src="/utilisateur.png" alt="">
+                        <div class="name">
+                            <p class="smallName">
+                                {user.name}
+                            </p>
+                            <p class="part">
+                                Friend
+                                <img src="/accepter.png" alt="">
+                            </p>
+                        </div>
+                        <p class="onLine">.</p>
+                    </a>   
+                    {/each}
+                {:else}
+                <p>No friend online</p>
+                {/if}
             </div>
 
         </div>

@@ -83,21 +83,18 @@
                                 </p>
                                 <p class="part">
                                     Friend
-                                    {#if user.friend_status == "not_friends"}
-                                        <img src="/refuser.png" alt="">
-                                    {:else if user.friend_status == "pending"}
+                                    {#if user.friend_status == "accepted"}
+                                        <img src="/accepter.png" alt="">
+                                    {:else if user.sender_id != currentUser.id && user.friend_status == "pending"}
+                                    <p>oui ou non</p>
+                                    {:else if user.sender_id == currentUser.id && user.friend_status == "pending"}
                                         <img src="/en_cours.png" alt="">
                                     {:else}
-                                        <img src="/accepter.png" alt="">
+                                        <img src="/refuser.png" alt="">
                                     {/if}
                                     
                                 </p>
                             </div>
-                            {#if user.is_online === true}
-                                <p class="onLine">.</p>
-                            {:else}
-                                <p class="offline">{user.last_seen}</p>
-                            {/if}
                         </a>        
                     {/each}
                 {:else}

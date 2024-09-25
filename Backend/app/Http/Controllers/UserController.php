@@ -32,11 +32,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function getUserOnline(Request $request)
+    public function getUserFriendOnline(Request $request)
     {
-        $user = $request -> user();
-
-        // Récupérer tous les utilisateurs qui sont en ligne
+        // Récupérer les amis de l utilisateur connécté qui sont en ligne
         $onlineUsers = User::where('is_online', '=', true)->get();
 
         return response()->json($onlineUsers);

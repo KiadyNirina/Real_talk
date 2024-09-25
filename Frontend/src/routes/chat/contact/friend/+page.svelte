@@ -11,7 +11,7 @@
     const fetchUser = async () => {
         try {
             user = await getUserInfo();
-            console.log('Informations de l’utilisateur récupérées: ', currentUser);
+            console.log('Informations de l’utilisateur récupérées: ', user);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
