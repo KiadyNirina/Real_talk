@@ -88,12 +88,22 @@ export const sendInvitation = async (formData) => {
     }
 }
 
+export const acceptInvitation = async (invitation) => {
+    try {
+        const response = await apiClient.post(`/invitations/${invitation}/accept`, {});
+        return response.data;
+    } catch (err) {
+        console.error("Erreur lors de l'acceptation de l'invitation:", err);
+        throw err;
+    }
+}
+
 export const checkFriend = async (id) => {
     try {
         const response = await apiClient.get(`/friends/status/${id}`);
 
         // Traitement du statut retourné
-        return response.data.status;
+        return response.data;
     } catch (error) {
         console.error('Erreur lors de la vérification du statut d\'amitié', error);
     }

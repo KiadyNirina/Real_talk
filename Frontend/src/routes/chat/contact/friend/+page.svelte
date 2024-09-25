@@ -87,6 +87,8 @@
                         </div>
                         {#if friend.is_online == true}
                             <p class="onLine">.</p>
+                        {:else}
+                            <p class="offline">{friend.last_seen}</p>
                         {/if}
                     </a>
                     {/each}
@@ -231,6 +233,14 @@
         margin: 0 0 0 auto;
         font-weight: bold;
         font-size: 50px;
+    }
+    .offline{
+        color: rgba(255, 255, 255, 0.546);
+        margin: 0 0 0 auto;
+        font-weight: bold;
+        font-size: 10px;
+        letter-spacing: 0.2px;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
     .active span{
         color: green;

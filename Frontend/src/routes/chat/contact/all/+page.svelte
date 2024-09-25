@@ -96,7 +96,7 @@
                             {#if user.is_online === true}
                                 <p class="onLine">.</p>
                             {:else}
-                                <p class="ofline">{user.last_seen}</p>
+                                <p class="offline">{user.last_seen}</p>
                             {/if}
                         </a>        
                     {/each}
@@ -244,7 +244,7 @@
         font-weight: bold;
         font-size: 50px;
     }
-    .ofline{
+    .offline{
         color: rgba(255, 255, 255, 0.546);
         margin: 0 0 0 auto;
         font-weight: bold;

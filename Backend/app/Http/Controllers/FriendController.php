@@ -22,11 +22,20 @@ class FriendController extends Controller
         return response()->json(['message' => 'Invitation send with success!']);
     }
 
-    public function acceptInvitation(Invitation $invitation)
+    public function acceptInvitation($invitationId)
     {
-        $invitation->update(['status' => 'accepted']);
+        $invitation = Invitation::where('id', $invitationId)
+                            ->where('receiver_id', auth()->id())
+                            ->first();
 
-        return response()->json(['message' => 'Invitation accepted!']);
+        if (!$invitation) {
+            return response()->json(['message' => 'Invitation not found or not authorized'], 404);
+        }
+
+        $invitation->status = 'accepted'; // Mettre à jour le statut de l'invitation à "accepted"
+        $invitation->save();
+
+        return response()->json($invitation);
     }
 
     public function rejectInvitation(Invitation $invitation)
@@ -51,20 +60,7 @@ class FriendController extends Controller
             })
             ->first();
     
-        // Vérifier le statut de la relation
-        if (!$friendship) {
-            return response()->json(['status' => 'not_friends']);
-        }
-    
-        if ($friendship->status == 'accepted') {
-            return response()->json(['status' => 'friends']);
-        }
-    
-        if ($friendship->status == 'pending') {
-            return response()->json(['status' => 'pending']);
-        }
-    
-        return response()->json(['status' => 'not_friends']);
+        return response()->json($friendship);
     }
 
     public function getFriends() 

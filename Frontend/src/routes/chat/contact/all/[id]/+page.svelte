@@ -2,12 +2,13 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo, getAllUserOnline, getUserSelectedInfo, sendInvitation, checkFriend } from "../../../../../lib/auth";
+    import { getUserInfo, getAllUserOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation } from "../../../../../lib/auth";
     import { page } from "$app/stores";
 
     let intervalId;
     let currentUser = null;
     let invitationSended;
+    let invitationAccepted;
     let alluser = [];
     let userSelectedId = null;
     let userSelected = null;
@@ -16,7 +17,7 @@
     $: userSelectedId = $page.params.id;
 
     let formData = {
-        receiver_id : 2,
+        receiver_id : $page.params.id,
     }
 
     const fetchUser = async () => {
@@ -49,7 +50,16 @@
     const sendFriendRequest = async() => {
         try {
             invitationSended = await sendInvitation(formData);
-            console.log('Friend request sending with success!', invitationSended);
+            console.log('Friend request sent with success!', invitationSended);
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+        }
+    }
+
+    const acceptFriendRequest = async (invitation) => {
+        try {
+            invitationAccepted = await acceptInvitation(invitation);
+            console.log('Friend request accepted with success!', invitationAccepted);
         } catch (error) {
             console.error('Error sending friend request:', error);
         }
@@ -65,6 +75,24 @@
         }
     }
 
+    let loading = false;
+
+    function handleClick() {
+        loading = true; 
+        setTimeout(async () => {
+            await sendFriendRequest(); 
+            loading = false;
+        }, 5000);
+    }
+
+    function handleClickAccept () {
+        loading = true;
+        setTimeout(async () => {
+            await acceptFriendRequest(userSelected2.id); 
+            loading = false;
+        }, 5000);
+    }
+
     onMount(async () => {
         await fetchUser();
         await fetchAllUser();
@@ -78,17 +106,41 @@
         intervalId = setInterval(() => {
             fetchAllUser();
             seeFriendStatus(userSelectedId);
-        }, 10000);
+        }, 5000);
 
         // Nettoyer l'intervalle au démontage
         return () => {
         clearInterval(intervalId);
         };
     });
+
+    let alertUnfriend = false;
+
+    const handleUnfriend = () => {
+        alertUnfriend = true;
+    }
+
+    const unfriendYes = () => {
+        goto('/');
+    }
+
+    const unfriendNo = () => {
+        alertUnfriend = false;
+    }
 </script>
 
 <div class="body">
     <div class="content">
+        {#if alertUnfriend}
+            <div class="overlay"></div>
+            <div class="alertLogout">
+                <p>Do you really want to unfriend this user?</p>
+                <div class="action">
+                    <button id="yes" on:click={unfriendYes}>Yes</button>
+                    <button on:click={unfriendNo}>No</button>
+                </div>
+            </div>
+        {/if}
         <NavChat/>
         {#if currentUser}
         <div class="right">
@@ -120,6 +172,7 @@
                     <div class="profile">
                         <img src="/utilisateur.png" alt="">
                         <p>{userSelected.name}</p>
+                        <button on:click={handleUnfriend}>Friend ✔️</button>
                     </div>
                     <div class="message">
                         <div class="content-message">
@@ -140,13 +193,32 @@
                             </p>
                         </div>
                     </div>
-                    {#if userSelected2 === "pending"}
+                    {#if userSelected2.status === "pending" && userSelected2.sender_id === currentUser.id}
                         <form>
                             <div class="input">
                                 <button id="cancel">Invitation envoyé</button>
                             </div>
                         </form>
-                    {:else if userSelected2 === "friends"}
+                    {:else if userSelected2.status === "pending" && userSelected2.receiver_id === currentUser.id}
+                            
+                                <form on:submit={handleClickAccept}>
+                                    {#if loading == false}
+                                        <div class="input" >
+                                            <button id="cancel">Accepter</button>
+                                        </div>
+                                    {:else}
+                                        <div class="input" >
+                                            <button id="cancel">Loading...</button>
+                                        </div>
+                                    {/if}
+                                </form>
+                                <form>
+                                    <div class="input">
+                                        <button id="add">Reffuser</button>
+                                    </div>
+                                </form>
+                            
+                    {:else if userSelected2.status === "accepted"}
                         <form>
                             <div class="input">
                                 <textarea name="" id="" placeholder="Enter the message"></textarea>
@@ -154,10 +226,13 @@
                             </div>
                         </form>
                     {:else}
-                        <form on:submit={sendFriendRequest}>
+                        <form on:submit={handleClick}>
                             <div class="input">
-                                <input type="text" value={userSelectedId}>
-                                <button id="add">Ajouter</button>
+                                {#if loading == false}
+                                    <button id="add">Ajouter</button>
+                                {:else}
+                                    <button id="disable" disabled>Loading...</button>
+                                {/if}
                             </div>
                         </form>
                     {/if}
@@ -256,6 +331,16 @@
     .profile:hover{
         background-color: rgba(255, 255, 255, 0.097);
     }
+    .profile button{
+        margin-left: auto;
+        background-color: rgb(59, 59, 254);
+        color: white;
+        font-size: small;
+        border: none;
+        padding: 7px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
     .name{
         line-height: 5px;
     }
@@ -336,11 +421,59 @@
         color: white;
         font-size: 15px;
     }
+    #disable{
+        cursor: not-allowed;
+        color: grey;
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.287);
+        padding: 10px;
+        font-size: 15px;
+    }
     #cancel{
         width: 100%;
         background: rgb(0, 81, 255);
         padding: 10px;
         color: white;
         font-size: 15px;
+    }
+    .alertLogout{
+        position: fixed;
+        right: 40%;
+        left: 40%;
+        border: 1px solid rgba(255, 255, 255, 0.19);
+        background-color: rgb(37, 37, 37);
+        text-align: center;
+        top: 40%;
+        border-radius: 15px;
+        padding: 5px;
+        z-index: 9;
+    }
+    .alertLogout .action{
+        display: flex;
+    }
+    .alertLogout .action button{
+        text-align: center;
+        padding: 10px;
+        width: 50%;
+        background-color: transparent;
+        border: none;
+        color: white;
+    }
+    #yes:hover{
+        background-color: rgba(255, 0, 0, 0.496);
+    }
+    .alertLogout .action button:hover{
+        cursor: pointer;
+        background-color: rgba(128, 128, 128, 0.692);
+        border-radius: 15px;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
+        z-index: 5;
     }
 </style>
