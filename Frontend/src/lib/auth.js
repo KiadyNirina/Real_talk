@@ -149,3 +149,13 @@ export const sendMessage = async (formData) => {
         throw error;
     }
 }
+
+export const getMessage = async (id) => {
+    try {
+        const response = await apiClient.get(`/getMessage/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors du récupération des message:', error);
+        throw error;
+    }
+}

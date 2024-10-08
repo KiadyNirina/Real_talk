@@ -2,7 +2,7 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation, sendMessage } from "../../../../../lib/auth";
+    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation, sendMessage, getMessage } from "../../../../../lib/auth";
     import { page } from "$app/stores";
     //import { echo } from "../../../../../lib/echo";
 
@@ -127,6 +127,7 @@
     }
 
     let messageSent;
+    let allMess = [];
 
     let messages = {
         receiver_id: $page.params.id,
@@ -137,11 +138,18 @@
     const sendFriendMessage = async () => {
         try {
             messageSent = await sendMessage(messages);
-            alert("newmessage: ", messages.message)
             console.log('Message sent with success!', messageSent);
         } catch (error) {
             console.error('Error sending message:', error);
-            alert('newmessage: ', messages.message)
+        }
+    }
+
+    const fetchMessage = async (id) => {
+        try {
+            allMess = await getMessage(id);
+            console.log('Message fetched with success!', allMess);
+        } catch (error) {
+            console.error('Error fetching message:', error);
         }
     }
 
@@ -152,6 +160,7 @@
         if(userSelectedId) {
             await fetchUserSelected(userSelectedId);
             await seeFriendStatus(userSelectedId);
+            await fetchMessage(userSelectedId);
         }
 
         /*echo.private(`chat.${userSelectedId}`)
@@ -163,6 +172,7 @@
         intervalId = setInterval(() => {
             fetchAllUser();
             seeFriendStatus(userSelectedId);
+            fetchMessage(userSelectedId);
         }, 5000);
 
         // Nettoyer l'intervalle au démontage
@@ -220,8 +230,8 @@
                         {/if}
                     </div>
                     <div class="message">
-                        {#each messages as message}
-                            {#if message.sender.name === currentUser.name}
+                        {#each allMess as message}
+                            {#if message.sender_id === currentUser.id}
                                 <div class="content-message-send">
                                     <p>
                                         {message.message}

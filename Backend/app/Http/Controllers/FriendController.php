@@ -163,5 +163,22 @@ class FriendController extends Controller
         return response()->json(['status' => 'Message sent!']);
     }
 
+    public function getMessage($selectedUserId) 
+    {
+        $user = auth()->id();
+    
+        $message = Message::where(function($query) use ($user, $selectedUserId) {
+                $query->where('sender_id', $user)
+                      ->where('receiver_id', $selectedUserId);
+            })
+            ->orWhere(function($query) use ($user, $selectedUserId) {
+                $query->where('sender_id', $selectedUserId)
+                      ->where('receiver_id', $user);
+            })
+            ->get();
+    
+        return response()->json($message);
+    }
+
     
 }
