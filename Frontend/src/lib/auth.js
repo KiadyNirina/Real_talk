@@ -26,7 +26,7 @@ export const registerUser = async (formData) => {
 };
 
 export const logout = async () => {
-    try {
+    try { 
         const response = await apiClient.post('/logout');
 
         // Sauvegarde du token dans le localStorage ou le sessionStorage
@@ -137,5 +137,15 @@ export const getUserFriends = async () => {
         return response.data;
     } catch (error) {
         console.error('Erreur lors de la récupération d amis: ', error);
+    }
+}
+
+export const sendMessage = async (formData) => {
+    try {
+        const response = await apiClient.post('/messages', formData);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de l envoie du message:", error);
+        throw error;
     }
 }

@@ -29,6 +29,12 @@
         alertLogout = false;
     }
 
+    if (typeof window !== "undefined") {
+        window.addEventListener('beforeunload', function (event) {
+            logout();
+        });
+    }
+
     onMount(async () => {
         fetchUser();
     });

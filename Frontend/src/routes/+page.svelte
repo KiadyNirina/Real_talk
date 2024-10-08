@@ -75,7 +75,6 @@
         margin-top: 10%;
         max-width: 500px;
         background-color: rgba(255, 255, 255, 0.101);
-        display: flex;
         align-items: center;
         justify-content: center;
         margin-left: auto;
@@ -97,6 +96,11 @@
     .content a{
         color: rgb(111, 111, 255);
         text-decoration: none;
+    }
+    .content form{
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
     }
     .content input, .content button{
         width: 100%;

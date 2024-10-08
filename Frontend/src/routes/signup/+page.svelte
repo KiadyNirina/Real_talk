@@ -108,7 +108,12 @@
         color: rgb(111, 111, 255);
         text-decoration: none;
     }
-    .content input, .content button{
+    .content form{
+        width: 70%;
+        margin-right: auto;
+        margin-left: auto;
+    }
+    .content form input, .content button{
         width: 100%;
         height: 40px;
         background-color: rgb(23, 23, 23);
@@ -119,35 +124,35 @@
         padding: 0;
         text-align: center;
     }
-    .content button{
+    .content form button{
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 15px;
         margin-top: 20px;
     }
-    .content button:hover{
+    .content form button:hover{
         cursor: pointer;
         background-color: green;
     }
-    .content button:disabled{
+    .content form button:disabled{
         color: gray;
     }
-    .content button:disabled:hover{
+    .content form button:disabled:hover{
         cursor: not-allowed;
         background-color: rgb(23, 23, 23);
     }
-    .check{
+    .content .check{
         display: flex;
         align-items: center;
         color: rgb(200, 200, 200);
     }
-    .check input{
+    .content form .check input{
         position: relative;
         width: 15px;
         height: 15px;
         cursor: pointer;
         margin-right: 10px;
     }
-    .check input:checked{
+    .content form .check input:checked{
         accent-color: green;
     }
     #error{

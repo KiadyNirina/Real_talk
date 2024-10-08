@@ -2,8 +2,9 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation } from "../../../../../lib/auth";
+    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation, sendMessage } from "../../../../../lib/auth";
     import { page } from "$app/stores";
+    //import { echo } from "../../../../../lib/echo";
 
     let intervalId;
     let currentUser = null;
@@ -111,28 +112,6 @@
         }, 5000);
     }
 
-
-    onMount(async () => {
-        await fetchUser();
-        await fetchAllUser();
-
-        if(userSelectedId) {
-            await fetchUserSelected(userSelectedId);
-            await seeFriendStatus(userSelectedId);
-        }
-
-        // Polling toutes les 5 secondes
-        intervalId = setInterval(() => {
-            fetchAllUser();
-            seeFriendStatus(userSelectedId);
-        }, 5000);
-
-        // Nettoyer l'intervalle au démontage
-        return () => {
-        clearInterval(intervalId);
-        };
-    });
-
     let alertUnfriend = false;
 
     const handleUnfriend = () => {
@@ -146,6 +125,51 @@
     const unfriendNo = () => {
         alertUnfriend = false;
     }
+
+    let messageSent;
+
+    let messages = {
+        receiver_id: $page.params.id,
+        message: '',
+    }
+
+    // Fonction pour envoyer le message
+    const sendFriendMessage = async () => {
+        try {
+            messageSent = await sendMessage(messages);
+            alert("newmessage: ", messages.message)
+            console.log('Message sent with success!', messageSent);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('newmessage: ', messages.message)
+        }
+    }
+
+    onMount(async () => {
+        await fetchUser();
+        await fetchAllUser();
+
+        if(userSelectedId) {
+            await fetchUserSelected(userSelectedId);
+            await seeFriendStatus(userSelectedId);
+        }
+
+        /*echo.private(`chat.${userSelectedId}`)
+        .listen("MessageSent", (e) => {
+            messages.update(currentMessages => [...currentMessages, e.message]);
+        });*/
+
+        // Polling toutes les 5 secondes
+        intervalId = setInterval(() => {
+            fetchAllUser();
+            seeFriendStatus(userSelectedId);
+        }, 5000);
+
+        // Nettoyer l'intervalle au démontage
+        return () => {
+        clearInterval(intervalId);
+        };
+    });
 </script>
 
 <div class="body">
@@ -196,23 +220,22 @@
                         {/if}
                     </div>
                     <div class="message">
-                        <div class="content-message">
-                            <img src="/utilisateur.png" alt="">
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
-                            </p>
-                        </div>
-        
-                        <div class="content-message-send">
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, obcaecati?
-                            </p>
-                        </div>
-                        <div class="content-message-send">
-                            <p>
-                                Lorem ipsum dolor
-                            </p>
-                        </div>
+                        {#each messages as message}
+                            {#if message.sender.name === currentUser.name}
+                                <div class="content-message-send">
+                                    <p>
+                                        {message.message}
+                                    </p>
+                                </div>
+                            {:else}
+                                <div class="content-message">
+                                    <img src="/utilisateur.png" alt="">
+                                    <p>
+                                        {message.message}
+                                    </p>
+                                </div>
+                            {/if}
+                        {/each}
                     </div>
                     {#if userSelected2.status === "pending" && userSelected2.sender_id === currentUser.id}
                         <form>
@@ -236,9 +259,9 @@
                             </div>
                             
                     {:else if userSelected2.status === "accepted"}
-                        <form>
+                        <form on:submit={sendFriendMessage}>
                             <div class="input">
-                                <textarea name="" id="" placeholder="Enter the message"></textarea>
+                                <textarea bind:value={messages.message} id="" placeholder="Enter the message"></textarea>
                                 <button><img src="/message-sender.png" alt=""></button>
                             </div>
                         </form>

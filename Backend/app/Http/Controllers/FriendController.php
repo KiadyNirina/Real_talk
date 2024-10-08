@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Invitation;
 use App\Models\User;
+use App\Events\MessageSent;
+use App\Models\Message;
 
 class FriendController extends Controller
 {
@@ -147,5 +149,19 @@ class FriendController extends Controller
             'users' => $users
         ]);
     }
+
+    public function sendMessage(Request $request)
+    {
+        $message = Message::create([
+            'sender_id' => auth()->user()->id,
+            'receiver_id' => $request->receiver_id,
+            'message' => $request->message,
+        ]);
+
+        //broadcast(new MessageSent($message))->toOthers();
+
+        return response()->json(['status' => 'Message sent!']);
+    }
+
     
 }

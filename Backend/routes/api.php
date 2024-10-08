@@ -49,3 +49,5 @@ Route::get('/friends/status', [FriendController::class, 'checkAllUsersFriendStat
 
 /* Friends of user connected */
 Route::get('/friends', [FriendController::class, 'getFriends'])->middleware('auth:sanctum');
+
+Route::post('/messages', [FriendController::class, 'sendMessage'])->middleware('auth:sanctum');

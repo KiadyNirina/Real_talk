@@ -7,6 +7,12 @@
 
     let currentUser = null;
 
+    if (typeof window !== "undefined") {
+        window.addEventListener('beforeunload', function (event) {
+            logout();
+        });
+    }
+
     onMount(async () => {
         try {
             currentUser = await getUserInfo();
@@ -31,14 +37,6 @@
         alertLogout = false;
     }
 
-    /*function logout() {
-        // Supprimer le token JWT et vider les infos de l'utilisateur
-        localStorage.removeItem('token');
-        user.set(null);
-
-        // Rediriger vers la page de connexion
-        goto('/');
-    }*/
 </script>
 
 <div class="left">
