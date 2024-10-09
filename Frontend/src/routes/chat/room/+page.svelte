@@ -97,9 +97,6 @@
         display: flex;
         font-size: 20px;
     }
-    .left{
-        width: 25%;
-    }
     .right{
         width: 75%;
     }
@@ -176,56 +173,10 @@
         font-size: 13px;
         color: rgba(255, 255, 255, 0.575);
     }
-    .message{
-        border: 1px solid rgba(255, 255, 255, 0.139);
-        border-radius: 10px;
-        padding: 10px;
-    }
-    .content-message{
-        display: flex;
-        align-items: center;
-        width: 60%;
-    }
-    .content-message img{
-        height: 40px;
-    }
-    .content-message p{
-        background-color: rgba(255, 255, 255, 0.404);
-        padding: 15px;
-        border-radius: 15px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 18px;
-        margin: 5px;
-    }
-    .content-message-send p{
-        background-color: green;
-        padding: 15px;
-        border-radius: 15px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 18px;
-        margin: 5px;
-    }
-    .content-message-send{
-        width: 60%;
-        margin-left: auto;
-    }
     .input{
         display: flex;
         align-items: center;
         margin-top: 10px;
-    }
-    .input button{
-        background-color: transparent;
-        border: none;
-        border-radius: 15px;
-    }
-    .input img{
-        height: 30px;
-        padding: 10px;
-    }
-    .input button:hover{
-        background-color: rgba(255, 255, 255, 0.13);
-        cursor: pointer;
     }
     .input input{
         width: 100%;
@@ -236,14 +187,6 @@
         color: white;
         font-size: 15px;
         margin-bottom: 10px;
-    }
-    @media screen and (max-width: 1000px) {
-        .col1{
-            display: none;
-        }
-        .col2{
-            width: 100%;
-        }
     }
     @media screen and (max-width: 700px) {
         .content {
