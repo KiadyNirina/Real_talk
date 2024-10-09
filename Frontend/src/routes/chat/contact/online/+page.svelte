@@ -74,7 +74,7 @@
             <div class="list">
                 {#if alluser.length > 0}
                     {#each alluser as user}
-                    <a href="/chat/contact/online/{user.id}" class="profile">
+                    <a href="/chat/contact/friend/{user.id}" class="profile">
                         <img src="/utilisateur.png" alt="">
                         <div class="name">
                             <p class="smallName">
@@ -101,7 +101,7 @@
                 <a id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
-                <input type="search" name="" id="" placeholder="Enter the room name">
+                <input type="search" name="" id="" placeholder="Enter the user name">
             </div>
             <button class="add">
                 <a href="/chat/contact/all" >
@@ -296,5 +296,22 @@
         color: white;
         font-size: 15px;
         margin-bottom: 10px;
+    }
+    @media screen and (max-width: 700px) {
+        .content {
+            display: block;
+            height: auto;
+            width: auto;
+            padding: 0;
+        }
+        .right {
+            width: auto;
+            padding: 0;
+            height: 100%;
+            padding: 10px;
+        }
+        .add a{
+            padding: 2px;
+        }
     }
 </style>

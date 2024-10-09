@@ -202,7 +202,7 @@
                 <div class="list">
                     {#if alluser.length > 0}
                         {#each alluser as user}
-                            <a href="/chat/contact/friend/2" class="profile">
+                            <a href="/chat/contact/friend/{user.id}" class="profile">
                                 <img src="/utilisateur.png" alt="">
                                 <div class="name">
                                     <p>{user.name} {#if user.name == currentUser.name}
@@ -230,22 +230,28 @@
                         {/if}
                     </div>
                     <div class="message">
-                        {#each allMess as message}
-                            {#if message.sender_id === currentUser.id}
-                                <div class="content-message-send">
-                                    <p>
-                                        {message.message}
-                                    </p>
-                                </div>
-                            {:else}
-                                <div class="content-message">
-                                    <img src="/utilisateur.png" alt="">
-                                    <p>
-                                        {message.message}
-                                    </p>
-                                </div>
-                            {/if}
-                        {/each}
+                        {#if allMess.length > 0}
+                            {#each allMess as message}
+                                {#if message.sender_id === currentUser.id}
+                                    <div class="content-message-send">
+                                        <p>
+                                            {message.message} <br>
+                                            <span>{message.created_at}</span>
+                                        </p>
+                                    </div>
+                                {:else}
+                                    <div class="content-message">
+                                        <img src="/utilisateur.png" alt="">
+                                        <p>
+                                            {message.message} <br>
+                                            <span>{message.created_at}</span>
+                                        </p>
+                                    </div>
+                                {/if}
+                            {/each}
+                        {:else}
+                            <p>No message for the moment</p>
+                        {/if}
                     </div>
                     {#if userSelected2.status === "pending" && userSelected2.sender_id === currentUser.id}
                         <form>
@@ -328,14 +334,13 @@
 <style>
     .body{
         color: white;
+        height: 100%;
     }
     .content{
         padding: 15px;
         display: flex;
         font-size: 20px;
-    }
-    .right{
-        width: 75%;
+        height: 100%;
     }
     .right{
         border: 1px solid rgba(255, 255, 255, 0.165);
@@ -343,6 +348,8 @@
         padding: 15px;
         border-radius: 35px;
         display: flex;
+        width: 75%;
+        height: 100%;
     }
     .col1, .col2{
         margin: 5px;
@@ -355,6 +362,7 @@
     }
     .col2{
         width: 75%;
+        height: auto;
     }
     h1{
         font-size: 20px;
@@ -409,6 +417,8 @@
         border: 1px solid rgba(255, 255, 255, 0.139);
         border-radius: 10px;
         padding: 10px;
+        height: 80%;
+        overflow-y: auto;
     }
     .content-message{
         display: flex;
@@ -433,6 +443,12 @@
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         font-size: 18px;
         margin: 5px;
+    }
+    .content-message p span, .content-message-send p span{
+        font-size: 10px;
+        color: rgb(202, 202, 202);
+        position: relative;
+        top: 10px;
     }
     .content-message-send{
         width: 60%;
@@ -525,5 +541,50 @@
         height: 100vh;
         background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
         z-index: 5;
+    }
+    @media screen and (max-width: 1000px) {
+        .col1{
+            display: none;
+        }
+        .col2{
+            width: 100%;
+        }
+    }
+    @media screen and (max-width: 700px) {
+        .content {
+            display: block;
+            height: auto;
+            width: auto;
+            padding: 0;
+        }
+        .right {
+            width: auto;
+            padding: 0;
+            height: 100%;
+        }
+        .message{
+            border: none;
+            border-radius: 10px;
+            padding: 0px;
+            height: auto;
+            overflow-y: auto;
+        }
+        .message p{
+            font-size: 12px;
+            line-height: 20px;
+        }
+        .message img{
+            height: 20px;
+        }
+        .alertLogout{
+            right: 10%;
+            left: 10%;
+        }
+        .content-message p span, .content-message-send p span{
+            font-size: 8px;
+            color: rgb(202, 202, 202);
+            position: relative;
+            top: 0px;
+        }
     }
 </style>

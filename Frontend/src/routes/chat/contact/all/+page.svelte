@@ -75,7 +75,7 @@
             <div class="list">
                 {#if allUser.length > 0}
                     {#each allUser as user}
-                        <a href="/chat/contact/all/{user.id}" class="profile">
+                        <a href="/chat/contact/friend/{user.id}" class="profile">
                             <img src="/utilisateur.png" alt="">
                             <div class="name">
                                 <p class="smallName">
@@ -110,7 +110,7 @@
                 <a id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
-                <input type="search" name="" id="" placeholder="Enter the room name">
+                <input type="search" name="" id="" placeholder="Enter the user name">
             </div>
             <button class="add">
                 <a href="/chat/contact/all" class="active">
@@ -147,9 +147,6 @@
         padding: 15px;
         display: flex;
         font-size: 20px;
-    }
-    .left{
-        width: 25%;
     }
     .right{
         width: 75%;
@@ -235,74 +232,14 @@
         height: 10px;
         margin-left: 5px;
     }
-    .onLine{
-        color: rgb(0, 198, 0);
-        margin: 0 0 0 auto;
-        font-weight: bold;
-        font-size: 50px;
-    }
-    .offline{
-        color: rgba(255, 255, 255, 0.546);
-        margin: 0 0 0 auto;
-        font-weight: bold;
-        font-size: 10px;
-        letter-spacing: 0.2px;
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
     .active span{
         color: green;
         font-weight: 900;
-    }
-    .message{
-        border: 1px solid rgba(255, 255, 255, 0.139);
-        border-radius: 10px;
-        padding: 10px;
-    }
-    .content-message{
-        display: flex;
-        align-items: center;
-        width: 60%;
-    }
-    .content-message img{
-        height: 40px;
-    }
-    .content-message p{
-        background-color: rgba(255, 255, 255, 0.404);
-        padding: 15px;
-        border-radius: 15px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 18px;
-        margin: 5px;
-    }
-    .content-message-send p{
-        background-color: green;
-        padding: 15px;
-        border-radius: 15px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 18px;
-        margin: 5px;
-    }
-    .content-message-send{
-        width: 60%;
-        margin-left: auto;
     }
     .input{
         display: flex;
         align-items: center;
         margin-top: 10px;
-    }
-    .input button{
-        background-color: transparent;
-        border: none;
-        border-radius: 15px;
-    }
-    .input img{
-        height: 30px;
-        padding: 10px;
-    }
-    .input button:hover{
-        background-color: rgba(255, 255, 255, 0.13);
-        cursor: pointer;
     }
     .input input{
         width: 100%;
@@ -313,5 +250,22 @@
         color: white;
         font-size: 15px;
         margin-bottom: 10px;
+    }
+    @media screen and (max-width: 700px) {
+        .content {
+            display: block;
+            height: auto;
+            width: auto;
+            padding: 0;
+        }
+        .right {
+            width: auto;
+            padding: 0;
+            height: 100%;
+            padding: 10px;
+        }
+        .add a{
+            padding: 2px;
+        }
     }
 </style>

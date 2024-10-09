@@ -493,4 +493,43 @@
         background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
         z-index: 5;
     }
+    @media screen and (max-width: 1000px) {
+        .col1{
+            display: none;
+        }
+        .col2{
+            width: 100%;
+        }
+    }
+    @media screen and (max-width: 700px) {
+        .content {
+            display: block;
+            height: auto;
+            width: auto;
+            padding: 0;
+        }
+        .right {
+            width: auto;
+            padding: 0;
+            height: 100%;
+        }
+        .message{
+            border: none;
+            border-radius: 10px;
+            padding: 0px;
+            height: auto;
+            overflow-y: auto;
+        }
+        .message p{
+            font-size: 12px;
+            line-height: 20px;
+        }
+        .message img{
+            height: 20px;
+        }
+        .alertLogout{
+            right: 10%;
+            left: 10%;
+        }
+    }
 </style>

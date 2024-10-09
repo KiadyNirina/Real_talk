@@ -42,35 +42,60 @@
 
 <div class="left">
     {#if currentUser}
-    <div class="profile">
-        <img src="/utilisateur.png" alt="">
-        <p>Welcome <b>{currentUser.name}</b></p>
-    </div>
-    <hr>
-    <div class="list">
-        <a href="/home">
-            <li><img src="/accueil.png" alt="">Home</li>
-        </a>
-        <a href="/chat/room">
-            <li id="active"><img src="/message-active.png" alt="">Chat <span>1500</span></li>
-        </a>
-        <a href="">
-            <li><img src="/parametre.png" alt="">Settings</li>
-        </a>
-        <button on:click={handleLogout}>
-            <li><img src="/déconnexion.png" alt="">Logout</li>
-        </button>
-        {#if alertLogout}
-            <div class="overlay"></div>
-            <div class="alertLogout">
-                <p>Do you really want to log out?</p>
-                <div class="action">
-                    <button id="yes" on:click={logoutYes}>Yes</button>
-                    <button on:click={logoutNo}>No</button>
+        <div class="profile">
+            <img src="/utilisateur.png" alt="">
+            <p>Welcome <b>{currentUser.name}</b></p>
+        </div>
+        <hr>
+        <div class="list">
+            <a href="/home">
+                <li><img src="/accueil.png" alt="">Home</li>
+            </a>
+            <a href="/chat/room">
+                <li id="active"><img src="/message-active.png" alt="">Chat <span>1500</span></li>
+            </a>
+            <a href="">
+                <li><img src="/parametre.png" alt="">Settings</li>
+            </a>
+            <button on:click={handleLogout}>
+                <li><img src="/déconnexion.png" alt="">Logout</li>
+            </button>
+            {#if alertLogout}
+                <div class="overlay"></div>
+                <div class="alertLogout">
+                    <p>Do you really want to log out?</p>
+                    <div class="action">
+                        <button id="yes" on:click={logoutYes}>Yes</button>
+                        <button on:click={logoutNo}>No</button>
+                    </div>
                 </div>
-            </div>
-        {/if}
-    </div>
+            {/if}
+        </div>
+
+        <div class="list resp">
+            <a href="/home">
+                <li><img src="/accueil.png" alt=""></li>
+            </a>
+            <a href="/chat/room">
+                <li id="active"><img src="/message-active.png" alt=""><span>1500</span></li>
+            </a>
+            <a href="">
+                <li><img src="/parametre.png" alt=""></li>
+            </a>
+            <button on:click={handleLogout}>
+                <li><img src="/déconnexion.png" alt=""></li>
+            </button>
+            {#if alertLogout}
+                <div class="overlay"></div>
+                <div class="alertLogout">
+                    <p>Do you really want to log out?</p>
+                    <div class="action">
+                        <button id="yes" on:click={logoutYes}>Yes</button>
+                        <button on:click={logoutNo}>No</button>
+                    </div>
+                </div>
+            {/if}
+        </div>
     {:else}
     <div class="profile">
         <img src="/utilisateur.png" alt="">
@@ -98,6 +123,7 @@
     
     .left{
         width: 25%;
+        height: 100%;
     }
     .left{
         border: 1px solid rgba(255, 255, 255, 0.165);
@@ -118,8 +144,11 @@
         height: 40px;
         margin-right: 15px;
     }
+    .resp{
+        display: none;
+    }
     .list li{
-        border: 1px solid rgba(255, 255, 255, 0.094);
+        /* border: 1px solid rgba(255, 255, 255, 0.094); */
         margin: 0;
         padding: 15px;
         margin-top: 5px;
@@ -199,5 +228,68 @@
         height: 100vh;
         background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
         z-index: 5;
+    }
+    @media screen and (max-width: 700px){
+        .left {
+            width: auto;
+            display: flex;
+            align-items: center;
+            border: none;
+        }
+        .profile {
+            display: block;
+        }
+        .profile img{
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .profile p{
+            font-size: 15px;
+            margin: 0;
+        }
+        .list {
+            display: none;
+            margin-left: auto;
+        }
+        .resp {
+            display: flex;
+            align-items: center;
+        }
+        .resp li{
+            /* border: 1px solid rgba(255, 255, 255, 0.094); */
+            margin: 0;
+            padding: 5px;
+            margin-top: 0;
+            border-radius: 20px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+        }
+        .list img{
+            height: 20px;
+            margin-right: 5px;
+        }
+        hr{
+            display: none;
+        }
+        .list span{
+            position: relative;
+            color: white;
+            background: rgb(255, 35, 35);
+            padding: 5px;
+            font-size: 12px;
+            font-weight: lighter;
+            left: -15px;
+            top: -10px;
+            font-family: cursive;
+        }
+        #active{
+            border: none;
+        }
+        .alertLogout{
+            right: 10%;
+            left: 10%;
+        }
     }
 </style>

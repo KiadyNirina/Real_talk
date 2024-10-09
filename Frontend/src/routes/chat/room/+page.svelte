@@ -237,4 +237,26 @@
         font-size: 15px;
         margin-bottom: 10px;
     }
+    @media screen and (max-width: 1000px) {
+        .col1{
+            display: none;
+        }
+        .col2{
+            width: 100%;
+        }
+    }
+    @media screen and (max-width: 700px) {
+        .content {
+            display: block;
+            height: auto;
+            width: auto;
+            padding: 0;
+        }
+        .right {
+            width: auto;
+            padding: 0;
+            height: 100%;
+            padding: 10px;
+        }
+    }
 </style>
