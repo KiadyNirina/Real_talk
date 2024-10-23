@@ -7,7 +7,6 @@ export const login = async (formData) => {
         const response = await apiClient.post('/login', formData);
         const token = response.data.token;
 
-        // Sauvegarde du token dans le localStorage ou le sessionStorage
         localStorage.setItem('token', token);
 
         return response.data;
@@ -29,7 +28,6 @@ export const logout = async () => {
     try { 
         const response = await apiClient.post('/logout');
 
-        // Sauvegarde du token dans le localStorage ou le sessionStorage
         localStorage.removeItem('token');
 
         return response;
@@ -112,7 +110,6 @@ export const checkFriend = async (id) => {
     try {
         const response = await apiClient.get(`/friends/status/${id}`);
 
-        // Traitement du statut retourné
         return response.data;
     } catch (error) {
         console.error('Erreur lors de la vérification du statut d\'amitié', error);
@@ -123,7 +120,6 @@ export const checkUsersWithFriendStatus = async () => {
     try {
         const response = await apiClient.get(`/friends/status`);
 
-        // Traitement du statut retourné
         return response.data.users;
     } catch (error) {
         console.error('Erreur lors de la vérification du statut d\'amitié', error);

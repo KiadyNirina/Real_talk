@@ -51,7 +51,7 @@
                 <li id="active"><img src="/accueil-active.png" alt="">Home</li>
             </a>
             <a href="/chat/room">
-                <li><img src="/message.png" alt="">Chat <span>1500</span></li>
+                <li><img src="/message.png" alt="">Chat <span>4</span></li>
             </a>
             <a href="">
                 <li><img src="/parametre.png" alt="">Settings</li>
@@ -76,9 +76,9 @@
                 <li id="active"><img src="/accueil-active.png" alt=""></li>
             </a>
             <a href="/chat/room">
-                <li><img src="/message.png" alt=""><span>1500</span></li>
+                <li><img src="/message.png" alt=""><span>4</span></li>
             </a>
-            <a href="">
+            <a href="/settings">
                 <li><img src="/parametre.png" alt=""></li>
             </a>
             <button on:click={handleLogout}>
@@ -108,7 +108,7 @@
             <a href="/chat/room">
                 <li><img src="/message.png" alt="">Chat</li>
             </a>
-            <a href="">
+            <a href="/settings">
                 <li><img src="/parametre.png" alt="">Settings</li>
             </a>
             <a href="/">
@@ -181,7 +181,6 @@
     
     #active{
         color: green;
-        border: 1px solid rgba(0, 128, 0, 0.664); 
     }
     
     .list span{
