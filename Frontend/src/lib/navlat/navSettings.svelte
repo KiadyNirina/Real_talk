@@ -1,26 +1,18 @@
 <script>
-    import axios from 'axios';
     import { onMount } from 'svelte';
-    import { user } from '../store';
     import { getUserInfo, logout } from '../auth';
     import {goto} from "$app/navigation";
 
     let currentUser = null;
 
-    if (typeof window !== "undefined") {
-        window.addEventListener('beforeunload', function (event) {
-            logout();
-        });
-    }
-
-    onMount(async () => {
+    const fetchUser = async () => {
         try {
             currentUser = await getUserInfo();
             console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
-    });
+    }
 
     let alertLogout = false;
 
@@ -37,6 +29,15 @@
         alertLogout = false;
     }
 
+    if (typeof window !== "undefined") {
+        window.addEventListener('beforeunload', function (event) {
+            logout();
+        });
+    }
+
+    onMount(async () => {
+        fetchUser();
+    });
 </script>
 
 <div class="left">
@@ -48,81 +49,82 @@
         <hr>
         <div class="list">
             <a href="/home">
-                <li id="active"><img src="/accueil-active.png" alt="">Home</li>
+                <li><img src="/accueil.png" alt="">Home</li>
             </a>
             <a href="/chat/room">
                 <li><img src="/message.png" alt="">Chat <span>4</span></li>
             </a>
             <a href="/settings">
-                <li><img src="/parametre.png" alt="">Settings</li>
+                <li id="active"><img src="/parametre-active.png" alt="">Settings</li>
             </a>
             <button on:click={handleLogout}>
                 <li><img src="/déconnexion.png" alt="">Logout</li>
             </button>
             {#if alertLogout}
-            <div class="overlay"></div>
-            <div class="alertLogout">
-                <p>Do you really want to log out?</p>
-                <div class="action">
-                    <button id="yes" on:click={logoutYes}>Yes</button>
-                    <button on:click={logoutNo}>No</button>
+                <div class="overlay"></div>
+                <div class="alertLogout">
+                    <p>Do you really want to log out?</p>
+                    <div class="action">
+                        <button id="yes" on:click={logoutYes}>Yes</button>
+                        <button on:click={logoutNo}>No</button>
+                    </div>
                 </div>
-            </div>
-        {/if}
+            {/if}
         </div>
 
+        <!-- Responsive -->
         <div class="list resp">
             <a href="/home">
-                <li id="active"><img src="/accueil-active.png" alt=""></li>
+                <li><img src="/accueil.png" alt=""></li>
             </a>
             <a href="/chat/room">
                 <li><img src="/message.png" alt=""><span>4</span></li>
             </a>
             <a href="/settings">
-                <li><img src="/parametre.png" alt=""></li>
+                <li id="active"><img src="/parametre-active.png" alt=""></li>
             </a>
             <button on:click={handleLogout}>
                 <li><img src="/déconnexion.png" alt=""></li>
             </button>
             {#if alertLogout}
-            <div class="overlay"></div>
-            <div class="alertLogout">
-                <p>Do you really want to log out?</p>
-                <div class="action">
-                    <button id="yes" on:click={logoutYes}>Yes</button>
-                    <button on:click={logoutNo}>No</button>
+                <div class="overlay"></div>
+                <div class="alertLogout">
+                    <p>Do you really want to log out?</p>
+                    <div class="action">
+                        <button id="yes" on:click={logoutYes}>Yes</button>
+                        <button on:click={logoutNo}>No</button>
+                    </div>
                 </div>
-            </div>
-        {/if}
+            {/if}
         </div>
     {:else}
-        <div class="profile">
-            <img src="/utilisateur.png" alt="">
-            <p>Loading...</p>
-        </div>
-        <hr>
-        <div class="list">
-            <a href="/home">
-                <li id="active"><img src="/accueil-active.png" alt="">Home</li>
-            </a>
-            <a href="/chat/room">
-                <li><img src="/message.png" alt="">Chat</li>
-            </a>
-            <a href="/settings">
-                <li><img src="/parametre.png" alt="">Settings</li>
-            </a>
-            <a href="/">
-                <li>Login</li>
-            </a>
-        </div>
+    <div class="profile">
+        <img src="/utilisateur.png" alt="">
+        <p>Loading...</p>
+    </div>
+    <hr>
+    <div class="list">
+        <a href="/home">
+            <li><img src="/accueil.png" alt="">Home</li>
+        </a>
+        <a href="/chat/room">
+            <li><img src="/message.png" alt="">Chat</li>
+        </a>
+        <a href="/settings">
+            <li id="active"><img src="/parametre-active.png" alt="">Settings</li>
+        </a>
+        <a href="/">
+            <li>Login</li>
+        </a>
+    </div>
     {/if}
-    
 </div>
 
 <style>
     
     .left{
         width: 25%;
+        height: 100%;
     }
     .left{
         border: 1px solid rgba(255, 255, 255, 0.165);
@@ -150,7 +152,7 @@
         display: none;
     }
     .list li{
-        /*border: 1px solid rgba(255, 255, 255, 0.094);*/
+        /* border: 1px solid rgba(255, 255, 255, 0.094); */
         margin: 0;
         padding: 15px;
         margin-top: 5px;
@@ -165,6 +167,9 @@
     }
     .list li:hover{
         background-color: rgba(255, 255, 255, 0.097);
+    }
+    #active{
+        color: green;
     }
     .list a{
         text-decoration: none;
@@ -181,11 +186,6 @@
         text-align: left;
         font-size: 17px;
     }
-    
-    #active{
-        color: green;
-    }
-    
     .list span{
         margin-left: auto;
         color: white;
