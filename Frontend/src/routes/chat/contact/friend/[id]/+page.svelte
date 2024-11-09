@@ -423,7 +423,7 @@
     .content-message{
         display: flex;
         align-items: center;
-        width: 60%;
+        width: 80%;
     }
     .content-message img{
         height: 40px;
@@ -451,7 +451,7 @@
         top: 10px;
     }
     .content-message-send{
-        width: 60%;
+        width: 80%;
         margin-left: auto;
     }
     .input{
