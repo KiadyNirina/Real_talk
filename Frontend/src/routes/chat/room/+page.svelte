@@ -101,7 +101,7 @@
         width: 75%;
     }
     .right{
-        border: 1px solid rgba(255, 255, 255, 0.165);
+        border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
         border-radius: 35px;

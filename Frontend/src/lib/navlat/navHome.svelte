@@ -125,7 +125,7 @@
         width: 25%;
     }
     .left{
-        border: 1px solid rgba(255, 255, 255, 0.165);
+        border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
         border-radius: 35px;
@@ -144,7 +144,7 @@
         margin-right: 15px;
     }
     hr{
-        border: 1px solid rgba(255, 255, 255, 0.227);
+        border: 1px solid rgba(255, 255, 255, 0.057);
     }
     .resp{
         display: none;
@@ -184,6 +184,7 @@
     
     #active{
         color: green;
+        background-color: rgba(0, 255, 0, 0.07);
     }
     
     .list span{

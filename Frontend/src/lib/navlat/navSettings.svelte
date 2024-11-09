@@ -127,7 +127,7 @@
         height: 100%;
     }
     .left{
-        border: 1px solid rgba(255, 255, 255, 0.165);
+        border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
         border-radius: 35px;
@@ -170,6 +170,7 @@
     }
     #active{
         color: green;
+        background-color: rgba(0, 255, 0, 0.07);
     }
     .list a{
         text-decoration: none;

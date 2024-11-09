@@ -127,7 +127,7 @@
         height: 100%;
     }
     .left{
-        border: 1px solid rgba(255, 255, 255, 0.165);
+        border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
         border-radius: 35px;
@@ -146,7 +146,7 @@
         margin-right: 15px;
     }
     hr{
-        border: 1px solid rgba(255, 255, 255, 0.227);
+        border: 1px solid rgba(255, 255, 255, 0.057);
     }
     .resp{
         display: none;
@@ -170,6 +170,7 @@
     }
     #active{
         color: green;
+        background-color: rgba(0, 255, 0, 0.07);
     }
     .list a{
         text-decoration: none;
@@ -193,7 +194,7 @@
         padding: 5px;
         text-align: center;
         border-radius: 100%;
-        font-size: 17px;
+        font-size: 12px;
         font-weight: bold;
     }
     .alertLogout{

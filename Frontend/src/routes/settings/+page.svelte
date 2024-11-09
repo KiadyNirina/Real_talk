@@ -8,13 +8,13 @@
         <NavSettings/>
         <div class="right">
             <div class="list">
-                <a href="" class="profile">
+                <a href="/settings/info" class="profile">
                     <img src="/utilisateur.png" alt="">
-                    <p>Informations personnelles</p>
+                    <p>Personnal Informations</p>
                 </a>
                 <a href="" class="profile">
                     <img src="/parametre.png" alt="">
-                    <p>Sécurité</p>
+                    <p>Security</p>
                 </a>
             </div>
         </div>
@@ -34,7 +34,7 @@
         width: 75%;
     }
     .right{
-        border: 1px solid rgba(255, 255, 255, 0.165);
+        border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
         border-radius: 35px;
