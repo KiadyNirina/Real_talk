@@ -24,21 +24,26 @@
     <div class="content">
         <NavSettings/>
         <div class="right">
+            <form action="">
             {#if currentUser}
-            <div class="img">
-                <img src="/utilisateur.png" alt="">
-                <p>{currentUser.name}</p>
-                <input type="file" name="" id="">
-            </div>
-            <div class="list">
-                <label for="">Name :
-                    <input type="text" placeholder="Enter your name" bind:value={currentUser.name}>
-                </label>
-                <label for="">Email :
-                    <input type="email" name="" id="" placeholder="Enter your email" bind:value={currentUser.email}>
-                </label>
-            </div>
+            
+                <div class="img">
+                    <img src="/utilisateur.png" alt="">
+                    <p>{currentUser.name}</p>
+                    <input type="file" name="" id="">
+                </div>
+                <div class="list">
+                    <label for="">Name :
+                        <input type="text" placeholder="Enter your name" bind:value={currentUser.name}>
+                    </label>
+                    <label for="">Email :
+                        <input type="email" name="" id="" placeholder="Enter your email" bind:value={currentUser.email}>
+                    </label>
+                    <button>Modifier</button>
+                </div>
+            
             {/if}
+            </form>
         </div>
     </div>
 </div>
@@ -55,7 +60,7 @@
     .right{
         width: 75%;
     }
-    .right{
+    .right form{
         border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
@@ -86,16 +91,35 @@
         padding: 20px;
         width: 100%;
         border-radius: 15px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: 15px;
     }
     .list input{
         width: 100%;
-        height: 30px;
+        height: 40px;
+        text-align: center;
         border-radius: 10px;
         border: none;
-        background-color: rgba(255, 255, 255, 0.13);
+        background-color: rgba(255, 255, 255, 0.074);
         color: white;
         font-family: 'Courier New', Courier, monospace;
         margin-bottom: 10px;
+    }
+    .list button{
+        width: 100%;
+        height: 40px;
+        text-align: center;  
+        border-radius: 10px;
+        border: none;
+        background-color: green; 
+        color: white;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    .list button:hover{
+        cursor: pointer;
+        background-color: rgb(0, 61, 0);
     }
     @media screen and (max-width: 700px) {
         .content {
@@ -109,6 +133,14 @@
             padding: 0;
             height: 100%;
             padding: 10px;
+        }
+    }
+    @media screen and (max-width: 1330px) {
+        .right form{
+            display: block;
+        }
+        .list{
+            width: auto;
         }
     }
 </style>
