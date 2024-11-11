@@ -52,7 +52,7 @@
                 <li><img src="/accueil.png" alt="">Home</li>
             </a>
             <a href="/chat/room">
-                <li id="active"><img src="/message-active.png" alt="">Chat <span>4</span></li>
+                <li id="active"><img src="/message.png" alt="">Chat <span>4</span></li>
             </a>
             <a href="/settings">
                 <li><img src="/parametre.png" alt="">Settings</li>
@@ -78,7 +78,7 @@
                 <li><img src="/accueil.png" alt=""></li>
             </a>
             <a href="/chat/room">
-                <li id="active"><img src="/message-active.png" alt=""><span>4</span></li>
+                <li id="active"><img src="/message.png" alt=""><span>4</span></li>
             </a>
             <a href="/settings">
                 <li><img src="/parametre.png" alt=""></li>
@@ -108,7 +108,7 @@
             <li><img src="/accueil.png" alt="">Home</li>
         </a>
         <a href="/chat/room">
-            <li id="active"><img src="/message-active.png" alt="">Chat</li>
+            <li id="active"><img src="/message.png" alt="">Chat</li>
         </a>
         <a href="/settings">
             <li><img src="/parametre.png" alt="">Settings</li>
@@ -169,8 +169,8 @@
         background-color: rgba(255, 255, 255, 0.097);
     }
     #active{
-        color: green;
-        background-color: rgba(0, 255, 0, 0.07);
+        color: white;
+        background-color: green;
     }
     .list a{
         text-decoration: none;
@@ -193,7 +193,7 @@
         background: rgb(255, 35, 35);
         padding: 5px;
         text-align: center;
-        border-radius: 100%;
+        border-radius: 10px;
         font-size: 12px;
         font-weight: bold;
     }

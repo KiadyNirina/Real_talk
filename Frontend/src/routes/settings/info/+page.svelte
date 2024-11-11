@@ -1,10 +1,16 @@
 <script>
     import NavSettings from "../../../lib/navlat/navSettings.svelte";
-    import { getUserInfo } from "../../../lib/auth";
+    import { getUserInfo, updateUser } from "../../../lib/auth";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
 
     let currentUser = null;
+    let updated;
+
+    let formData = {
+        name: '',
+        email: '',
+    }
 
     const fetchUser = async () => {
         try {
@@ -15,8 +21,18 @@
         }
     }
 
+    const updateUserInfo = async () => {
+        try {
+            updated = await updateUser(formData);
+            console.log('User info updated with success!', updated);
+        } catch (error) {
+            console.error('Error updating user info:', error);
+        }
+    }
+
     onMount(async () => {
         await fetchUser();
+        formData = { ...currentUser };
     });
 </script>
 
@@ -34,12 +50,12 @@
                 </div>
                 <div class="list">
                     <label for="">Name :
-                        <input type="text" placeholder="Enter your name" bind:value={currentUser.name}>
+                        <input type="text" placeholder="Enter your name" bind:value={formData.name}>
                     </label>
                     <label for="">Email :
-                        <input type="email" name="" id="" placeholder="Enter your email" bind:value={currentUser.email}>
+                        <input type="email" name="" id="" placeholder="Enter your email" bind:value={formData.email}>
                     </label>
-                    <button>Modifier</button>
+                    <button on:click={updateUserInfo}>Modifier</button>
                 </div>
             
             {/if}

@@ -48,7 +48,7 @@
         <hr>
         <div class="list">
             <a href="/home">
-                <li id="active"><img src="/accueil-active.png" alt="">Home</li>
+                <li id="active"><img src="/accueil.png" alt="">Home</li>
             </a>
             <a href="/chat/room">
                 <li><img src="/message.png" alt="">Chat <span>4</span></li>
@@ -73,7 +73,7 @@
 
         <div class="list resp">
             <a href="/home">
-                <li id="active"><img src="/accueil-active.png" alt=""></li>
+                <li id="active"><img src="/accueil.png" alt=""></li>
             </a>
             <a href="/chat/room">
                 <li><img src="/message.png" alt=""><span>4</span></li>
@@ -103,7 +103,7 @@
         <hr>
         <div class="list">
             <a href="/home">
-                <li id="active"><img src="/accueil-active.png" alt="">Home</li>
+                <li id="active"><img src="/accueil.png" alt="">Home</li>
             </a>
             <a href="/chat/room">
                 <li><img src="/message.png" alt="">Chat</li>
@@ -183,8 +183,8 @@
     }
     
     #active{
-        color: green;
-        background-color: rgba(0, 255, 0, 0.07);
+        color: white;
+        background-color: green;
     }
     
     .list span{

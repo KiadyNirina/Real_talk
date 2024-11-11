@@ -155,3 +155,13 @@ export const getMessage = async (id) => {
         throw error;
     }
 }
+
+export const updateUser = async (formData) => {
+    try {
+        const response = await apiClient.put('/updateUser', formData);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors du mise à jour de l'information:", error);
+        throw error;
+    }
+}

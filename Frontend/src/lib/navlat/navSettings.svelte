@@ -55,7 +55,7 @@
                 <li><img src="/message.png" alt="">Chat <span>4</span></li>
             </a>
             <a href="/settings">
-                <li id="active"><img src="/parametre-active.png" alt="">Settings</li>
+                <li id="active"><img src="/parametre.png" alt="">Settings</li>
             </a>
             <button on:click={handleLogout}>
                 <li><img src="/déconnexion.png" alt="">Logout</li>
@@ -81,7 +81,7 @@
                 <li><img src="/message.png" alt=""><span>4</span></li>
             </a>
             <a href="/settings">
-                <li id="active"><img src="/parametre-active.png" alt=""></li>
+                <li id="active"><img src="/parametre.png" alt=""></li>
             </a>
             <button on:click={handleLogout}>
                 <li><img src="/déconnexion.png" alt=""></li>
@@ -111,7 +111,7 @@
             <li><img src="/message.png" alt="">Chat</li>
         </a>
         <a href="/settings">
-            <li id="active"><img src="/parametre-active.png" alt="">Settings</li>
+            <li id="active"><img src="/parametre.png" alt="">Settings</li>
         </a>
         <a href="/">
             <li>Login</li>
@@ -169,8 +169,8 @@
         background-color: rgba(255, 255, 255, 0.097);
     }
     #active{
-        color: green;
-        background-color: rgba(0, 255, 0, 0.07);
+        color: white;
+        background-color: green;
     }
     .list a{
         text-decoration: none;
@@ -193,7 +193,7 @@
         background: rgb(255, 35, 35);
         padding: 5px;
         text-align: center;
-        border-radius: 100%;
+        border-radius: 10px;
         font-size: 17px;
         font-weight: bold;
     }

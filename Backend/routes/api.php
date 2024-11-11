@@ -53,3 +53,5 @@ Route::get('/friends', [FriendController::class, 'getFriends'])->middleware('aut
 
 Route::post('/messages', [FriendController::class, 'sendMessage'])->middleware('auth:sanctum');
 Route::get('/getMessage/{selectedUserId}', [FriendController::class, 'getMessage'])->middleware('auth:sanctum');
+
+Route::put('/updateUser', [UserController::class, 'updateUser'])->middleware('auth:sanctum');

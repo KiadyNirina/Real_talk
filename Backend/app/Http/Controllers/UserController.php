@@ -53,4 +53,21 @@ class UserController extends Controller
         // Retourner les informations de l'utilisateur
         return response()->json($user);
     }
+
+    public function updateUser(Request $request) {
+        $user = $request->user();
+
+        $validator = User::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user->update($request->only(['name', 'email']));
+
+        return response()->json(['message' => 'Informations updated with success !', 'user' => $user]);
+    }
 }
