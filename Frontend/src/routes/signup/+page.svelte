@@ -1,83 +1,141 @@
 <script>
     import axios from 'axios';
-
+    
     let showPassword = false;
-
     let name = "";
     let email = "";
     let password = "";
     let password_confirmation = "";
-    let error = "";
+    
+    let errors = {
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: ""
+    };
+    
     let successMessage = "";
-
     let clicked = false;
-
-     // Fonction pour l'inscription
+    
+    function validateField(field) {
+        switch (field) {
+            case 'name':
+                return name.trim() === "" ? "Name is required." : "";
+            case 'email':
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return !emailPattern.test(email) ? "Invalid email address." : "";
+            case 'password':
+                const minLength = 6;
+                const securePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+                if (password.length < minLength) {
+                    return "Password must be at least 6 characters long.";
+                }
+                if (!securePattern.test(password)) {
+                    return "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+                }
+                return "";
+            case 'password_confirmation':
+                return password !== password_confirmation ? "Passwords do not match." : "";
+            default:
+                return "";
+        }
+    }
+    
+    function handleInput(field) {
+        errors[field] = validateField(field);
+    }
+    
+    // Fonction pour l'inscription
     async function register() {
         clicked = true;
+        errors = {
+            name: validateField('name'),
+            email: validateField('email'),
+            password: validateField('password'),
+            password_confirmation: validateField('password_confirmation')
+        };
+    
+        if (Object.values(errors).some(error => error)) {
+            clicked = false;
+            return;
+        }
+    
         try {
             await axios.post('http://localhost:8000/api/register', {
                 name,
                 email,
                 password,
-                password_confirmation: password_confirmation,
+                password_confirmation,
             });
     
             successMessage = "Registration successful! You can now log in.";
-            error = "";
+            errors = { name: "", email: "", password: "", password_confirmation: "" };
             clicked = false;
-            
+    
         } catch (err) {
-            clicked = false;
             console.error('Registration error:', err);
-            error = err.message;
             successMessage = "";
+            clicked = false;
         }
-    };
-
+    }
 </script>
-
+    
 <div class="body">
     <div class="content">
         <div class="">
             <h1>SignUp</h1>
-            {#if error}
-                <p id="error">{error}</p>
-            {/if}
             {#if successMessage}
                 <p style="color: green;">{successMessage}</p>
             {/if}
-            
+
             <form on:submit|preventDefault={register}>
-                <input type="text" placeholder="Username" bind:value={name}>
-                <input type="email" name="" id="" placeholder="Email" bind:value={email}>
-                {#if showPassword}
-                    <input type="text" placeholder="Password" bind:value={password}>
-                {:else}
-                    <input type="password" placeholder="Password" bind:value={password}>
+                <label for="username">Username :</label>
+                <input type="text" id="username" class={errors.name ? "input-error" : ""} placeholder="Username" bind:value={name} on:input={() => handleInput('name')}>
+                {#if errors.name}
+                    <p class="error-message">{errors.name}</p>
                 {/if}
-                <input type="password" placeholder="Confirm password" bind:value={password_confirmation}>
-                <div class="check">
-                    <input type="checkbox" name="" id="checkbox" bind:checked={showPassword}>
-                    <span>Show password</span>
-                </div>
-                {#if !clicked}
-                    <button type="submit">Signup</button> 
-                {:else}
-                    <button disabled type="submit">Loading...</button> 
-                {/if}
-                <p>or</p>
-                <p>Already have an account? <a href="/">Sign In</a></p>
+    
+                <label for="email">Email :</label>
+                <input type="email" id="email" class={errors.email ? "input-error" : ""} placeholder="Email" bind:value={email} on:input={() => handleInput('email')}>
+                {#if errors.email}
+                    <p class="error-message">{errors.email}</p>
+                    {/if}
+    
+                    <label for="password">Password :</label>
+                    {#if showPassword}
+                        <input type="text" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                    {:else}
+                        <input type="password" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                    {/if}
+                    {#if errors.password}
+                        <p class="error-message">{errors.password}</p>
+                    {/if}
+    
+                    <label for="password_confirmation">Confirm password :</label>
+                    <input type="password" id="password_confirmation" class={errors.password_confirmation ? "input-error" : ""} placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
+                    {#if errors.password_confirmation}
+                        <p class="error-message">{errors.password_confirmation}</p>
+                    {/if}
+    
+                    <div class="check">
+                        <input type="checkbox" id="checkbox" bind:checked={showPassword}>
+                        <span>Show password</span>
+                    </div>
+    
+                    {#if !clicked}
+                        <button type="submit">Signup</button>
+                    {:else}
+                        <button disabled type="submit">Loading...</button>
+                    {/if}
+    
+                    <p>or</p>
+                    <p>Already have an account? <a href="/">Sign In</a></p>
             </form>
-        </div> 
+        </div>
     </div>
 </div>
-
+    
 <style>
-    /*.body{
-        border: 1px solid white;
-        padding: 15px;
-    }*/
     .content{
         border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 15px;
@@ -96,10 +154,6 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         text-align: center;
     }
-    #forget{
-        text-align: right;
-        margin: 0;
-    }
     .content p{
         text-align: center;
         color: white;
@@ -113,16 +167,30 @@
         margin-right: auto;
         margin-left: auto;
     }
+    .content form label {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        color: rgb(200, 200, 200);
+    }
     .content form input, .content button{
         width: 100%;
         height: 40px;
         background-color: rgb(23, 23, 23);
-        margin-top: 5px;
+        margin-bottom: 5px;
         border: none;
         border-radius: 5px;
         color: white;
         padding: 0;
         text-align: center;
+    }
+    .content form .error-message {
+        color: red;
+        font-size: 12px;
+        margin-top: -5px;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+    .content form .input-error {
+        border: 1px solid red;
     }
     .content form button{
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -154,8 +222,5 @@
     }
     .content form .check input:checked{
         accent-color: green;
-    }
-    #error{
-        color: rgb(250, 57, 57);
     }
 </style>

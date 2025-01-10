@@ -40,14 +40,22 @@
             {/if}
 
             <form on:submit|preventDefault={handleLogin}>
-                <input type="email" name="" id="" placeholder="Email" bind:value={formData.email}>
+                <label for="email">Email:</label>
+                <input type="email" id="email" class={error ? "input-error" : ""} placeholder="Email" bind:value={formData.email}>
+                {#if error && !formData.email}
+                    <p class="error-message">Email is required.</p>
+                {/if}
+                <label for="password">Password:</label>
                 {#if showPassword}
-                    <input type="text" placeholder="Password" bind:value={formData.password}>
+                    <input type="text" id="password" class={error ? "input-error" : ""} placeholder="Password" bind:value={formData.password}>
                 {:else}
-                    <input type="password" placeholder="Password" bind:value={formData.password}>
+                    <input type="password" id="password" class={error ? "input-error" : ""} placeholder="Password" bind:value={formData.password}>
+                {/if}
+                {#if error && !formData.password}
+                    <p class="error-message">Password is required.</p>
                 {/if}
                 <div class="check">
-                    <input type="checkbox" name="" id="checkbox" bind:checked={showPassword}>
+                    <input type="checkbox" id="checkbox" bind:checked={showPassword}>
                     <span>Show password</span>
                 </div>
                 <p id="forget"><a href="">Forget password?</a></p>
@@ -102,6 +110,10 @@
         margin-left: auto;
         margin-right: auto;
     }
+    .content form label {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        color: rgb(200, 200, 200);
+    }
     .content input, .content button{
         width: 100%;
         height: 40px;
@@ -112,6 +124,16 @@
         color: white;
         padding: 0;
         text-align: center;
+    }
+    .content .input-error {
+        border: 1px solid red;
+    }
+    .content form .error-message {
+        color: red;
+        text-align: left;
+        font-size: 13px;
+        margin-top: -0px;
+        margin-bottom: 5px;
     }
     .content button{
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
