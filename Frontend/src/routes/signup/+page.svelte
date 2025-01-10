@@ -15,6 +15,7 @@
     };
     
     let successMessage = "";
+    let errorMessage = "";
     let clicked = false;
     
     function validateField(field) {
@@ -55,7 +56,7 @@
             password_confirmation: validateField('password_confirmation')
         };
     
-        if (Object.values(errors).some(error => error)) {
+        if (Object.values(errors).some(error => error) || !name || !email || !password || !password_confirmation) {
             clicked = false;
             return;
         }
@@ -69,23 +70,28 @@
             });
     
             successMessage = "Registration successful! You can now log in.";
+            errorMessage = "";
             errors = { name: "", email: "", password: "", password_confirmation: "" };
             clicked = false;
     
         } catch (err) {
             console.error('Registration error:', err);
+            errorMessage = "Registration failed, try again!"
             successMessage = "";
             clicked = false;
         }
     }
 </script>
-    
+
 <div class="body">
     <div class="content">
         <div class="">
             <h1>SignUp</h1>
             {#if successMessage}
                 <p style="color: green;">{successMessage}</p>
+            {/if}
+            {#if errorMessage}
+                <p style="color: red;">{errorMessage}</p>
             {/if}
 
             <form on:submit|preventDefault={register}>
@@ -99,37 +105,35 @@
                 <input type="email" id="email" class={errors.email ? "input-error" : ""} placeholder="Email" bind:value={email} on:input={() => handleInput('email')}>
                 {#if errors.email}
                     <p class="error-message">{errors.email}</p>
-                    {/if}
+                {/if}
     
-                    <label for="password">Password :</label>
-                    {#if showPassword}
-                        <input type="text" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
-                    {:else}
-                        <input type="password" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
-                    {/if}
-                    {#if errors.password}
-                        <p class="error-message">{errors.password}</p>
-                    {/if}
+                <label for="password">Password :</label>
+                {#if showPassword}
+                    <input type="text" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                {:else}
+                    <input type="password" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                {/if}
+                {#if errors.password}
+                    <p class="error-message">{errors.password}</p>
+                {/if}
     
-                    <label for="password_confirmation">Confirm password :</label>
-                    <input type="password" id="password_confirmation" class={errors.password_confirmation ? "input-error" : ""} placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
-                    {#if errors.password_confirmation}
-                        <p class="error-message">{errors.password_confirmation}</p>
-                    {/if}
+                <label for="password_confirmation">Confirm password :</label>
+                <input type="password" id="password_confirmation" class={errors.password_confirmation ? "input-error" : ""} placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
+                {#if errors.password_confirmation}
+                    <p class="error-message">{errors.password_confirmation}</p>
+                {/if}
     
-                    <div class="check">
-                        <input type="checkbox" id="checkbox" bind:checked={showPassword}>
-                        <span>Show password</span>
-                    </div>
+                <div class="check">
+                    <input type="checkbox" id="checkbox" bind:checked={showPassword}>
+                    <span>Show password</span>
+                </div>
     
-                    {#if !clicked}
-                        <button type="submit">Signup</button>
-                    {:else}
-                        <button disabled type="submit">Loading...</button>
-                    {/if}
+                <button type="submit" disabled={Object.values(errors).some(error => error) || !name || !email || !password || !password_confirmation || clicked}>
+                    {clicked ? 'Loading...' : 'Sign Up'}
+                </button>
     
-                    <p>or</p>
-                    <p>Already have an account? <a href="/">Sign In</a></p>
+                <p>or</p>
+                <p>Already have an account? <a href="/">Sign In</a></p>
             </form>
         </div>
     </div>
