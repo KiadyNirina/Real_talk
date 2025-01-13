@@ -87,6 +87,8 @@
         justify-content: center;
         margin-left: auto;
         margin-right: auto;
+        font-family: 'poppins';
+        font-size: 13px;
     }
     .content h1{
         color: white;
@@ -111,14 +113,13 @@
         margin-right: auto;
     }
     .content form label {
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         color: rgb(200, 200, 200);
     }
     .content input, .content button{
         width: 100%;
         height: 40px;
         background-color: rgb(23, 23, 23);
-        margin-top: 5px;
+        margin-bottom: 5px;
         border: none;
         border-radius: 5px;
         color: white;
@@ -126,17 +127,16 @@
         text-align: center;
     }
     .content .input-error {
-        border: 1px solid red;
+        border: 1px solid rgb(255, 37, 37);
     }
     .content form .error-message {
-        color: red;
+        color: rgb(255, 37, 37);
         text-align: left;
-        font-size: 13px;
+        font-size: 11px;
         margin-top: -0px;
         margin-bottom: 5px;
     }
     .content button{
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 15px;
         margin-top: 20px;
     }
