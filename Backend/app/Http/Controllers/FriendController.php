@@ -152,13 +152,14 @@ class FriendController extends Controller
 
     public function sendMessage(Request $request)
     {
-        $message = Message::create([
+        $message = $request->input('message');
+        /* $message = Message::create([
             'sender_id' => auth()->user()->id,
             'receiver_id' => $request->receiver_id,
             'message' => $request->message,
-        ]);
+        ]); */
 
-        //broadcast(new MessageSent($message))->toOthers();
+        broadcast(new MessageSent($message))->toOthers();
 
         return response()->json(['status' => 'Message sent!']);
     }
