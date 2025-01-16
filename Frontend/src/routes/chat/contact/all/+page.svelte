@@ -30,14 +30,6 @@
         // Récupérer les données utilisateurs
         await fetchUser();
         await fetchAllUserWithFriendStatus();
-
-        // Polling toutes les 5 secondes
-        intervalId = setInterval(fetchAllUserWithFriendStatus, 5000);
-
-        // Nettoyer l'intervalle au démontage
-        return () => {
-        clearInterval(intervalId);
-        };
     });
 </script>
 
@@ -86,7 +78,7 @@
                                     {#if user.friend_status == "accepted"}
                                         <img src="/accepter.png" alt="">
                                     {:else if user.sender_id != currentUser.id && user.friend_status == "pending"}
-                                    <p>oui ou non</p>
+                                        <img src="/invitation.png" alt="">
                                     {:else if user.sender_id == currentUser.id && user.friend_status == "pending"}
                                         <img src="/en_cours.png" alt="">
                                     {:else}

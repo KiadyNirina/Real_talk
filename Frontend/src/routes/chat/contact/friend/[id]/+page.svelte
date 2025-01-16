@@ -49,10 +49,15 @@
         }
     }
 
+    const reloadPage = () => {
+        location.reload();
+    }
+
     const sendFriendRequest = async() => {
         try {
             invitationSended = await sendInvitation(formData);
             console.log('Friend request sent with success!', invitationSended);
+            reloadPage();
         } catch (error) {
             console.error('Error sending friend request:', error);
         }
@@ -62,6 +67,7 @@
         try {
             invitationAccepted = await acceptInvitation(invitation);
             console.log('Friend request accepted with success!', invitationAccepted);
+            reloadPage();
         } catch (error) {
             console.error('Error sending friend request:', error);
         }
@@ -71,6 +77,7 @@
         try {
             invitationRejected = await rejectInvitation(invitation);
             console.log('Friend request accepted with success!', invitationRejected);
+            reloadPage();
         } catch (error) {
             console.error('Error sending friend request:', error);
         }
@@ -139,6 +146,7 @@
         try {
             messageSent = await sendMessage(messages);
             console.log('Message sent with success!', messageSent);
+            reloadPage();
         } catch (error) {
             console.error('Error sending message:', error);
         }
@@ -167,18 +175,6 @@
         .listen("MessageSent", (e) => {
             messages.update(currentMessages => [...currentMessages, e.message]);
         });*/
-
-        // Polling toutes les 5 secondes
-        intervalId = setInterval(() => {
-            fetchAllUser();
-            seeFriendStatus(userSelectedId);
-            fetchMessage(userSelectedId);
-        }, 5000);
-
-        // Nettoyer l'intervalle au démontage
-        return () => {
-        clearInterval(intervalId);
-        };
     });
 </script>
 
@@ -358,11 +354,14 @@
     }
     .col1{
         width: 25%;
-        border-right: 1px solid rgba(255, 255, 255, 0.185);
+        border-right: 1px solid rgba(255, 255, 255, 0.071);
     }
     .col2{
         width: 75%;
         height: auto;
+        position: relative;
+        display: flex;
+        flex-direction: column;
     }
     h1{
         font-size: 20px;
@@ -414,16 +413,12 @@
         margin-left: 5px;
     }
     .message{
-        border: 1px solid rgba(255, 255, 255, 0.139);
-        border-radius: 10px;
-        padding: 10px;
-        height: 80%;
+        flex: 1;
         overflow-y: auto;
     }
     .content-message{
         display: flex;
-        align-items: center;
-        width: 80%;
+        width: 60%;
     }
     .content-message img{
         height: 40px;
@@ -432,16 +427,14 @@
         background-color: rgba(255, 255, 255, 0.404);
         padding: 15px;
         border-radius: 15px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 18px;
+        font-size: 15px;
         margin: 5px;
     }
     .content-message-send p{
         background-color: green;
         padding: 15px;
         border-radius: 15px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 18px;
+        font-size: 15px;
         margin: 5px;
     }
     .content-message p span, .content-message-send p span{
@@ -451,31 +444,40 @@
         top: 10px;
     }
     .content-message-send{
-        width: 80%;
+        width: 60%;
         margin-left: auto;
     }
     .input{
         display: flex;
         align-items: center;
         margin-top: 5px;
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+        background-color: #33333300;
+        color: #fff;
+        text-align: center;
+        padding: 10px 20px; /* Add padding to the left and right */
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     }
     .input button{
         background-color: transparent;
         border: none;
         border-radius: 15px;
+        margin-left: 5px;
     }
     .input img{
         height: 30px;
-        padding: 10px;
+        padding: 8px;
     }
     .input button:hover{
-        background-color: rgba(255, 255, 255, 0.13);
+        background-color: rgb(36, 36, 36);
         cursor: pointer;
     }
     .input textarea{
         width: 100%;
         border-radius: 15px;
-        background: transparent;
+        background: rgb(45, 45, 45);
         padding: 10px;
         border: none;
         color: white;
@@ -548,6 +550,28 @@
         }
         .col2{
             width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 50px;
+        }
+        .message {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .content-message, .content-message-send{
+            width: 80%;
+        }
+        .input {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1b1b1b;
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
         }
     }
     @media screen and (max-width: 700px) {
@@ -571,7 +595,7 @@
         }
         .message p{
             font-size: 12px;
-            line-height: 20px;
+            line-height: 17px;
         }
         .message img{
             height: 20px;
