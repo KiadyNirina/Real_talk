@@ -136,6 +136,16 @@ export const getUserFriends = async () => {
     }
 }
 
+export const deleteFriend = async (id) => {
+    try {
+        const response = await apiClient.delete(`/friend/remove/${id}`);
+
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors de la suppression de l ami: ', error);
+    }
+}
+
 export const sendMessage = async (formData) => {
     try {
         const response = await apiClient.post('/messages', formData);

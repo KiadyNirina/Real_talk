@@ -1,10 +1,8 @@
 <script>
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
-    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation, sendMessage, getMessage } from "../../../../../lib/auth";
+    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation, sendMessage, getMessage, deleteFriend } from "../../../../../lib/auth";
     import { page } from "$app/stores";
-    //import { echo } from "../../../../../lib/echo";
 
     let intervalId;
     let currentUser = null;
@@ -19,102 +17,111 @@
     $: userSelectedId = $page.params.id;
 
     let formData = {
-        receiver_id : $page.params.id,
-    }
+        receiver_id: $page.params.id,
+    };
 
     const fetchUser = async () => {
         try {
             currentUser = await getUserInfo();
-            console.log('Informations de l’utilisateur récupérées', currentUser);
+            console.log('User info fetched', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
-    }
+    };
 
     const fetchAllUser = async () => {
         try {
             alluser = await getUserFriendOnline();
-            console.log('Informations des utilisateurs online récupérées', alluser);
+            console.log('Online users info fetched', alluser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
-    }
+    };
 
     const fetchUserSelected = async (id) => {
         try {
             userSelected = await getUserSelectedInfo(id);
-            console.log('Informations de l’utilisateur séléctionné récupérées', userSelected);
+            console.log('Selected user info fetched', userSelected);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
-    }
+    };
 
     const reloadPage = () => {
         location.reload();
-    }
+    };
 
-    const sendFriendRequest = async() => {
+    const sendFriendRequest = async () => {
         try {
             invitationSended = await sendInvitation(formData);
-            console.log('Friend request sent with success!', invitationSended);
+            console.log('Friend request sent successfully!', invitationSended);
             reloadPage();
         } catch (error) {
             console.error('Error sending friend request:', error);
         }
-    }
+    };
 
     const acceptFriendRequest = async (invitation) => {
         try {
             invitationAccepted = await acceptInvitation(invitation);
-            console.log('Friend request accepted with success!', invitationAccepted);
+            console.log('Friend request accepted successfully!', invitationAccepted);
             reloadPage();
         } catch (error) {
-            console.error('Error sending friend request:', error);
+            console.error('Error accepting friend request:', error);
         }
-    }
+    };
 
     const rejectFriendRequest = async (invitation) => {
         try {
             invitationRejected = await rejectInvitation(invitation);
-            console.log('Friend request accepted with success!', invitationRejected);
+            console.log('Friend request rejected successfully!', invitationRejected);
             reloadPage();
         } catch (error) {
-            console.error('Error sending friend request:', error);
+            console.error('Error rejecting friend request:', error);
         }
-    }
+    };
 
     const seeFriendStatus = async (id) => {
         try {
             userSelected2 = await checkFriend(id);
-            console.log('Informations de l’utilisateur friend séléctionné récupérées', userSelected2);
-            
+            console.log('Selected friend status fetched', userSelected2);
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            console.error('Error fetching friend status:', error);
         }
-    }
+    };
+
+    const removeFriend = async (id) => {
+        try {
+            await deleteFriend(id);
+            console.log('Friend removed successfully!');
+            reloadPage();
+        } catch (error) {
+            console.error('Error removing friend:', error);
+        }
+    };
 
     let loading = false;
 
     function handleClick() {
-        loading = true; 
+        loading = true;
         setTimeout(async () => {
-            await sendFriendRequest(); 
+            await sendFriendRequest();
             loading = false;
         }, 5000);
     }
 
-    function handleClickAccept () {
+    function handleClickAccept() {
         loading = true;
         setTimeout(async () => {
-            await acceptFriendRequest(userSelected2.id); 
+            await acceptFriendRequest(userSelected2.id);
             loading = false;
         }, 5000);
     }
 
-    function handleClickReject () {
+    function handleClickReject() {
         loading = true;
         setTimeout(async () => {
-            await rejectFriendRequest(userSelected2.id); 
+            await rejectFriendRequest(userSelected2.id);
             loading = false;
         }, 5000);
     }
@@ -123,15 +130,19 @@
 
     const handleUnfriend = () => {
         alertUnfriend = true;
-    }
+    };
 
     const unfriendYes = () => {
-        goto('/');
-    }
+        loading = true;
+        setTimeout(async () => {
+            await removeFriend(userSelected.id);
+            loading = false;
+        }, 5000);
+    };
 
     const unfriendNo = () => {
         alertUnfriend = false;
-    }
+    };
 
     let messageSent;
     let allMess = [];
@@ -139,42 +150,36 @@
     let messages = {
         receiver_id: $page.params.id,
         message: '',
-    }
+    };
 
-    // Fonction pour envoyer le message
     const sendFriendMessage = async () => {
         try {
             messageSent = await sendMessage(messages);
-            console.log('Message sent with success!', messageSent);
+            console.log('Message sent successfully!', messageSent);
             reloadPage();
         } catch (error) {
             console.error('Error sending message:', error);
         }
-    }
+    };
 
     const fetchMessage = async (id) => {
         try {
             allMess = await getMessage(id);
-            console.log('Message fetched with success!', allMess);
+            console.log('Messages fetched successfully!', allMess);
         } catch (error) {
-            console.error('Error fetching message:', error);
+            console.error('Error fetching messages:', error);
         }
-    }
+    };
 
     onMount(async () => {
         await fetchUser();
         await fetchAllUser();
 
-        if(userSelectedId) {
+        if (userSelectedId) {
             await fetchUserSelected(userSelectedId);
             await seeFriendStatus(userSelectedId);
             await fetchMessage(userSelectedId);
         }
-
-        /*echo.private(`chat.${userSelectedId}`)
-        .listen("MessageSent", (e) => {
-            messages.update(currentMessages => [...currentMessages, e.message]);
-        });*/
     });
 </script>
 
@@ -212,7 +217,7 @@
                             </a>
                         {/each}
                     {:else}
-                        <p>No user online</p>    
+                        <p>No user online</p>
                     {/if}
                 </div>
             </div>
@@ -252,36 +257,31 @@
                     {#if userSelected2.status === "pending" && userSelected2.sender_id === currentUser.id}
                         <form>
                             <div class="input">
-                                <button id="cancel">Invitation envoyé</button>
+                                <button id="cancel">Invitation sent</button>
                             </div>
                         </form>
                     {:else if userSelected2.status === "pending" && userSelected2.receiver_id === currentUser.id}
                             <div class="input">
-                                {#if loading == false}
-                                    <button id="cancel" on:click={handleClickAccept}>Accepter</button>
+                                {#if !loading}
+                                    <button id="cancel" on:click={handleClickAccept}>Accept</button>
+                                    <button id="add" on:click={handleClickReject}>Reject</button>
                                 {:else}
                                     <button id="cancel">Loading...</button>
-                                {/if}
-
-                                {#if loading == false}
-                                    <button id="add" on:click={handleClickReject}>Reffuser</button>
-                                {:else}
                                     <button id="add">Loading...</button>
                                 {/if}
                             </div>
-                            
                     {:else if userSelected2.status === "accepted"}
                         <form on:submit={sendFriendMessage}>
                             <div class="input">
-                                <textarea bind:value={messages.message} id="" placeholder="Enter the message"></textarea>
+                                <textarea bind:value={messages.message} placeholder="Enter the message"></textarea>
                                 <button><img src="/message-sender.png" alt=""></button>
                             </div>
                         </form>
                     {:else}
                         <form on:submit={handleClick}>
                             <div class="input">
-                                {#if loading == false}
-                                    <button id="add">Ajouter</button>
+                                {#if !loading}
+                                    <button id="add">Add</button>
                                 {:else}
                                     <button id="disable" disabled>Loading...</button>
                                 {/if}
@@ -296,12 +296,11 @@
                         <p>User not found</p>
                     </div>
                     <div class="input">
-                        <textarea name="" id="" placeholder="Enter the message"></textarea>
+                        <textarea placeholder="Enter the message"></textarea>
                         <button><img src="/message-sender.png" alt=""></button>
                     </div>
                 </div>
             {/if}
-
         </div>
         {:else}
         <div class="right">
@@ -317,28 +316,27 @@
                     <p>Loading...</p>
                 </div>
                 <div class="input">
-                    <textarea name="" id="" placeholder="Enter the message"></textarea>
+                    <textarea placeholder="Enter the message"></textarea>
                     <button><img src="/message-sender.png" alt=""></button>
                 </div>
             </div>
-
         </div>
         {/if}
     </div>
 </div>
 
 <style>
-    .body{
+    .body {
         color: white;
         height: 100%;
     }
-    .content{
+    .content {
         padding: 15px;
         display: flex;
         font-size: 20px;
         height: 100%;
     }
-    .right{
+    .right {
         border: 1px solid rgba(255, 255, 255, 0.165);
         margin: 5px;
         padding: 15px;
@@ -347,31 +345,30 @@
         width: 75%;
         height: 100%;
     }
-    .col1, .col2{
+    .col1, .col2 {
         margin: 5px;
         padding: 15px;
-        /* border-radius: 35px; */
     }
-    .col1{
+    .col1 {
         width: 25%;
         border-right: 1px solid rgba(255, 255, 255, 0.071);
     }
-    .col2{
+    .col2 {
         width: 75%;
         height: auto;
         position: relative;
         display: flex;
         flex-direction: column;
     }
-    h1{
+    h1 {
         font-size: 20px;
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         color: rgba(255, 255, 255, 0.619);
     }
-    .list{
+    .list {
         margin-top: 10px;
     }
-    .profile{
+    .profile {
         display: flex;
         align-items: center;
         text-decoration: none;
@@ -379,16 +376,16 @@
         border-radius: 15px;
         padding: 5px;
     }
-    .profile img{
+    .profile img {
         border: 1px solid rgba(255, 255, 255, 0.508);
         border-radius: 100%;
         height: 40px;
         margin-right: 15px;
     }
-    .profile:hover{
+    .profile:hover {
         background-color: rgba(255, 255, 255, 0.097);
     }
-    .profile button{
+    .profile button {
         margin-left: auto;
         background-color: rgb(59, 59, 254);
         color: white;
@@ -398,56 +395,56 @@
         border-radius: 10px;
         cursor: pointer;
     }
-    .name{
+    .name {
         line-height: 5px;
     }
-    .part{
+    .part {
         font-size: 13px;
         color: rgba(255, 255, 255, 0.575);
         display: flex;
         align-items: center;
     }
-    .part img{
+    .part img {
         border: none;
         height: 10px;
         margin-left: 5px;
     }
-    .message{
+    .message {
         flex: 1;
         overflow-y: auto;
     }
-    .content-message{
+    .content-message {
         display: flex;
         width: 60%;
     }
-    .content-message img{
+    .content-message img {
         height: 40px;
     }
-    .content-message p{
+    .content-message p {
         background-color: rgba(255, 255, 255, 0.404);
         padding: 15px;
         border-radius: 15px;
         font-size: 15px;
         margin: 5px;
     }
-    .content-message-send p{
+    .content-message-send p {
         background-color: green;
         padding: 15px;
         border-radius: 15px;
         font-size: 15px;
         margin: 5px;
     }
-    .content-message p span, .content-message-send p span{
+    .content-message p span, .content-message-send p span {
         font-size: 10px;
         color: rgb(202, 202, 202);
         position: relative;
         top: 10px;
     }
-    .content-message-send{
+    .content-message-send {
         width: 60%;
         margin-left: auto;
     }
-    .input{
+    .input {
         display: flex;
         align-items: center;
         margin-top: 5px;
@@ -457,24 +454,24 @@
         background-color: #33333300;
         color: #fff;
         text-align: center;
-        padding: 10px 20px; /* Add padding to the left and right */
+        padding: 10px 20px;
         box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     }
-    .input button{
+    .input button {
         background-color: transparent;
         border: none;
         border-radius: 15px;
         margin-left: 5px;
     }
-    .input img{
+    .input img {
         height: 30px;
         padding: 8px;
     }
-    .input button:hover{
+    .input button:hover {
         background-color: rgb(36, 36, 36);
         cursor: pointer;
     }
-    .input textarea{
+    .input textarea {
         width: 100%;
         border-radius: 15px;
         background: rgb(45, 45, 45);
@@ -482,14 +479,14 @@
         border: none;
         color: white;
     }
-    #add{
+    #add {
         width: 100%;
         border: 1px solid rgba(255, 255, 255, 0.287);
         padding: 10px;
         color: white;
         font-size: 15px;
     }
-    #disable{
+    #disable {
         cursor: not-allowed;
         color: grey;
         width: 100%;
@@ -497,14 +494,14 @@
         padding: 10px;
         font-size: 15px;
     }
-    #cancel{
+    #cancel {
         width: 100%;
         background: rgb(0, 81, 255);
         padding: 10px;
         color: white;
         font-size: 15px;
     }
-    .alertLogout{
+    .alertLogout {
         position: fixed;
         right: 40%;
         left: 40%;
@@ -516,10 +513,10 @@
         padding: 5px;
         z-index: 9;
     }
-    .alertLogout .action{
+    .alertLogout .action {
         display: flex;
     }
-    .alertLogout .action button{
+    .alertLogout .action button {
         text-align: center;
         padding: 10px;
         width: 50%;
@@ -527,10 +524,10 @@
         border: none;
         color: white;
     }
-    #yes:hover{
+    #yes:hover {
         background-color: rgba(255, 0, 0, 0.496);
     }
-    .alertLogout .action button:hover{
+    .alertLogout .action button:hover {
         cursor: pointer;
         background-color: rgba(128, 128, 128, 0.692);
         border-radius: 15px;
@@ -541,14 +538,14 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
+        background-color: rgba(0, 0, 0, 0.671);
         z-index: 5;
     }
     @media screen and (max-width: 1000px) {
-        .col1{
+        .col1 {
             display: none;
         }
-        .col2{
+        .col2 {
             width: 100%;
             min-height: 100vh;
             display: flex;
@@ -559,7 +556,7 @@
             flex: 1;
             overflow-y: auto;
         }
-        .content-message, .content-message-send{
+        .content-message, .content-message-send {
             width: 80%;
         }
         .input {
@@ -586,25 +583,25 @@
             padding: 0;
             height: 100%;
         }
-        .message{
+        .message {
             border: none;
             border-radius: 10px;
             padding: 0px;
             height: auto;
             overflow-y: auto;
         }
-        .message p{
+        .message p {
             font-size: 12px;
             line-height: 17px;
         }
-        .message img{
+        .message img {
             height: 20px;
         }
-        .alertLogout{
+        .alertLogout {
             right: 10%;
             left: 10%;
         }
-        .content-message p span, .content-message-send p span{
+        .content-message p span, .content-message-send p span {
             font-size: 8px;
             color: rgb(202, 202, 202);
             position: relative;
