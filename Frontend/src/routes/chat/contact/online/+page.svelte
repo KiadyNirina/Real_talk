@@ -1,9 +1,8 @@
 <script>
     import NavChat from "../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
-    import { getUserInfo, getUserFriendOnline } from "../../../../lib/auth";
-    import { goto } from "$app/navigation";
-    import { all } from "axios";
+    import { getUserInfo } from "../../../../api/user";
+    import { getUserFriendOnline } from "../../../../api/friend";
 
     let user = null;
     let alluser = [];

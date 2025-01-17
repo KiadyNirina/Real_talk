@@ -2,11 +2,11 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { getUserInfo, getUserFriendOnline, getUserSelectedInfo, sendInvitation, checkFriend, acceptInvitation, rejectInvitation, sendMessage, getMessage } from "../../../../../lib/auth";
+    import { getUserInfo, getUserSelectedInfo } from "../../../../../api/user";
+    import { getUserFriendOnline, checkFriend, sendInvitation, acceptInvitation, rejectInvitation } from "../../../../../api/friend";
+    import { sendMessage, getMessage } from "../../../../../api/message";
     import { page } from "$app/stores";
-    //import { echo } from "../../../../../lib/echo";
 
-    let intervalId;
     let currentUser = null;
     let invitationSended;
     let invitationAccepted;
@@ -167,18 +167,6 @@
         .listen("MessageSent", (e) => {
             messages.update(currentMessages => [...currentMessages, e.message]);
         });*/
-
-        // Polling toutes les 5 secondes
-        intervalId = setInterval(() => {
-            fetchAllUser();
-            seeFriendStatus(userSelectedId);
-            fetchMessage(userSelectedId);
-        }, 5000);
-
-        // Nettoyer l'intervalle au démontage
-        return () => {
-        clearInterval(intervalId);
-        };
     });
 </script>
 

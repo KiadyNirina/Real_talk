@@ -1,8 +1,8 @@
 <script>
     import NavChat from "../../../../lib/navlat/navChat.svelte";
     import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
-    import { getUserInfo, getUserFriends } from "../../../../lib/auth";
+    import { getUserInfo } from "../../../../api/user";
+    import { getUserFriends } from "../../../../api/friend";
 
     let user = null;
     let friends = [];
@@ -28,14 +28,6 @@
     onMount(async () => {
         await fetchUser();
         await fetchUserFriend();
-
-        intervalId = setInterval(() => {
-            fetchUserFriend();
-        }, 10000);
-
-        return () => {
-            clearInterval(intervalId);
-        }
     });
 </script>
 

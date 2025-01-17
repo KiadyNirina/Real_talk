@@ -1,8 +1,6 @@
 <script>
-    import axios from "axios";
     import {goto} from "$app/navigation";
-    import { user, token } from "../lib/store";
-    import { login } from "../lib/auth";
+    import { login } from "../api/auth";
 
     let successMessage = "";
     let showPassword = false;

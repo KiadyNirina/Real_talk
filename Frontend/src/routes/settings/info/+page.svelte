@@ -1,8 +1,7 @@
 <script>
     import NavSettings from "../../../lib/navlat/navSettings.svelte";
-    import { getUserInfo, updateUser } from "../../../lib/auth";
+    import { getUserInfo, updateUser } from "../../../api/user";
     import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
 
     let currentUser = null;
     let updated;

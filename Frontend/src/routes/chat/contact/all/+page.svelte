@@ -1,16 +1,15 @@
 <script>
     import { onMount } from 'svelte';
-    import { getUserInfo, checkUsersWithFriendStatus } from '../../../../lib/auth';
+    import { getUserInfo } from '../../../../api/user';
+    import { checkUsersWithFriendStatus } from '../../../../api/friend';
     import NavChat from '../../../../lib/navlat/navChat.svelte';
 
     let currentUser = null;
     let allUser = [];
-    let intervalId;
 
     const fetchUser = async () => {
         try {
             currentUser = await getUserInfo();
-            // console.log('Informations de l’utilisateur récupérées', currentUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
@@ -19,25 +18,14 @@
     const fetchAllUserWithFriendStatus = async () => {
         try {
             allUser = await checkUsersWithFriendStatus();
-            // console.log('Informations des utilisateur récupérées', allUser);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     }
 
     onMount(async () => {
-
-        // Récupérer les données utilisateurs
         await fetchUser();
         await fetchAllUserWithFriendStatus();
-
-        // Polling toutes les 5 secondes
-        intervalId = setInterval(fetchAllUserWithFriendStatus, 5000);
-
-        // Nettoyer l'intervalle au démontage
-        return () => {
-        clearInterval(intervalId);
-        };
     });
 </script>
 

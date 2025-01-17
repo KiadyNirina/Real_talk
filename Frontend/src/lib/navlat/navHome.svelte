@@ -1,8 +1,7 @@
 <script>
-    import axios from 'axios';
     import { onMount } from 'svelte';
-    import { user } from '../store';
-    import { getUserInfo, logout } from '../auth';
+    import { getUserInfo } from '../../api/user';
+    import { logout } from '../../api/auth';
     import {goto} from "$app/navigation";
 
     let currentUser = null;

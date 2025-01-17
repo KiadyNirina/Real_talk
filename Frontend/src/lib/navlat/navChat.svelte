@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
-    import { getUserInfo, logout } from '../auth';
+    import { logout } from '../../api/auth';
+    import { getUserInfo } from '../../api/user';
     import {goto} from "$app/navigation";
 
     let currentUser = null;

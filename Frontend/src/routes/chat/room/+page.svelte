@@ -1,8 +1,7 @@
 <script>
     import NavChat from "../../../lib/navlat/navChat.svelte";
-    import { getUserInfo } from "../../../lib/auth";
+    import { getUserInfo } from "../../../api/user";
     import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
 
     let currentUser = null;
 
