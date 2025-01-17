@@ -6,7 +6,6 @@
 
     let user = null;
     let friends = [];
-    let intervalId;
 
     const fetchUser = async () => {
         try {
@@ -84,6 +83,8 @@
                         {/if}
                     </a>
                     {/each}
+                {:else}
+                    <p>No friends</p>
                 {/if}
             </div>
 
@@ -133,7 +134,7 @@
         padding: 15px;
         display: flex;
         font-size: 20px;
-        height: 100%;
+        flex: 1;
     }
     .right{
         width: 75%;

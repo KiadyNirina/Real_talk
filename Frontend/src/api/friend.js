@@ -69,3 +69,13 @@ export const rejectInvitation = async (invitation) => {
         throw error;
     }
 };
+
+export const deleteFriend = async (id) => {
+    try {
+        const response = await apiClient.delete(`/friend/remove/${id}`);
+
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors de la suppression de l ami: ', error);
+    }
+}

@@ -7,6 +7,7 @@ use App\Models\Invitation;
 use App\Models\User;
 use App\Events\MessageSent;
 use App\Models\Message;
+use Illuminate\Support\Facades\DB;
 
 class FriendController extends Controller
 {
@@ -37,6 +38,12 @@ class FriendController extends Controller
         $invitation->status = 'accepted'; // Mettre à jour le statut de l'invitation à "accepted"
         $invitation->save();
 
+        // Ajouter les utilisateurs dans la table friends
+        DB::table('friends')->insert([
+            ['user_id' => $invitation->sender_id, 'friend_id' => $invitation->receiver_id],
+            ['user_id' => $invitation->receiver_id, 'friend_id' => $invitation->sender_id],
+        ]);
+
         return response()->json($invitation);
     }
 
@@ -50,8 +57,7 @@ class FriendController extends Controller
             return response()->json(['message' => 'Invitation not found or not authorized'], 404);
         }
 
-        $invitation->status = 'rejected'; // Mettre à jour le statut de l'invitation à "rejected"
-        $invitation->save();
+        $invitation->delete();
 
         return response()->json($invitation);
     }
@@ -181,5 +187,28 @@ class FriendController extends Controller
         return response()->json($message);
     }
 
-    
+    public function removeFriend($friendId)
+    {
+        $userId = auth()->id();
+
+        // Supprimer la relation d'amitié dans les deux sens
+        DB::table('friends')->where(function($query) use ($userId, $friendId) {
+            $query->where('user_id', $userId)
+                  ->where('friend_id', $friendId);
+        })->orWhere(function($query) use ($userId, $friendId) {
+            $query->where('user_id', $friendId)
+                  ->where('friend_id', $userId);
+        })->delete();
+
+        // Supprimer les invitations correspondantes
+        DB::table('invitations')->where(function($query) use ($userId, $friendId) {
+            $query->where('sender_id', $userId)
+                  ->where('receiver_id', $friendId);
+        })->orWhere(function($query) use ($userId, $friendId) {
+            $query->where('sender_id', $friendId)
+                  ->where('receiver_id', $userId);
+        })->delete();
+
+        return response()->json(['message' => 'Friend and corresponding invitations removed successfully']);
+    }
 }
