@@ -18,6 +18,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendController;
 
+use App\Http\Controllers\Invitations\AcceptInvitationController;
+use App\Http\Controllers\Invitations\CheckAllUsersFriendStatusController;
+use App\Http\Controllers\Invitations\CheckFriendStatusController;
+use App\Http\Controllers\Invitations\RejectInvitationController;
+use App\Http\Controllers\Invitations\SendInvitationController;
+
 /* Authentication */
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -33,19 +39,19 @@ Route::get('/user/{id}', [UserController::class, 'show']);
 Route::get('/usersOnline', [FriendController::class, 'getUserFriendOnline'])->middleware('auth:sanctum');
 
 /* Send friend request */
-Route::post('/invitations', [FriendController::class, 'sendInvitation'])->middleware('auth:sanctum');
+Route::post('/invitations', SendInvitationController::class)->middleware('auth:sanctum');
 
 /* Accept friend request */
-Route::post('/invitations/{invitation}/accept', [FriendController::class, 'acceptInvitation'])->middleware('auth:sanctum');
+Route::post('/invitations/{invitation}/accept', AcceptInvitationController::class)->middleware('auth:sanctum');
 
 /* Reject friend request */
-Route::post('/invitations/{invitation}/reject', [FriendController::class, 'rejectInvitation'])->middleware('auth:sanctum');
+Route::post('/invitations/{invitation}/reject', RejectInvitationController::class)->middleware('auth:sanctum');
 
 /* Show friend status of user selected */
-Route::get('/friends/status/{selectedUserId}', [FriendController::class, 'checkFriendStatus'])->middleware('auth:sanctum');
+Route::get('/friends/status/{selectedUserId}', CheckFriendStatusController::class)->middleware('auth:sanctum');
 
 /* Show friend status of all users */
-Route::get('/friends/status', [FriendController::class, 'checkAllUsersFriendStatus'])->middleware('auth:sanctum');
+Route::get('/friends/status', CheckAllUsersFriendStatusController::class)->middleware('auth:sanctum');
 
 /* Friends of user connected */
 Route::get('/friends', [FriendController::class, 'getFriends'])->middleware('auth:sanctum');
