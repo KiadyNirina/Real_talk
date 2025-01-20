@@ -24,6 +24,10 @@ use App\Http\Controllers\Invitations\CheckFriendStatusController;
 use App\Http\Controllers\Invitations\RejectInvitationController;
 use App\Http\Controllers\Invitations\SendInvitationController;
 
+use App\Http\Controllers\Friends\GetFriendsController;
+use App\Http\Controllers\Friends\GetUserFriendOnlineController;
+use App\Http\Controllers\Friends\RemoveFriendController;
+
 /* Authentication */
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -36,7 +40,7 @@ Route::get('/users', [UserController::class, 'getUser'])->middleware('auth:sanct
 Route::get('/user/{id}', [UserController::class, 'show']);
 
 /* All users online */
-Route::get('/usersOnline', [FriendController::class, 'getUserFriendOnline'])->middleware('auth:sanctum');
+Route::get('/usersOnline', GetUserFriendOnlineController::class)->middleware('auth:sanctum');
 
 /* Send friend request */
 Route::post('/invitations', SendInvitationController::class)->middleware('auth:sanctum');
@@ -54,8 +58,8 @@ Route::get('/friends/status/{selectedUserId}', CheckFriendStatusController::clas
 Route::get('/friends/status', CheckAllUsersFriendStatusController::class)->middleware('auth:sanctum');
 
 /* Friends of user connected */
-Route::get('/friends', [FriendController::class, 'getFriends'])->middleware('auth:sanctum');
-Route::delete('/friend/remove/{friendId}', [FriendController::class, 'removeFriend'])->middleware('auth:sanctum');
+Route::get('/friends', GetFriendsController::class)->middleware('auth:sanctum');
+Route::delete('/friend/remove/{friendId}', RemoveFriendController::class)->middleware('auth:sanctum');
 
 
 Route::post('/messages', [FriendController::class, 'sendMessage'])->middleware('auth:sanctum');

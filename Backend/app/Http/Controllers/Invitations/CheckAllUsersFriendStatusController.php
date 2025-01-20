@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Invitation;
 
-class CheckFriendStatusController extends Controller
+class CheckAllUsersFriendStatusController extends Controller
 {
     public function __invoke()
     {
