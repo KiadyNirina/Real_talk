@@ -33,36 +33,35 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-/* All users */
-Route::get('/users', [UserController::class, 'getUser'])->middleware('auth:sanctum');
 
-/* Selected user */
-Route::get('/user/{id}', [UserController::class, 'show']);
 
-/* All users online */
-Route::get('/usersOnline', GetUserFriendOnlineController::class)->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    // All users
+    Route::get('/users', [UserController::class, 'getUser']);
+    
+    // Selected user
+    Route::get('/user/{id}', [UserController::class, 'show']);
+    
+    // Update user
+    Route::put('/user/update', [UserController::class, 'updateUser']);
+});
 
 /* Send friend request */
 Route::post('/invitations', SendInvitationController::class)->middleware('auth:sanctum');
-
 /* Accept friend request */
 Route::post('/invitations/{invitation}/accept', AcceptInvitationController::class)->middleware('auth:sanctum');
-
 /* Reject friend request */
 Route::post('/invitations/{invitation}/reject', RejectInvitationController::class)->middleware('auth:sanctum');
-
 /* Show friend status of user selected */
 Route::get('/friends/status/{selectedUserId}', CheckFriendStatusController::class)->middleware('auth:sanctum');
-
 /* Show friend status of all users */
 Route::get('/friends/status', CheckAllUsersFriendStatusController::class)->middleware('auth:sanctum');
-
-/* Friends of user connected */
+/* Friends of user */
 Route::get('/friends', GetFriendsController::class)->middleware('auth:sanctum');
+/* All user's friends online */
+Route::get('/usersOnline', GetUserFriendOnlineController::class)->middleware('auth:sanctum');
+/* Remove friend */
 Route::delete('/friend/remove/{friendId}', RemoveFriendController::class)->middleware('auth:sanctum');
-
 
 Route::post('/messages', [FriendController::class, 'sendMessage'])->middleware('auth:sanctum');
 Route::get('/getMessage/{selectedUserId}', [FriendController::class, 'getMessage'])->middleware('auth:sanctum');
-
-Route::put('/updateUser', [UserController::class, 'updateUser'])->middleware('auth:sanctum');
