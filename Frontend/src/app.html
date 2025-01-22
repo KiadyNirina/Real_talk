@@ -8,6 +8,12 @@
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents; height: 100vh;">%sveltekit.body%</div>
+		<div class="footer">
+			<p>© Copyright <span id="year"></span> Real_Talk, Inc. All rights reserved.</p>
+		</div>
+		<script>
+			document.getElementById('year').textContent = new Date().getFullYear();
+		</script>
 	</body>
 </html>
 
@@ -22,4 +28,11 @@
         font-weight: normal;
         font-style: normal;
     }
+	.footer{
+		margin-top: 50px;
+		color: rgba(255, 255, 255, 0.564);
+		text-align: center;
+		font-family: "poppins";
+		font-size: 12px;
+	}
 </style>
