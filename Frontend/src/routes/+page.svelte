@@ -14,7 +14,8 @@
     let error;
 
     const handleLogin = async() => {
-        clicked = true;
+        try {
+            clicked = true;
             const response = await login(formData);
             if(response){
                 goto('/home');
@@ -22,6 +23,10 @@
                 clicked = false;
                 error = "Invalid email or password";
             }
+        } catch (err) {
+            clicked = false;
+            error = err.message || "Connexion error";
+        }
     }
     
 </script>
