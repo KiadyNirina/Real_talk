@@ -106,7 +106,8 @@
         padding: 20px;
         width: 100%;
         border-radius: 15px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        /*font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;*/
+        font-family: "poppins";
         font-size: 15px;
     }
     .list input{
@@ -134,7 +135,7 @@
     }
     .list button:hover{
         cursor: pointer;
-        background-color: rgb(0, 61, 0);
+        background-color: rgb(0, 106, 0);
     }
     @media screen and (max-width: 700px) {
         .content {
