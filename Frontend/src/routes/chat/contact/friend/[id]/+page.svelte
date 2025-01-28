@@ -5,6 +5,9 @@
     import { getUserFriendOnline, checkFriend, sendInvitation, acceptInvitation, rejectInvitation, deleteFriend } from "../../../../../api/friend";
     import { sendMessage, getMessage } from "../../../../../api/message";
     import { page } from "$app/stores";
+    import pusher from "../../../../../lib/pusher";
+    import axios from "axios";
+    import { writable } from "svelte/store";
 
     let currentUser = null;
     let invitationSended;
@@ -145,19 +148,23 @@
         alertUnfriend = false;
     };
 
-    let messageSent;
-    let allMess = [];
-
-    let messages = {
-        receiver_id: $page.params.id,
-        message: '',
-    };
+    export let messages = writable([]);
+    export let newMessage = writable('');
 
     const sendFriendMessage = async () => {
         try {
-            messageSent = await sendMessage(messages);
-            console.log('Message sent successfully!', messageSent);
-            reloadPage();
+            if (!$newMessage.trim()) return;
+
+            await axios.post('http://localhost:8000/api/send-message', {
+                receiver_id: $page.params.id,
+                message: $newMessage,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            newMessage.set('');
         } catch (error) {
             console.error('Error sending message:', error);
         }
@@ -165,8 +172,12 @@
 
     const fetchMessage = async (id) => {
         try {
-            allMess = await getMessage(id);
-            console.log('Messages fetched successfully!', allMess);
+            const response = await axios.get(`http://localhost:8000/api/messages/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            messages.set(response.data);
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
@@ -182,10 +193,10 @@
             await fetchMessage(userSelectedId);
         }
 
-        /*echo.private(`chat.${userSelectedId}`)
-        .listen("MessageSent", (e) => {
-            messages.update(currentMessages => [...currentMessages, e.message]);
-        });*/
+        const channel = pusher.subscribe(`chat.${userSelectedId}`);
+        channel.bind('MessageSent', (data) => {
+            messages.update((msgs) => [...msgs, data.message]);
+        });
     });
 </script>
 
@@ -237,8 +248,8 @@
                         {/if}
                     </div>
                     <div class="message">
-                        {#if allMess.length > 0}
-                            {#each allMess as message}
+                        {#if messages.length > 0}
+                            {#each messages as message}
                                 {#if message.sender_id === currentUser.id}
                                     <div class="content-message-send">
                                         <p>
@@ -279,7 +290,7 @@
                     {:else if userSelected2.status === "accepted"}
                         <form on:submit={sendFriendMessage}>
                             <div class="input">
-                                <textarea bind:value={messages.message} placeholder="Enter the message"></textarea>
+                                <textarea bind:value={$newMessage} placeholder="Enter the message"></textarea>
                                 <button><img src="/message-sender.png" alt=""></button>
                             </div>
                         </form>

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\ChatController;
 
 use App\Http\Controllers\Invitations\AcceptInvitationController;
 use App\Http\Controllers\Invitations\CheckAllUsersFriendStatusController;
@@ -63,5 +64,5 @@ Route::get('/usersOnline', GetUserFriendOnlineController::class)->middleware('au
 /* Remove friend */
 Route::delete('/friend/remove/{friendId}', RemoveFriendController::class)->middleware('auth:sanctum');
 
-Route::post('/messages', [FriendController::class, 'sendMessage'])->middleware('auth:sanctum');
-Route::get('/getMessage/{selectedUserId}', [FriendController::class, 'getMessage'])->middleware('auth:sanctum');
+Route::post('/send-message', [ChatController::class, 'sendMessage'])->middleware('auth:sanctum');
+Route::get('/messages/{userId}', [ChatController::class, 'getMessage'])->middleware('auth:sanctum');
