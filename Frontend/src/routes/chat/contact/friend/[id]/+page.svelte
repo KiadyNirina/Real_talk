@@ -9,194 +9,186 @@
     import axios from "axios";
     import { writable } from "svelte/store";
 
+    // États réactifs
     let currentUser = null;
-    let invitationSended;
-    let invitationAccepted;
-    let invitationRejected;
     let alluser = [];
-    let userSelectedId = null;
     let userSelected = null;
-    let userSelected2 = null;
+    let userSelectedStatus = null;
+    let alertUnfriend = false;
+    let loading = writable(false);
 
+    // États pour les messages
+    export let messages = writable([]);
+    export let newMessage = writable('');
+
+    // Récupère l'ID de l'utilisateur sélectionné depuis l'URL
     $: userSelectedId = $page.params.id;
 
-    let formData = {
-        receiver_id: $page.params.id,
+    // Fonction pour recharger la page
+    const reloadPage = () => location.reload();
+
+    // Fonction pour gérer les erreurs
+    const handleError = (error, context) => {
+        console.error(`Error in ${context}:`, error);
     };
 
+    // Récupère les informations de l'utilisateur connecté
     const fetchUser = async () => {
         try {
             currentUser = await getUserInfo();
             console.log('User info fetched', currentUser);
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            handleError(error, 'fetching user data');
         }
     };
 
+    // Récupère la liste des utilisateurs en ligne
     const fetchAllUser = async () => {
         try {
             alluser = await getUserFriendOnline();
             console.log('Online users info fetched', alluser);
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            handleError(error, 'fetching online users');
         }
     };
 
+    // Récupère les informations de l'utilisateur sélectionné
     const fetchUserSelected = async (id) => {
         try {
             userSelected = await getUserSelectedInfo(id);
             console.log('Selected user info fetched', userSelected);
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            handleError(error, 'fetching selected user data');
         }
     };
 
-    const reloadPage = () => {
-        location.reload();
+    // Récupère le statut de l'ami (ami, en attente, etc.)
+    const fetchUserStatus = async (id) => {
+        try {
+            userSelectedStatus = await checkFriend(id);
+            console.log('Selected friend status fetched', userSelectedStatus);
+        } catch (error) {
+            handleError(error, 'fetching friend status');
+        }
     };
 
+    // Envoie une invitation d'ami
     const sendFriendRequest = async () => {
         try {
-            invitationSended = await sendInvitation(formData);
-            console.log('Friend request sent successfully!', invitationSended);
+            await sendInvitation({ receiver_id: userSelectedId });
+            console.log('Friend request sent successfully!');
             reloadPage();
         } catch (error) {
-            console.error('Error sending friend request:', error);
+            handleError(error, 'sending friend request');
         }
     };
 
-    const acceptFriendRequest = async (invitation) => {
+    // Accepte une invitation d'ami
+    const acceptFriendRequest = async () => {
         try {
-            invitationAccepted = await acceptInvitation(invitation);
-            console.log('Friend request accepted successfully!', invitationAccepted);
+            await acceptInvitation(userSelectedStatus.id);
+            console.log('Friend request accepted successfully!');
             reloadPage();
         } catch (error) {
-            console.error('Error accepting friend request:', error);
+            handleError(error, 'accepting friend request');
         }
     };
 
-    const rejectFriendRequest = async (invitation) => {
+    // Rejette une invitation d'ami
+    const rejectFriendRequest = async () => {
         try {
-            invitationRejected = await rejectInvitation(invitation);
-            console.log('Friend request rejected successfully!', invitationRejected);
+            await rejectInvitation(userSelectedStatus.id);
+            console.log('Friend request rejected successfully!');
             reloadPage();
         } catch (error) {
-            console.error('Error rejecting friend request:', error);
+            handleError(error, 'rejecting friend request');
         }
     };
 
-    const seeFriendStatus = async (id) => {
+    // Supprime un ami
+    const removeFriend = async () => {
         try {
-            userSelected2 = await checkFriend(id);
-            console.log('Selected friend status fetched', userSelected2);
-        } catch (error) {
-            console.error('Error fetching friend status:', error);
-        }
-    };
-
-    const removeFriend = async (id) => {
-        try {
-            await deleteFriend(id);
+            await deleteFriend(userSelected.id);
             console.log('Friend removed successfully!');
             reloadPage();
         } catch (error) {
-            console.error('Error removing friend:', error);
+            handleError(error, 'removing friend');
         }
     };
 
-    let loading = false;
-
-    function handleClick() {
-        loading = true;
-        setTimeout(async () => {
-            await sendFriendRequest();
-            loading = false;
-        }, 5000);
-    }
-
-    function handleClickAccept() {
-        loading = true;
-        setTimeout(async () => {
-            await acceptFriendRequest(userSelected2.id);
-            loading = false;
-        }, 5000);
-    }
-
-    function handleClickReject() {
-        loading = true;
-        setTimeout(async () => {
-            await rejectFriendRequest(userSelected2.id);
-            loading = false;
-        }, 5000);
-    }
-
-    let alertUnfriend = false;
-
-    const handleUnfriend = () => {
-        alertUnfriend = true;
-    };
-
-    const unfriendYes = () => {
-        loading = true;
-        setTimeout(async () => {
-            await removeFriend(userSelected.id);
-            loading = false;
-        }, 5000);
-    };
-
-    const unfriendNo = () => {
-        alertUnfriend = false;
-    };
-
-    export let messages = writable([]);
-    export let newMessage = writable('');
-
+    // Envoie un message
     const sendFriendMessage = async () => {
         try {
             if (!$newMessage.trim()) return;
 
-            await axios.post('http://localhost:8000/api/send-message', {
-                receiver_id: $page.params.id,
+            const newMessageData = {
+                id: Date.now(), // ID temporaire (remplacé par la réponse de l'API)
+                sender_id: currentUser.id,
+                receiver_id: userSelectedId,
                 message: $newMessage,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            };
+            messages.update((msgs) => [...msgs, newMessageData]);
+
+            await sendMessage({
+                receiver_id: userSelectedId,
+                message: $newMessage,
             });
+
+            if (response.data && response.data.message) {
+                messages.update((msgs) => {
+                    const updatedMessages = msgs.filter((msg) => msg.id !== newMessageData.id); // Supprime le message temporaire
+                    return [...updatedMessages, response.data.message]; // Ajoute le message de l'API
+                });
+            }
 
             newMessage.set('');
         } catch (error) {
-            console.error('Error sending message:', error);
+            handleError(error, 'sending message');
+            messages.update((msgs) => msgs.filter((msg) => msg.id !== newMessageData.id));
         }
     };
 
-    const fetchMessage = async (id) => {
+    // Récupère les messages
+    const fetchMessages = async (id) => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/messages/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-            messages.set(response.data);
+            const response = await getMessage(id);
+
+            if (response.messages && Array.isArray(response.messages)) {
+                messages.set(response.messages); // Met à jour les messages
+            } else {
+                console.error('Invalid data format received from API:', response.messages);
+                messages.set([]); // Initialise à un tableau vide en cas d'erreur
+            }
         } catch (error) {
-            console.error('Error fetching messages:', error);
+            handleError(error, 'fetching messages');
         }
     };
 
+    // Abonne l'utilisateur au canal Pusher pour les messages en temps réel
+    const subscribeToPusher = () => {
+        const channel = pusher.subscribe(`chat.${userSelectedId}`);
+        channel.bind('MessageSent', (data) => {
+            if (data.message && Array.isArray(data.message)) {
+                messages.update((msgs) => [...msgs, ...data.message]);
+            } else {
+                console.error('Invalid message data received from Pusher:', data);
+            }
+        });
+    };
+
+    // Initialisation du composant
     onMount(async () => {
         await fetchUser();
         await fetchAllUser();
 
         if (userSelectedId) {
             await fetchUserSelected(userSelectedId);
-            await seeFriendStatus(userSelectedId);
-            await fetchMessage(userSelectedId);
+            await fetchUserStatus(userSelectedId);
+            await fetchMessages(userSelectedId);
+            subscribeToPusher();
         }
-
-        const channel = pusher.subscribe(`chat.${userSelectedId}`);
-        channel.bind('MessageSent', (data) => {
-            messages.update((msgs) => [...msgs, data.message]);
-        });
     });
 </script>
 
@@ -207,137 +199,126 @@
             <div class="alertLogout">
                 <p>Do you really want to unfriend this user?</p>
                 <div class="action">
-                    <button id="yes" on:click={unfriendYes}>Yes</button>
-                    <button on:click={unfriendNo}>No</button>
+                    <button id="yes" on:click={removeFriend}>Yes</button>
+                    <button on:click={() => alertUnfriend = false}>No</button>
                 </div>
             </div>
         {/if}
-        <NavChat/>
+        <NavChat />
         {#if currentUser}
-        <div class="right">
-            <div class="col1">
-                <h1>Contact online</h1>
-                <div class="list">
-                    {#if alluser.length > 0}
-                        {#each alluser as user}
-                            <a href="/chat/contact/friend/{user.id}" class="profile">
-                                <img src="/utilisateur.png" alt="">
-                                <div class="name">
-                                    <p>{user.name} {#if user.name == currentUser.name}
-                                        (You)
-                                    {/if}</p>
-                                    <p class="part">
-                                        online
-                                        <img src="/accepter.png" alt="">
-                                    </p>
-                                </div>
-                            </a>
-                        {/each}
-                    {:else}
-                        <p>No user online</p>
-                    {/if}
-                </div>
-            </div>
-            {#if userSelected && userSelected2}
-                <div class="col2">
-                    <div class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <p>{userSelected.name}</p>
-                        {#if userSelected2.status == 'accepted'}
-                            <button on:click={handleUnfriend}>Friend ✔️</button>
-                        {/if}
-                    </div>
-                    <div class="message">
-                        {#if messages.length > 0}
-                            {#each messages as message}
-                                {#if message.sender_id === currentUser.id}
-                                    <div class="content-message-send">
-                                        <p>
-                                            {message.message} <br>
-                                            <span>{message.created_at}</span>
-                                        </p>
+            <div class="right">
+                <div class="col1">
+                    <h1>Contact online</h1>
+                    <div class="list">
+                        {#if alluser.length > 0}
+                            {#each alluser as user}
+                                <a href="/chat/contact/friend/{user.id}" class="profile">
+                                    <img src="/utilisateur.png" alt="">
+                                    <div class="name">
+                                        <p>{user.name} {#if user.name === currentUser.name}(You){/if}</p>
+                                        <p class="part">online <img src="/accepter.png" alt=""></p>
                                     </div>
-                                {:else}
-                                    <div class="content-message">
-                                        <img src="/utilisateur.png" alt="">
-                                        <p>
-                                            {message.message} <br>
-                                            <span>{message.created_at}</span>
-                                        </p>
-                                    </div>
-                                {/if}
+                                </a>
                             {/each}
                         {:else}
-                            <p>No message for the moment</p>
+                            <p>No user online</p>
                         {/if}
                     </div>
-                    {#if userSelected2.status === "pending" && userSelected2.sender_id === currentUser.id}
-                        <form>
+                </div>
+                {#if userSelected && userSelectedStatus}
+                    <div class="col2">
+                        <div class="profile">
+                            <img src="/utilisateur.png" alt="">
+                            <p>{userSelected.name}</p>
+                            {#if userSelectedStatus.status === 'accepted'}
+                                <button on:click={() => alertUnfriend = true}>Friend ✔️</button>
+                            {/if}
+                        </div>
+                        <div class="message">
+                            {#if $messages && $messages.length > 0}
+                                {#each $messages as message}
+                                    {#if message.sender_id === currentUser.id}
+                                        <div class="content-message-send">
+                                            <p>{message.message} <br><span>{message.created_at}</span></p>
+                                        </div>
+                                    {:else}
+                                        <div class="content-message">
+                                            <img src="/utilisateur.png" alt="">
+                                            <p>{message.message} <br><span>{message.created_at}</span></p>
+                                        </div>
+                                    {/if}
+                                {/each}
+                            {:else}
+                                <p>No message for the moment</p>
+                            {/if}
+                        </div>
+                        {#if userSelectedStatus.status === "pending" && userSelectedStatus.sender_id === currentUser.id}
+                            <form>
+                                <div class="input">
+                                    <button id="cancel">Invitation sent</button>
+                                </div>
+                            </form>
+                        {:else if userSelectedStatus.status === "pending" && userSelectedStatus.receiver_id === currentUser.id}
                             <div class="input">
-                                <button id="cancel">Invitation sent</button>
-                            </div>
-                        </form>
-                    {:else if userSelected2.status === "pending" && userSelected2.receiver_id === currentUser.id}
-                            <div class="input">
-                                {#if !loading}
-                                    <button id="cancel" on:click={handleClickAccept}>Accept</button>
-                                    <button id="add" on:click={handleClickReject}>Reject</button>
+                                {#if !$loading}
+                                    <button id="cancel" on:click={acceptFriendRequest}>Accept</button>
+                                    <button id="add" on:click={rejectFriendRequest}>Reject</button>
                                 {:else}
                                     <button id="cancel">Loading...</button>
                                     <button id="add">Loading...</button>
                                 {/if}
                             </div>
-                    {:else if userSelected2.status === "accepted"}
-                        <form on:submit={sendFriendMessage}>
-                            <div class="input">
-                                <textarea bind:value={$newMessage} placeholder="Enter the message"></textarea>
-                                <button><img src="/message-sender.png" alt=""></button>
-                            </div>
-                        </form>
-                    {:else}
-                        <form on:submit={handleClick}>
-                            <div class="input">
-                                {#if !loading}
-                                    <button id="add">Add</button>
-                                {:else}
-                                    <button id="disable" disabled>Loading...</button>
-                                {/if}
-                            </div>
-                        </form>
-                    {/if}
+                        {:else if userSelectedStatus.status === "accepted"}
+                            <form on:submit|preventDefault={sendFriendMessage}>
+                                <div class="input">
+                                    <textarea bind:value={$newMessage} placeholder="Enter the message"></textarea>
+                                    <button><img src="/message-sender.png" alt=""></button>
+                                </div>
+                            </form>
+                        {:else}
+                            <form on:submit|preventDefault={sendFriendRequest}>
+                                <div class="input">
+                                    {#if !$loading}
+                                        <button id="add">Add</button>
+                                    {:else}
+                                        <button id="disable" disabled>Loading...</button>
+                                    {/if}
+                                </div>
+                            </form>
+                        {/if}
+                    </div>
+                {:else}
+                    <div class="col2">
+                        <div class="profile">
+                            <img src="/utilisateur.png" alt="">
+                            <p>User not found</p>
+                        </div>
+                        <div class="input">
+                            <textarea placeholder="Enter the message"></textarea>
+                            <button><img src="/message-sender.png" alt=""></button>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        {:else}
+            <div class="right">
+                <div class="col1">
+                    <h1>Contact online</h1>
+                    <div class="list">
+                        <p>Loading...</p>
+                    </div>
                 </div>
-            {:else}
                 <div class="col2">
                     <div class="profile">
                         <img src="/utilisateur.png" alt="">
-                        <p>User not found</p>
+                        <p>Loading...</p>
                     </div>
                     <div class="input">
                         <textarea placeholder="Enter the message"></textarea>
                         <button><img src="/message-sender.png" alt=""></button>
                     </div>
                 </div>
-            {/if}
-        </div>
-        {:else}
-        <div class="right">
-            <div class="col1">
-                <h1>Contact online</h1>
-                <div class="list">
-                    <p>Loading...</p>
-                </div>
             </div>
-            <div class="col2">
-                <div class="profile">
-                    <img src="/utilisateur.png" alt="">
-                    <p>Loading...</p>
-                </div>
-                <div class="input">
-                    <textarea placeholder="Enter the message"></textarea>
-                    <button><img src="/message-sender.png" alt=""></button>
-                </div>
-            </div>
-        </div>
         {/if}
     </div>
 </div>

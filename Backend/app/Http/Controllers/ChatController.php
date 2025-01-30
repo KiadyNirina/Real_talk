@@ -37,6 +37,8 @@ class ChatController extends Controller
         })->orderBy('created_at', 'asc')
         ->get();
 
+        event(new MessageSent($messages, $userId));
+
         return response()->json(['messages' => $messages]);
     }
 }

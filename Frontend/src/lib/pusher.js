@@ -13,11 +13,24 @@ pusher.config.authorizer = (channel) => ({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ socket_id: socketId, channel_name: channel.name }),
+            body: JSON.stringify({
+                socket_id: socketId,
+                channel_name: channel.name,
+            }),
         })
-            .then((res) => res.json())
-            .then((data) => callback(null, data))
-            .catch((err) => callback(err));
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                callback(null, data);
+            })
+            .catch((error) => {
+                console.error('Erreur lors de l\'autorisation Pusher:', error);
+                callback(error);
+            });
     },
 });
 
