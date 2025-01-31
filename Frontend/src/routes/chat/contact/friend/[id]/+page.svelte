@@ -1,6 +1,6 @@
 <script>
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import { getUserInfo, getUserSelectedInfo } from "../../../../../api/user";
     import { getUserFriendOnline, checkFriend, sendInvitation, acceptInvitation, rejectInvitation, deleteFriend } from "../../../../../api/friend";
     import { sendMessage, getMessage } from "../../../../../api/message";
@@ -131,7 +131,7 @@
             };
             messages.update((msgs) => [...msgs, newMessageData]);
 
-            await sendMessage({
+            const response = await sendMessage({
                 receiver_id: userSelectedId,
                 message: $newMessage,
             });
@@ -170,8 +170,9 @@
     const subscribeToPusher = () => {
         const channel = pusher.subscribe(`chat.${userSelectedId}`);
         channel.bind('MessageSent', (data) => {
-            if (data.message && Array.isArray(data.message)) {
-                messages.update((msgs) => [...msgs, ...data.message]);
+            if (data.message) {
+                messages.update((msgs) => [...msgs, data.message]);
+                console.log('Message received in real-time:', data);
             } else {
                 console.error('Invalid message data received from Pusher:', data);
             }
@@ -190,6 +191,7 @@
             subscribeToPusher();
         }
     });
+
 </script>
 
 <div class="body">
