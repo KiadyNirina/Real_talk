@@ -128,7 +128,6 @@
 <style>
     .body{
         color: white;
-        height: 100%;
     }
     .content{
         padding: 15px;
@@ -138,7 +137,6 @@
     }
     .right{
         width: 75%;
-        height: 100%;
     }
     .right{
         border: 1px solid rgba(255, 255, 255, 0.057);

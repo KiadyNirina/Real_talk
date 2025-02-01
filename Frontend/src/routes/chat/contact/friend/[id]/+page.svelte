@@ -337,7 +337,7 @@
         height: 100%;
     }
     .right {
-        border: 1px solid rgba(255, 255, 255, 0.165);
+        border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
         border-radius: 35px;
@@ -455,7 +455,6 @@
         color: #fff;
         text-align: center;
         padding: 10px 20px;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     }
     .input button {
         background-color: transparent;
