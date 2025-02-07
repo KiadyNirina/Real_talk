@@ -412,6 +412,7 @@
     .message {
         flex: 1;
         overflow-y: auto;
+        font-family: "poppins";
     }
     .content-message {
         display: flex;
@@ -424,14 +425,14 @@
         background-color: rgba(255, 255, 255, 0.404);
         padding: 15px;
         border-radius: 15px;
-        font-size: 15px;
+        font-size: 13px;
         margin: 5px;
     }
     .content-message-send p {
         background-color: green;
         padding: 15px;
         border-radius: 15px;
-        font-size: 15px;
+        font-size: 13px;
         margin: 5px;
     }
     .content-message p span, .content-message-send p span {
@@ -439,9 +440,13 @@
         color: rgb(202, 202, 202);
         position: relative;
         top: 10px;
+        display: flex;
+        justify-content: right;
     }
     .content-message-send {
+        display: flex;
         width: 60%;
+        justify-content: right;
         margin-left: auto;
     }
     .input {
@@ -592,9 +597,7 @@
         .message p {
             font-size: 12px;
             line-height: 17px;
-        }
-        .message img {
-            height: 20px;
+            padding: 10px;
         }
         .alertLogout {
             right: 10%;
