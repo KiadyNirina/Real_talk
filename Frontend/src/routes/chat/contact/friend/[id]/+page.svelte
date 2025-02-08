@@ -16,6 +16,7 @@
     let userSelectedStatus = null;
     let alertUnfriend = false;
     let loading = writable(false);
+    let menu = false;
 
     // États pour les messages
     export let messages = writable([]);
@@ -203,6 +204,14 @@
         }
     });
 
+    const openMenu = () => {
+        if (menu === false) {
+            menu = true;
+        } else {
+            menu = false;
+        }
+    }
+
 </script>
 
 <div class="body">
@@ -243,10 +252,30 @@
                         <div class="profile">
                             <img src="/utilisateur.png" alt="">
                             <p>{userSelected.name}</p>
-                            {#if userSelectedStatus.status === 'accepted'}
+                            <button id="menu" on:click={openMenu}><img src="/menu.png" alt=""></button>
+                            <!-- {#if userSelectedStatus.status === 'accepted'}
                                 <button on:click={() => alertUnfriend = true}>Friend ✔️</button>
-                            {/if}
+                            {/if} -->
                         </div>
+                        {#if menu}
+                            <div class="menu">
+                                <p>See profile</p>
+                                {#if userSelectedStatus.status === 'accepted'}
+                                    <p>Unfriend</p>
+                                {:else if userSelectedStatus.status === 'pending' && userSelectedStatus.sender_id === currentUser.id}
+                                    <p>Invitation sent</p>
+                                {:else if userSelectedStatus.status === 'pending' && userSelectedStatus.receiver_id === currentUser.id}
+                                    <p>Accept or refuse</p>
+                                {:else}
+                                    <p>Add</p>
+                                {/if}
+                                <p>Search</p>
+                                <p>Report</p>
+                                <p>Blockr</p>
+                                <p>Remove content</p>
+                            </div>
+                        {/if}
+
                         <div class="message">
                             {#if $messages && $messages.length > 0}
                                 {#each $messages as message}
@@ -393,9 +422,6 @@
         height: 40px;
         margin-right: 15px;
     }
-    .profile:hover {
-        background-color: rgba(255, 255, 255, 0.097);
-    }
     .profile button {
         margin-left: auto;
         background-color: rgb(59, 59, 254);
@@ -404,6 +430,38 @@
         border: none;
         padding: 7px;
         border-radius: 10px;
+        cursor: pointer;
+    }
+    #menu {
+        background-color: transparent;
+    }
+    #menu img{
+        border: none;
+        height: 20px;
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #menu:hover {
+        background-color: rgba(255, 255, 255, 0.097);
+    }
+    .menu {
+        background-color: #202020;
+        position: absolute;
+        right: 60px;
+        z-index: 99;
+        font-size: 15px;
+        font-family: 'poppins';
+        border-radius: 10px;
+        padding: 10px 0px;
+        width: 200px;
+    }
+    .menu p{
+        margin: 0;
+        padding: 10px;
+    }
+    .menu p:hover{
+        background-color: rgb(48, 48, 48);
         cursor: pointer;
     }
     .name {
