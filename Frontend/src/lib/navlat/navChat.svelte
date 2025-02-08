@@ -242,7 +242,7 @@
             border: none;
             position: fixed;
             height: auto;
-            /*background-color: rgb(23, 23, 23);*/
+            background-color: rgb(23, 23, 23);
             top: 0;
         }
         .profile {
