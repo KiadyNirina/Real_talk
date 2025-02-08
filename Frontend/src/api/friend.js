@@ -70,6 +70,15 @@ export const rejectInvitation = async (invitation) => {
     }
 };
 
+export const cancelInvitation = async (invitationId) => {
+    try {
+        const response = await apiClient.post(`/invitations/${invitationId}/cancel`, {});
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de l'annulation de l'invitation :", error);
+    }
+}
+
 export const deleteFriend = async (id) => {
     try {
         const response = await apiClient.delete(`/friend/remove/${id}`);

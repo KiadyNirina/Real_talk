@@ -24,6 +24,7 @@ use App\Http\Controllers\Invitations\CheckAllUsersFriendStatusController;
 use App\Http\Controllers\Invitations\CheckFriendStatusController;
 use App\Http\Controllers\Invitations\RejectInvitationController;
 use App\Http\Controllers\Invitations\SendInvitationController;
+use App\Http\Controllers\Invitations\CancelInvitationController;
 
 use App\Http\Controllers\Friends\GetFriendsController;
 use App\Http\Controllers\Friends\GetUserFriendOnlineController;
@@ -53,6 +54,8 @@ Route::post('/invitations', SendInvitationController::class)->middleware('auth:s
 Route::post('/invitations/{invitation}/accept', AcceptInvitationController::class)->middleware('auth:sanctum');
 /* Reject friend request */
 Route::post('/invitations/{invitation}/reject', RejectInvitationController::class)->middleware('auth:sanctum');
+// Cancel friend request
+Route::post('/invitations/{invitationId}/cancel', CancelInvitationController::class)->middleware('auth:sanctum');
 /* Show friend status of user selected */
 Route::get('/friends/status/{selectedUserId}', CheckFriendStatusController::class)->middleware('auth:sanctum');
 /* Show friend status of all users */

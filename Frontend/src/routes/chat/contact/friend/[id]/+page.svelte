@@ -2,7 +2,7 @@
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
     import { onMount, onDestroy } from "svelte";
     import { getUserInfo, getUserSelectedInfo } from "../../../../../api/user";
-    import { getUserFriendOnline, checkFriend, sendInvitation, acceptInvitation, rejectInvitation, deleteFriend } from "../../../../../api/friend";
+    import { getUserFriendOnline, checkFriend, sendInvitation, cancelInvitation, acceptInvitation, rejectInvitation, deleteFriend } from "../../../../../api/friend";
     import { sendMessage, getMessage } from "../../../../../api/message";
     import { page } from "$app/stores";
     import pusher from "../../../../../lib/pusher";
@@ -82,6 +82,17 @@
             handleError(error, 'sending friend request');
         }
     };
+
+    // Annule une invitation d'ami
+    const  cancelFriendRequest = async () => {
+        try {
+            await cancelInvitation(userSelectedStatus.id);
+            console.log('Friend request canceled successfully!');
+            reloadPage();
+        } catch (error) {
+            handleError(error, 'canceling friend request');
+        }
+    }
 
     // Accepte une invitation d'ami
     const acceptFriendRequest = async () => {
@@ -257,7 +268,7 @@
                         {#if userSelectedStatus.status === "pending" && userSelectedStatus.sender_id === currentUser.id}
                             <form>
                                 <div class="input">
-                                    <button id="cancel">Invitation sent</button>
+                                    <button id="cancel" on:click={cancelFriendRequest}>Invitation sent</button>
                                 </div>
                             </form>
                         {:else if userSelectedStatus.status === "pending" && userSelectedStatus.receiver_id === currentUser.id}
