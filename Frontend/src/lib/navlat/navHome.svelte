@@ -234,10 +234,13 @@
     }
     @media screen and (max-width: 700px){
         .left {
-            width: auto;
+            width: 90%;
             display: flex;
             align-items: center;
             border: none;
+            position: fixed;
+            height: auto;
+            top: 0;
         }
         .profile {
             display: block;

@@ -148,6 +148,31 @@
             width: auto;
             padding: 0;
             height: 100%;
+            padding: 0px;
+            margin-top: 100px;
+        }
+        .right form{
+            padding: 5px;
+            border-radius: 20px;
+        }
+        .img{
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .img img{
+            height: 200px;
+            width: auto;
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .img input {
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .list {
             padding: 10px;
         }
     }

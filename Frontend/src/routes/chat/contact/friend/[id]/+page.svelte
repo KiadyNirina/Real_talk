@@ -565,11 +565,11 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            margin-bottom: 50px;
         }
         .message {
             flex: 1;
             overflow-y: auto;
+            margin-bottom: 200px;
         }
         .content-message, .content-message-send {
             width: 80%;
@@ -594,9 +594,10 @@
             padding: 0;
         }
         .right {
-            width: auto;
+            width: 92%;
             padding: 0;
-            height: 100%;
+            margin-top: 100px;
+            position: fixed;
         }
         .message {
             border: none;
