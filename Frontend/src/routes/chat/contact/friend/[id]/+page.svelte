@@ -1,12 +1,11 @@
 <script>
     import NavChat from "../../../../../lib/navlat/navChat.svelte";
-    import { onMount, onDestroy } from "svelte";
+    import { onMount, tick } from "svelte";
     import { getUserInfo, getUserSelectedInfo } from "../../../../../api/user";
     import { getUserFriendOnline, checkFriend, sendInvitation, cancelInvitation, acceptInvitation, rejectInvitation, deleteFriend } from "../../../../../api/friend";
     import { sendMessage, getMessage } from "../../../../../api/message";
     import { page } from "$app/stores";
     import pusher from "../../../../../lib/pusher";
-    import axios from "axios";
     import { writable } from "svelte/store";
 
     // États réactifs
@@ -85,7 +84,7 @@
     };
 
     // Annule une invitation d'ami
-    const  cancelFriendRequest = async () => {
+    const cancelFriendRequest = async () => {
         try {
             await cancelInvitation(userSelectedStatus.id);
             console.log('Friend request canceled successfully!');
@@ -93,7 +92,7 @@
         } catch (error) {
             handleError(error, 'canceling friend request');
         }
-    }
+    };
 
     // Accepte une invitation d'ami
     const acceptFriendRequest = async () => {
@@ -134,13 +133,15 @@
             if (!$newMessage.trim()) return;
 
             const newMessageData = {
-                id: Date.now(), // ID temporaire (remplacé par la réponse de l'API)
+                id: Date.now(), // ID temporaire
                 sender_id: currentUser.id,
                 receiver_id: userSelectedId,
                 message: $newMessage,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
             };
+
+            // Envoyer le message temporaire (si besoin d'un affichage immédiat)
             messages.update((msgs) => [...msgs, newMessageData]);
 
             const response = await sendMessage({
@@ -149,10 +150,11 @@
             });
 
             if (response.data && response.data.message) {
-                messages.update((msgs) => {
-                    const updatedMessages = msgs.filter((msg) => msg.id !== newMessageData.id); // Supprime le message temporaire
-                    return [...updatedMessages, response.data.message]; // Ajoute le message de l'API
-                });
+                messages.update((msgs) =>
+                    msgs.map((msg) =>
+                        msg.id === newMessageData.id ? response.data.message : msg
+                    )
+                );
             }
 
             newMessage.set('');
@@ -168,22 +170,34 @@
             const response = await getMessage(id);
 
             if (response.messages && Array.isArray(response.messages)) {
-                messages.set(response.messages); // Met à jour les messages
+                // Tri des messages par date de création (les plus anciens en premier)
+                const sortedMessages = response.messages.sort((a, b) =>
+                    new Date(a.created_at) - new Date(b.created_at)
+                );
+                messages.set(sortedMessages);
             } else {
-                console.error('Invalid data format received from API:', response.messages);
-                messages.set([]); // Initialise à un tableau vide en cas d'erreur
+                console.error('Invalid data format received from API:', response);
+                messages.set([]);
             }
         } catch (error) {
             handleError(error, 'fetching messages');
         }
     };
 
-    // Abonne l'utilisateur au canal Pusher pour les messages en temps réel
+    // Définition du conteneur des messages pour le défilement
+    let messageContainer;
+    const scrollToBottom = () => {
+        if (messageContainer) {
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+    };
+
     const subscribeToPusher = () => {
         const channel = pusher.subscribe(`chat.${userSelectedId}`);
-        channel.bind('MessageSent', (data) => {
+        channel.bind('MessageSent', async (data) => {
             if (data.message) {
                 messages.update((msgs) => [...msgs, data.message]);
+                scrollToBottom();
                 console.log('Message received in real-time:', data);
             } else {
                 console.error('Invalid message data received from Pusher:', data);
@@ -200,18 +214,15 @@
             await fetchUserSelected(userSelectedId);
             await fetchUserStatus(userSelectedId);
             await fetchMessages(userSelectedId);
-            subscribeToPusher();
+            await tick();          // Attendre que le DOM soit mis à jour après le rendu des messages
+            scrollToBottom();      // Défilement vers le dernier message
+            subscribeToPusher();   // Abonnement aux messages en temps réel
         }
     });
 
     const openMenu = () => {
-        if (menu === false) {
-            menu = true;
-        } else {
-            menu = false;
-        }
+        menu = !menu;
     }
-
 </script>
 
 <div class="body">
@@ -253,9 +264,6 @@
                             <img src="/utilisateur.png" alt="">
                             <p>{userSelected.name}</p>
                             <button id="menu" on:click={openMenu}><img src="/menu.png" alt=""></button>
-                            <!-- {#if userSelectedStatus.status === 'accepted'}
-                                <button on:click={() => alertUnfriend = true}>Friend ✔️</button>
-                            {/if} -->
                         </div>
                         {#if menu}
                             <div class="menu">
@@ -271,12 +279,12 @@
                                 {/if}
                                 <p>Search</p>
                                 <p>Report</p>
-                                <p>Blockr</p>
+                                <p>Block</p>
                                 <p>Remove content</p>
                             </div>
                         {/if}
 
-                        <div class="message">
+                        <div class="message" bind:this={messageContainer}>
                             {#if $messages && $messages.length > 0}
                                 {#each $messages as message}
                                     {#if message.sender_id === currentUser.id}
