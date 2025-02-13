@@ -16,6 +16,8 @@
     let alertUnfriend = false;
     let loading = writable(false);
     let menu = false;
+    let messageMenuOpen = false;
+    let selectedMessageId = null;
 
     // États pour les messages
     export let messages = writable([]);
@@ -205,6 +207,38 @@
         });
     };
 
+    // Fonction pour supprimer un message
+    const deleteMessage = async (messageId) => {
+        try {
+            // Appel à l'API pour supprimer le message
+            // await deleteMessageAPI(messageId);
+            messages.update((msgs) => msgs.filter((msg) => msg.id !== messageId));
+            console.log('Message deleted successfully!');
+        } catch (error) {
+            handleError(error, 'deleting message');
+        }
+    };
+
+    // Fonction pour signaler un message
+    const reportMessage = async (messageId) => {
+        try {
+            // Appel à l'API pour signaler le message
+            // await reportMessageAPI(messageId);
+            console.log('Message reported successfully!');
+        } catch (error) {
+            handleError(error, 'reporting message');
+        }
+    };
+
+    const openMessageMenu = (messageId, type) => {
+        if (selectedMessageId === messageId) {
+            messageMenuOpen = !messageMenuOpen;
+        } else {
+            messageMenuOpen = true;
+        }
+        selectedMessageId = messageId;
+    };
+
     // Initialisation du composant
     onMount(async () => {
         await fetchUser();
@@ -290,11 +324,28 @@
                                     {#if message.sender_id === currentUser.id}
                                         <div class="content-message-send">
                                             <p>{message.message} <br><span>{message.created_at}</span></p>
+                                            <div class="message-menu">
+                                                <img src="/menu.png" alt="menu" on:click={() => openMessageMenu(message.id, 'sent')}>
+                                                {#if messageMenuOpen && selectedMessageId === message.id}
+                                                    <div class="message-menu-content">
+                                                        <p on:click={() => deleteMessage(message.id)}>Delete</p>
+                                                        <p on:click={() => reportMessage(message.id)}>Report</p>
+                                                    </div>
+                                                {/if}
+                                            </div>
                                         </div>
                                     {:else}
                                         <div class="content-message">
                                             <img src="/utilisateur.png" alt="">
                                             <p>{message.message} <br><span>{message.created_at}</span></p>
+                                            <div class="message-menu">
+                                                <img src="/menu.png" alt="menu" on:click={() => openMessageMenu(message.id, 'received')}>
+                                                {#if messageMenuOpen && selectedMessageId === message.id}
+                                                    <div class="message-menu-content">
+                                                        <p on:click={() => reportMessage(message.id)}>Report</p>
+                                                    </div>
+                                                {/if}
+                                            </div>
                                         </div>
                                     {/if}
                                 {/each}
@@ -494,6 +545,7 @@
     .content-message {
         display: flex;
         width: 60%;
+        position: relative;
     }
     .content-message img {
         height: 40px;
@@ -525,6 +577,45 @@
         width: 60%;
         justify-content: right;
         margin-left: auto;
+        position: relative;
+    }
+    .message-menu {
+        display: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .content-message:hover .message-menu {
+        display: block;
+        right: 10px;
+    }
+    .content-message-send:hover .message-menu {
+        display: block;
+        left: 10px;
+    }
+    .message-menu img {
+        height: 20px;
+        cursor: pointer;
+    }
+    .message-menu-content {
+        background-color: #202020;
+        position: absolute;
+        z-index: 99;
+        font-size: 15px;
+        font-family: 'poppins';
+        border-radius: 10px;
+        padding: 10px 0px;
+        width: 100px;
+        top: 30px;
+        right: 0;
+    }
+    .message-menu-content p {
+        margin: 0;
+        padding: 10px;
+    }
+    .message-menu-content p:hover {
+        background-color: rgb(48, 48, 48);
+        cursor: pointer;
     }
     .input {
         display: flex;
