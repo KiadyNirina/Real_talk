@@ -83,42 +83,43 @@
     }
 </script>
 
-<div class="body">
-    <div class="content">
-        <div class="">
-            <h1>SignUp</h1>
-            {#if successMessage}
-                <p style="color: green;">{successMessage}</p>
-            {/if}
-            {#if errorMessage}
-                <p style="color: red;">{errorMessage}</p>
-            {/if}
+<div class="body h-[90vh] flex">
+    <div class="content mt-auto mb-auto">
+        <div class="p-[10px]">
+            <h1 class="text-white text-center text-2xl font-bold">SignUp</h1>
+    
+            <form class="p-[20px]" on:submit|preventDefault={register}>
+                {#if successMessage}
+                    <p style="color: green;">{successMessage}</p>
+                {/if}
+                {#if errorMessage}
+                    <p style="color: red;">{errorMessage}</p>
+                {/if}
 
-            <form on:submit|preventDefault={register}>
                 <label for="username">Username :</label>
-                <input type="text" id="username" class={errors.name ? "input-error" : ""} placeholder="Username" bind:value={name} on:input={() => handleInput('name')}>
+                <input type="text" id="username" class="mb-[5px] {errors.name ? "input-error" : ""}" placeholder="Username" bind:value={name} on:input={() => handleInput('name')}>
                 {#if errors.name}
                     <p class="error-message">{errors.name}</p>
                 {/if}
     
                 <label for="email">Email :</label>
-                <input type="email" id="email" class={errors.email ? "input-error" : ""} placeholder="Email" bind:value={email} on:input={() => handleInput('email')}>
+                <input type="email" id="email" class="mb-[5px] {errors.email ? "input-error" : ""}" placeholder="Email" bind:value={email} on:input={() => handleInput('email')}>
                 {#if errors.email}
                     <p class="error-message">{errors.email}</p>
                 {/if}
     
                 <label for="password">Password :</label>
                 {#if showPassword}
-                    <input type="text" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                    <input type="text" id="password" class="mb-[5px] {errors.password ? "input-error" : ""}" placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
                 {:else}
-                    <input type="password" id="password" class={errors.password ? "input-error" : ""} placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                    <input type="password" id="password" class="mb-[5px] {errors.password ? "input-error" : ""}" placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
                 {/if}
                 {#if errors.password}
                     <p class="error-message">{errors.password}</p>
                 {/if}
     
                 <label for="password_confirmation">Confirm password :</label>
-                <input type="password" id="password_confirmation" class={errors.password_confirmation ? "input-error" : ""} placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
+                <input type="password" id="password_confirmation" class="mb-[5px] {errors.password_confirmation ? "input-error" : ""}" placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
                 {#if errors.password_confirmation}
                     <p class="error-message">{errors.password_confirmation}</p>
                 {/if}
@@ -132,7 +133,7 @@
                     {clicked ? 'Loading...' : 'Sign Up'}
                 </button>
     
-                <p>or</p>
+                <p class="mt-[10px] mb-[10px]">or</p>
                 <p>Already have an account? <a href="/">Sign In</a></p>
             </form>
         </div>
@@ -144,7 +145,6 @@
         border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 15px;
         padding: 10px;
-        margin-top: 7%;
         max-width: 500px;
         background-color: rgba(255, 255, 255, 0.101);
         display: flex;
@@ -155,11 +155,6 @@
         font-family: 'poppins';
         font-size: 13px;
     }
-    .content h1{
-        color: white;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-align: center;
-    }
     .content p{
         text-align: center;
         color: white;
@@ -169,7 +164,7 @@
         text-decoration: none;
     }
     .content form{
-        width: 70%;
+        width: 100%;
         margin-right: auto;
         margin-left: auto;
     }
@@ -180,7 +175,6 @@
         width: 100%;
         height: 40px;
         background-color: rgb(23, 23, 23);
-        margin-bottom: 5px;
         border: none;
         border-radius: 5px;
         color: white;
