@@ -31,18 +31,19 @@
     
 </script>
 
-<div class="body">
-    <div class="content">
-        <div class="">
-            <h1>Login</h1>
-            {#if error}
-                <p id="error">{error}</p>
-            {/if}
-            {#if successMessage}
-                <p style="color: green;">{successMessage}</p>
-            {/if}
+<div class="body h-[90vh] flex">
+    <div class="content mt-auto mb-auto">
+        <div class="p-[10px]">
+            <h1 class="text-white text-center text-2xl font-bold">Login</h1>
 
-            <form on:submit|preventDefault={handleLogin}>
+            <form class="p-[20px]" on:submit|preventDefault={handleLogin}>
+                {#if error}
+                    <p id="error">{error}</p>
+                {/if}
+                {#if successMessage}
+                    <p style="color: green;">{successMessage}</p>
+                {/if}
+
                 <label for="email">Email:</label>
                 <input type="email" id="email" class={error ? "input-error" : ""} placeholder="Email" bind:value={formData.email}>
                 {#if error && !formData.email}
@@ -57,7 +58,7 @@
                 {#if error && !formData.password}
                     <p class="error-message">Password is required.</p>
                 {/if}
-                <div class="check">
+                <div class="check mt-[5px]">
                     <input type="checkbox" id="checkbox" bind:checked={showPassword}>
                     <span>Show password</span>
                 </div>
@@ -67,7 +68,7 @@
                 {:else}
                     <button>Login</button> 
                 {/if}
-                <p>or</p>
+                <p class="mt-[10px] mb-[10px]">or</p>
                 <p>Have not an account yet? <a href="/signup">Sign Up</a></p>
             </form>
         </div> 
@@ -75,6 +76,7 @@
 </div>
 
 <style>
+    @import "tailwindcss";
     /*.body{
         border: 1px solid white;
         padding: 15px;
@@ -83,8 +85,7 @@
         border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 15px;
         padding: 10px;
-        margin-top: 10%;
-        max-width: 500px;
+        width: 500px;
         background-color: rgba(255, 255, 255, 0.101);
         align-items: center;
         justify-content: center;
@@ -92,11 +93,6 @@
         margin-right: auto;
         font-family: 'poppins';
         font-size: 13px;
-    }
-    .content h1{
-        color: white;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-align: center;
     }
     #forget{
         text-align: right;
@@ -111,7 +107,7 @@
         text-decoration: none;
     }
     .content form{
-        width: 70%;
+        width: 100%;
         margin-left: auto;
         margin-right: auto;
     }
@@ -122,7 +118,6 @@
         width: 100%;
         height: 40px;
         background-color: rgb(23, 23, 23);
-        margin-bottom: 5px;
         border: none;
         border-radius: 5px;
         color: white;
