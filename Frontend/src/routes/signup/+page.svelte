@@ -86,7 +86,7 @@
 <div class="body h-[95vh] flex">
     <div class="content mt-auto mb-auto">
         <div class="p-[10px]">
-            <h1 class="text-white text-center text-2xl font-bold">SignUp</h1>
+            <h1 class="mt-[5px] text-white text-center text-2xl font-bold">SignUp</h1>
     
             <form class="p-[20px]" on:submit|preventDefault={register}>
                 {#if successMessage}
@@ -108,21 +108,27 @@
                     <p class="error-message">{errors.email}</p>
                 {/if}
     
-                <label for="password">Password :</label>
-                {#if showPassword}
-                    <input type="text" id="password" class="mb-[5px] {errors.password ? "input-error" : ""}" placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
-                {:else}
-                    <input type="password" id="password" class="mb-[5px] {errors.password ? "input-error" : ""}" placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
-                {/if}
-                {#if errors.password}
-                    <p class="error-message">{errors.password}</p>
-                {/if}
-    
-                <label for="password_confirmation">Confirm password :</label>
-                <input type="password" id="password_confirmation" class="mb-[5px] {errors.password_confirmation ? "input-error" : ""}" placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
-                {#if errors.password_confirmation}
-                    <p class="error-message">{errors.password_confirmation}</p>
-                {/if}
+                <div class="flex gap-2 mt-[5px] items-center">
+                    <div class="w-1/2">
+                        <label for="password">Password :</label>
+                        {#if showPassword}
+                            <input type="text" id="password" class="mb-[5px] {errors.password ? "input-error" : ""}" placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                        {:else}
+                            <input type="password" id="password" class="mb-[5px] {errors.password ? "input-error" : ""}" placeholder="Password" bind:value={password} on:input={() => handleInput('password')}>
+                        {/if}
+                        {#if errors.password}
+                            <p class="error-message">{errors.password}</p>
+                        {/if}
+                    </div>
+        
+                    <div class="w-1/2">
+                        <label for="password_confirmation">Confirm password :</label>
+                        <input type="password" id="password_confirmation" class="mb-[5px] {errors.password_confirmation ? "input-error" : ""}" placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
+                        {#if errors.password_confirmation}
+                            <p class="error-message">{errors.password_confirmation}</p>
+                        {/if}
+                    </div>
+                </div>
     
                 <div class="check">
                     <input type="checkbox" id="checkbox" bind:checked={showPassword}>

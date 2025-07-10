@@ -34,7 +34,7 @@
 <div class="body h-[95vh] flex">
     <div class="content mt-auto mb-auto">
         <div class="p-[10px]">
-            <h1 class="text-white text-center text-2xl font-bold">Login</h1>
+            <h1 class="mt-[5px] text-white text-center text-2xl font-bold">Login</h1>
 
             <form class="p-[20px]" on:submit|preventDefault={handleLogin}>
                 {#if error}
