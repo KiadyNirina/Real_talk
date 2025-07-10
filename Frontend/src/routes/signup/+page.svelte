@@ -108,7 +108,7 @@
                     <p class="error-message">{errors.email}</p>
                 {/if}
     
-                <div class="flex gap-2 mt-[5px] items-center">
+                <div class="flex gap-2 mt-[5px]">
                     <div class="w-1/2">
                         <label for="password">Password :</label>
                         {#if showPassword}
@@ -123,7 +123,11 @@
         
                     <div class="w-1/2">
                         <label for="password_confirmation">Confirm password :</label>
-                        <input type="password" id="password_confirmation" class="mb-[5px] {errors.password_confirmation ? "input-error" : ""}" placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
+                        {#if showPassword}
+                            <input type="text" id="password_confirmation" class="mb-[5px] {errors.password_confirmation ? "input-error" : ""}" placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
+                        {:else}
+                            <input type="password" id="password_confirmation" class="mb-[5px] {errors.password_confirmation ? "input-error" : ""}" placeholder="Confirm password" bind:value={password_confirmation} on:input={() => handleInput('password_confirmation')}>
+                        {/if}
                         {#if errors.password_confirmation}
                             <p class="error-message">{errors.password_confirmation}</p>
                         {/if}
