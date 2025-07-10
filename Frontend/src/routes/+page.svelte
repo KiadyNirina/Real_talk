@@ -31,7 +31,7 @@
     
 </script>
 
-<div class="body h-[90vh] flex">
+<div class="body h-[95vh] flex">
     <div class="content mt-auto mb-auto">
         <div class="p-[10px]">
             <h1 class="text-white text-center text-2xl font-bold">Login</h1>
@@ -45,15 +45,15 @@
                 {/if}
 
                 <label for="email">Email:</label>
-                <input type="email" id="email" class={error ? "input-error" : ""} placeholder="Email" bind:value={formData.email}>
+                <input type="email" id="email" class="mb-[5px] {error ? "input-error" : ""}" placeholder="Email" bind:value={formData.email}>
                 {#if error && !formData.email}
                     <p class="error-message">Email is required.</p>
                 {/if}
                 <label for="password">Password:</label>
                 {#if showPassword}
-                    <input type="text" id="password" class={error ? "input-error" : ""} placeholder="Password" bind:value={formData.password}>
+                    <input type="text" id="password" class="mb-[5px] {error ? "input-error" : ""}" placeholder="Password" bind:value={formData.password}>
                 {:else}
-                    <input type="password" id="password" class={error ? "input-error" : ""} placeholder="Password" bind:value={formData.password}>
+                    <input type="password" id="password" class="mb-[5px] {error ? "input-error" : ""}" placeholder="Password" bind:value={formData.password}>
                 {/if}
                 {#if error && !formData.password}
                     <p class="error-message">Password is required.</p>

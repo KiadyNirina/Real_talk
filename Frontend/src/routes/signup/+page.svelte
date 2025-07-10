@@ -83,7 +83,7 @@
     }
 </script>
 
-<div class="body h-[90vh] flex">
+<div class="body h-[95vh] flex">
     <div class="content mt-auto mb-auto">
         <div class="p-[10px]">
             <h1 class="text-white text-center text-2xl font-bold">SignUp</h1>
