@@ -40,11 +40,10 @@
 
 <div class="left">
     {#if currentUser}
-        <div class="profile">
+        <div class="profile p-[15px]">
             <img src="/utilisateur.png" alt="">
             <p>Welcome <b>{currentUser.name}</b></p>
         </div>
-        <hr>
         <div class="list">
             <a href="/home">
                 <li id="active"><img src="/accueil.png" alt="">Home</li>
@@ -95,11 +94,10 @@
         {/if}
         </div>
     {:else}
-        <div class="profile">
+        <div class="profile p-[15px]">
             <img src="/utilisateur.png" alt="">
             <p>Loading...</p>
         </div>
-        <hr>
         <div class="list">
             <a href="/home">
                 <li id="active"><img src="/accueil.png" alt="">Home</li>
@@ -121,12 +119,12 @@
 <style>
     
     .left{
-        width: 25%;
+        width: 20%;
     }
     .left{
         border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
-        padding: 15px;
+        padding: 10px;
         border-radius: 35px;
     }
     .profile{
