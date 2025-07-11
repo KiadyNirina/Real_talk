@@ -16,6 +16,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@iconify/svelte": "^5.0.0",
 		"@tailwindcss/vite": "^4.1.11",
 		"axios": "^1.7.7",
 		"laravel-echo": "^1.16.1",
