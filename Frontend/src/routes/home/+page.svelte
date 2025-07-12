@@ -40,9 +40,9 @@
         .right {
             width: auto;
             padding: 0;
-            height: 100%;
+            height: 100vh;
             padding: 10px;
-            margin-top: 100px;
+            margin-top: 80px;
         }
     }
 </style>
