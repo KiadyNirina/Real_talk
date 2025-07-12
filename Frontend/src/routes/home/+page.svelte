@@ -4,7 +4,7 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         <NavHome/>
         <div class="right">
             <p>Bonjour</p>
@@ -17,12 +17,12 @@
         color: white;
     }
     .content{
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
+        font-size: 15px;
     }
     .right{
-        width: 75%;
+        width: 80%;
     }
     .right{
         border: 1px solid rgba(255, 255, 255, 0.057);
@@ -40,9 +40,9 @@
         .right {
             width: auto;
             padding: 0;
-            height: 100%;
+            height: 100vh;
             padding: 10px;
-            margin-top: 100px;
+            margin-top: 80px;
         }
     }
 </style>

@@ -3,6 +3,7 @@
     import { getUserInfo } from '../../api/user';
     import { logout } from '../../api/auth';
     import {goto} from "$app/navigation";
+    import Icon from "@iconify/svelte";
 
     let currentUser = null;
 
@@ -40,23 +41,22 @@
 
 <div class="left">
     {#if currentUser}
-        <div class="profile">
+        <div class="profile p-[15px]">
             <img src="/utilisateur.png" alt="">
             <p>Welcome <b>{currentUser.name}</b></p>
         </div>
-        <hr>
         <div class="list">
             <a href="/home">
-                <li id="active"><img src="/accueil.png" alt="">Home</li>
+                <li id="active"><Icon icon="majesticons:home" class="mr-[10px]" height="25px"/>Home</li>
             </a>
             <a href="/chat/room">
-                <li><img src="/message.png" alt="">Chat <span>4</span></li>
+                <li><Icon icon="majesticons:chat" class="mr-[10px]" height="25px"/>Chat <span>4</span></li>
             </a>
             <a href="/settings">
-                <li><img src="/parametre.png" alt="">Settings</li>
+                <li><Icon icon="ion:settings" class="mr-[10px]" height="25px"/>Settings</li>
             </a>
             <button on:click={handleLogout}>
-                <li><img src="/déconnexion.png" alt="">Logout</li>
+                <li><Icon icon="heroicons-outline:logout" class="mr-[10px]" height="25px"/>Logout</li>
             </button>
             {#if alertLogout}
             <div class="overlay"></div>
@@ -72,46 +72,45 @@
 
         <div class="list resp">
             <a href="/home">
-                <li id="active"><img src="/accueil.png" alt=""></li>
+                <li id="active"><Icon icon="majesticons:home" class="mr-[10px]" height="20px"/></li>
             </a>
             <a href="/chat/room">
-                <li><img src="/message.png" alt=""><span>4</span></li>
+                <li><Icon icon="majesticons:chat" class="mr-[10px]" height="20px"/><span>4</span></li>
             </a>
             <a href="/settings">
-                <li><img src="/parametre.png" alt=""></li>
+                <li><Icon icon="ion:settings" class="mr-[10px]" height="25px"/></li>
             </a>
             <button on:click={handleLogout}>
-                <li><img src="/déconnexion.png" alt=""></li>
+                <li><Icon icon="heroicons-outline:logout" class="mr-[10px]" height="25px"/></li>
             </button>
             {#if alertLogout}
-            <div class="overlay"></div>
-            <div class="alertLogout">
-                <p>Do you really want to log out?</p>
-                <div class="action">
-                    <button id="yes" on:click={logoutYes}>Yes</button>
-                    <button on:click={logoutNo}>No</button>
+                <div class="overlay"></div>
+                <div class="alertLogout">
+                    <p>Do you really want to log out?</p>
+                    <div class="action">
+                        <button id="yes" on:click={logoutYes}>Yes</button>
+                        <button on:click={logoutNo}>No</button>
+                    </div>
                 </div>
-            </div>
-        {/if}
+            {/if}
         </div>
     {:else}
-        <div class="profile">
+        <div class="profile p-[15px]">
             <img src="/utilisateur.png" alt="">
             <p>Loading...</p>
         </div>
-        <hr>
         <div class="list">
             <a href="/home">
-                <li id="active"><img src="/accueil.png" alt="">Home</li>
+                <li id="active"><Icon icon="majesticons:home" class="mr-[10px]" height="25px"/>Home</li>
             </a>
             <a href="/chat/room">
-                <li><img src="/message.png" alt="">Chat</li>
+                <li><Icon icon="majesticons:chat" class="mr-[10px]" height="25px"/>Chat <span>4</span></li>
             </a>
             <a href="/settings">
-                <li><img src="/parametre.png" alt="">Settings</li>
+                <li><Icon icon="ion:settings" class="mr-[10px]" height="25px"/>Settings</li>
             </a>
             <a href="/">
-                <li>Login</li>
+                <li><Icon icon="heroicons-outline:login" class="mr-[10px]" height="25px"/>Login</li>
             </a>
         </div>
     {/if}
@@ -121,12 +120,12 @@
 <style>
     
     .left{
-        width: 25%;
+        width: 20%;
     }
     .left{
         border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
-        padding: 15px;
+        padding: 10px;
         border-radius: 35px;
     }
     .profile{
@@ -234,7 +233,7 @@
     }
     @media screen and (max-width: 700px){
         .left {
-            width: 90%;
+            width: 100%;
             display: flex;
             align-items: center;
             border: none;
@@ -242,6 +241,9 @@
             height: auto;
             background-color: rgb(23, 23, 23);
             top: 0;
+            margin: 0;
+            padding: 0;
+            border-radius: 0px 0px 35px 35px;
         }
         .profile {
             display: block;
@@ -252,6 +254,7 @@
             margin-right: auto;
         }
         .profile p{
+            display: none;
             font-size: 15px;
             margin: 0;
         }
