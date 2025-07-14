@@ -6,112 +6,109 @@
     import Icon from "@iconify/svelte";
 
     let currentUser = null;
+    let alertLogout = false;
 
     if (typeof window !== "undefined") {
-        window.addEventListener('beforeunload', function (event) {
-            logout();
-        });
+        window.addEventListener('beforeunload', logout);
     }
 
     onMount(async () => {
         try {
             currentUser = await getUserInfo();
-            console.log('Informations de l’utilisateur récupérées', currentUser);
+            console.log('Informations utilisateur:', currentUser);
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            console.error('Erreur:', error);
         }
     });
 
-    let alertLogout = false;
-
-    const handleLogout = () => {
-        alertLogout = true;
-    }
-
-    const logoutYes = () => {
-        logout();
-        goto('/');
-    }
-
-    const logoutNo = () => {
-        alertLogout = false;
-    }
-
+    const toggleLogoutAlert = (show = true) => alertLogout = show;
+    const confirmLogout = () => { logout(); goto('/'); };
 </script>
 
 <div class="left">
     {#if currentUser}
+        <!-- Profil utilisateur -->
         <div class="profile p-[15px]">
             <img src="/utilisateur.png" alt="">
             <p>Welcome <b>{currentUser.name}</b></p>
         </div>
+
+        <!-- Menu principal -->
         <div class="list">
-            <a href="/home">
-                <li id="active"><Icon icon="majesticons:home" class="mr-[10px]" height="25px"/>Home</li>
-            </a>
-            <a href="/chat/room">
-                <li><Icon icon="majesticons:chat" class="mr-[10px]" height="25px"/>Chat <span>4</span></li>
-            </a>
-            <a href="/settings">
-                <li><Icon icon="ion:settings" class="mr-[10px]" height="25px"/>Settings</li>
-            </a>
-            <button on:click={handleLogout}>
+            {#each [
+                { href: "/home", icon: "majesticons:home", text: "Home" },
+                { href: "/chat/room", icon: "majesticons:chat", text: "Chat", badge: "4" },
+                { href: "/settings", icon: "ion:settings", text: "Settings" }
+            ] as item}
+                <a href={item.href}>
+                    <li class:active={item.href === "/home"}>
+                        <Icon icon={item.icon} class="mr-[10px]" height="25px"/>
+                        {item.text}
+                        {#if item.badge}<span>{item.badge}</span>{/if}
+                    </li>
+                </a>
+            {/each}
+            
+            <button on:click={() => toggleLogoutAlert()}>
                 <li><Icon icon="heroicons-outline:logout" class="mr-[10px]" height="25px"/>Logout</li>
             </button>
-            {#if alertLogout}
-            <div class="overlay"></div>
-            <div class="alertLogout">
-                <p>Do you really want to log out?</p>
-                <div class="action">
-                    <button id="yes" on:click={logoutYes}>Yes</button>
-                    <button on:click={logoutNo}>No</button>
-                </div>
-            </div>
-        {/if}
-        </div>
 
-        <div class="list resp">
-            <a href="/home">
-                <li id="active"><Icon icon="majesticons:home" class="mr-[10px]" height="20px"/></li>
-            </a>
-            <a href="/chat/room">
-                <li><Icon icon="majesticons:chat" class="mr-[10px]" height="20px"/><span>4</span></li>
-            </a>
-            <a href="/settings">
-                <li><Icon icon="ion:settings" class="mr-[10px]" height="25px"/></li>
-            </a>
-            <button on:click={handleLogout}>
-                <li><Icon icon="heroicons-outline:logout" class="mr-[10px]" height="25px"/></li>
-            </button>
+            <!-- Popup de confirmation -->
             {#if alertLogout}
                 <div class="overlay"></div>
                 <div class="alertLogout">
                     <p>Do you really want to log out?</p>
                     <div class="action">
-                        <button id="yes" on:click={logoutYes}>Yes</button>
-                        <button on:click={logoutNo}>No</button>
+                        <button id="yes" on:click={confirmLogout}>Yes</button>
+                        <button on:click={() => toggleLogoutAlert(false)}>No</button>
                     </div>
                 </div>
             {/if}
         </div>
+
+        <!-- Version responsive -->
+        <div class="list resp">
+            {#each [
+                { href: "/home", icon: "majesticons:home" },
+                { href: "/chat/room", icon: "majesticons:chat", badge: "4" },
+                { href: "/settings", icon: "ion:settings" },
+                { action: () => toggleLogoutAlert(), icon: "heroicons-outline:logout" }
+            ] as item}
+                {#if item.href}
+                    <a href={item.href}>
+                        <li class:active={item.href === "/home"}>
+                            <Icon icon={item.icon} class="mr-[10px]" height="20px"/>
+                            {#if item.badge}<span>{item.badge}</span>{/if}
+                        </li>
+                    </a>
+                {:else}
+                    <button on:click={item.action}>
+                        <li><Icon icon={item.icon} class="mr-[10px]" height="25px"/></li>
+                    </button>
+                {/if}
+            {/each}
+        </div>
     {:else}
+        <!-- État de chargement -->
         <div class="profile p-[15px]">
             <img src="/utilisateur.png" alt="">
             <p>Loading...</p>
         </div>
         <div class="list">
-            <a href="/home">
-                <li id="active"><Icon icon="majesticons:home" class="mr-[10px]" height="25px"/>Home</li>
-            </a>
-            <a href="/chat/room">
-                <li><Icon icon="majesticons:chat" class="mr-[10px]" height="25px"/>Chat <span>4</span></li>
-            </a>
-            <a href="/settings">
-                <li><Icon icon="ion:settings" class="mr-[10px]" height="25px"/>Settings</li>
-            </a>
-            <a href="/">
-                <li><Icon icon="heroicons-outline:login" class="mr-[10px]" height="25px"/>Login</li>
-            </a>
+            {#each [
+                { href: "/home", icon: "majesticons:home", text: "Home" },
+                { href: "/chat/room", icon: "majesticons:chat", text: "Chat", badge: "4" },
+                { href: "/settings", icon: "ion:settings", text: "Settings" },
+                { href: "/", icon: "heroicons-outline:login", text: "Login" }
+            ] as item}
+                <a href={item.href}>
+                    <li class:active={item.href === "/home"}>
+                        <Icon icon={item.icon} class="mr-[10px]" height="25px"/>
+                        {item.text}
+                        {#if item.badge}<span>{item.badge}</span>{/if}
+                    </li>
+                </a>
+            {/each}
         </div>
     {/if}
     
@@ -141,9 +138,6 @@
         height: 40px;
         margin-right: 15px;
     }
-    hr{
-        border: 1px solid rgba(255, 255, 255, 0.057);
-    }
     .resp{
         display: none;
     }
@@ -156,10 +150,6 @@
         list-style: none;
         display: flex;
         align-items: center;
-    }
-    .list img{
-        height: 25px;
-        margin-right: 10px;
     }
     .list li:hover{
         background-color: rgba(255, 255, 255, 0.097);
@@ -180,7 +170,7 @@
         font-size: 17px;
     }
     
-    #active{
+    .active{
         color: white;
         background-color: green;
     }
@@ -228,7 +218,7 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
+        background-color: rgba(0, 0, 0, 0.671);
         z-index: 5;
     }
     @media screen and (max-width: 700px){
@@ -276,13 +266,6 @@
             display: flex;
             align-items: center;
         }
-        .list img{
-            height: 20px;
-            margin-right: 5px;
-        }
-        hr{
-            display: none;
-        }
         .list span{
             position: relative;
             color: white;
@@ -294,7 +277,7 @@
             top: -10px;
             font-family: cursive;
         }
-        #active{
+        .active{
             border: none;
         }
         .alertLogout{
