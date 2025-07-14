@@ -26,8 +26,8 @@
             
         <div class="right">
             <div class="nav">
-                <a id="active" href="/chat/room"><p>Room</p></a>
-                <a href="/chat/contact/friend"><p>Contact</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/room"><p>Room</p></a>
+                <a style="padding: 15px;" href="/chat/contact/friend"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the room name">
@@ -66,8 +66,8 @@
         {:else}
         <div class="right">
             <div class="nav">
-                <a id="active" href="/chat/room/"><p>Room</p></a>
-                <a href="/chat/contact/friend/"><p>Contact</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/room/"><p>Room</p></a>
+                <a style="padding: 15px;" href="/chat/contact/friend/"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the room name">
@@ -163,9 +163,6 @@
     .list{
         margin-top: 10px;
     }
-    .name{
-        line-height: 5px;
-    }
     .part{
         font-size: 13px;
         color: rgba(255, 255, 255, 0.575);
@@ -195,7 +192,7 @@
         .right {
             width: auto;
             padding: 0;
-            height: 100%;
+            height: 100vh;
             padding: 10px;
             margin-top: 80px;
         }

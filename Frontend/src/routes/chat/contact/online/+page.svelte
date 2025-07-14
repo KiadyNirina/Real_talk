@@ -40,14 +40,14 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         <NavChat/>
         {#if user}
             
         <div class="right">
             <div class="nav">
-                <a href="/chat/room"><p>Room</p></a>
-                <a id="active" href="/chat/contact"><p>Contact</p></a>
+                <a style="padding: 15px;" href="/chat/room"><p>Room</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the user name">
@@ -96,8 +96,8 @@
         {:else}
         <div class="right">
             <div class="nav">
-                <a href="/chat/room"><p>Room</p></a>
-                <a id="active" href="/chat/contact"><p>Contact</p></a>
+                <a style="padding: 15px;" href="/chat/room"><p>Room</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the user name">
@@ -134,12 +134,12 @@
         color: white;
     }
     .content{
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
+        font-size: 15px;
     }
     .right{
-        width: 75%;
+        width: 80%;
     }
     .right{
         border: 1px solid rgba(255, 255, 255, 0.057);
@@ -208,9 +208,6 @@
     .list{
         margin-top: 10px;
     }
-    .name{
-        line-height: 5px;
-    }
     .part{
         font-size: 13px;
         color: rgba(255, 255, 255, 0.575);
@@ -257,9 +254,9 @@
         .right {
             width: auto;
             padding: 0;
-            height: 100%;
+            height: 100vh;
             padding: 10px;
-            margin-top: 100px;
+            margin-top: 80px;
         }
         .add a{
             padding: 2px;
