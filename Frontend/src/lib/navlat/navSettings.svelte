@@ -1,136 +1,127 @@
 <script>
     import { onMount } from 'svelte';
-    import { logout } from '../../api/auth';
     import { getUserInfo } from '../../api/user';
+    import { logout } from '../../api/auth';
     import {goto} from "$app/navigation";
+    import Icon from "@iconify/svelte";
 
     let currentUser = null;
-
-    const fetchUser = async () => {
-        try {
-            currentUser = await getUserInfo();
-            console.log('Informations de l’utilisateur récupérées', currentUser);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    }
-
     let alertLogout = false;
 
-    const handleLogout = () => {
-        alertLogout = true;
-    }
-
-    const logoutYes = () => {
-        logout();
-        goto('/');
-    }
-
-    const logoutNo = () => {
-        alertLogout = false;
-    }
-
     if (typeof window !== "undefined") {
-        window.addEventListener('beforeunload', function (event) {
-            logout();
-        });
+        window.addEventListener('beforeunload', logout);
     }
 
     onMount(async () => {
-        fetchUser();
+        try {
+            currentUser = await getUserInfo();
+            console.log('Informations utilisateur:', currentUser);
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
     });
+
+    const toggleLogoutAlert = (show = true) => alertLogout = show;
+    const confirmLogout = () => { logout(); goto('/'); };
 </script>
 
 <div class="left">
     {#if currentUser}
-        <div class="profile">
+        <!-- Profil utilisateur -->
+        <div class="profile p-[15px]">
             <img src="/utilisateur.png" alt="">
             <p>Welcome <b>{currentUser.name}</b></p>
         </div>
-        <hr>
+
+        <!-- Menu principal -->
         <div class="list">
-            <a href="/home">
-                <li><img src="/accueil.png" alt="">Home</li>
-            </a>
-            <a href="/chat/room">
-                <li><img src="/message.png" alt="">Chat <span>4</span></li>
-            </a>
-            <a href="/settings">
-                <li id="active"><img src="/parametre.png" alt="">Settings</li>
-            </a>
-            <button on:click={handleLogout}>
-                <li><img src="/déconnexion.png" alt="">Logout</li>
+            {#each [
+                { href: "/home", icon: "majesticons:home", text: "Home" },
+                { href: "/chat/room", icon: "majesticons:chat", text: "Chat", badge: "4" },
+                { href: "/settings", icon: "ion:settings", text: "Settings" }
+            ] as item}
+                <a href={item.href}>
+                    <li class:active={item.href === "/settings"}>
+                        <Icon icon={item.icon} class="mr-[10px]" height="25px"/>
+                        {item.text}
+                        {#if item.badge}<span>{item.badge}</span>{/if}
+                    </li>
+                </a>
+            {/each}
+
+            <button on:click={() => toggleLogoutAlert()}>
+                <li><Icon icon="heroicons-outline:logout" class="mr-[10px]" height="25px"/>Logout</li>
             </button>
+
+            <!-- Popup de confirmation -->
             {#if alertLogout}
                 <div class="overlay"></div>
                 <div class="alertLogout">
                     <p>Do you really want to log out?</p>
                     <div class="action">
-                        <button id="yes" on:click={logoutYes}>Yes</button>
-                        <button on:click={logoutNo}>No</button>
+                        <button id="yes" on:click={confirmLogout}>Yes</button>
+                        <button on:click={() => toggleLogoutAlert(false)}>No</button>
                     </div>
                 </div>
             {/if}
         </div>
 
-        <!-- Responsive -->
+        <!-- Version responsive -->
         <div class="list resp">
-            <a href="/home">
-                <li><img src="/accueil.png" alt=""></li>
-            </a>
-            <a href="/chat/room">
-                <li><img src="/message.png" alt=""><span>4</span></li>
-            </a>
-            <a href="/settings">
-                <li id="active"><img src="/parametre.png" alt=""></li>
-            </a>
-            <button on:click={handleLogout}>
-                <li><img src="/déconnexion.png" alt=""></li>
-            </button>
-            {#if alertLogout}
-                <div class="overlay"></div>
-                <div class="alertLogout">
-                    <p>Do you really want to log out?</p>
-                    <div class="action">
-                        <button id="yes" on:click={logoutYes}>Yes</button>
-                        <button on:click={logoutNo}>No</button>
-                    </div>
-                </div>
-            {/if}
+            {#each [
+                { href: "/home", icon: "majesticons:home" },
+                { href: "/chat/room", icon: "majesticons:chat", badge: "4" },
+                { href: "/settings", icon: "ion:settings" },
+                { action: () => toggleLogoutAlert(), icon: "heroicons-outline:logout" }
+            ] as item}
+                {#if item.href}
+                    <a href={item.href}>
+                        <li class:active={item.href === "/settings"}>
+                            <Icon icon={item.icon} class="mr-[10px]" height="20px"/>
+                            {#if item.badge}<span>{item.badge}</span>{/if}
+                        </li>
+                    </a>
+                {:else}
+                    <button on:click={item.action}>
+                        <li><Icon icon={item.icon} class="mr-[10px]" height="25px"/></li>
+                    </button>
+                {/if}
+            {/each}
         </div>
     {:else}
-    <div class="profile">
-        <img src="/utilisateur.png" alt="">
-        <p>Loading...</p>
-    </div>
-    <hr>
-    <div class="list">
-        <a href="/home">
-            <li><img src="/accueil.png" alt="">Home</li>
-        </a>
-        <a href="/chat/room">
-            <li><img src="/message.png" alt="">Chat</li>
-        </a>
-        <a href="/settings">
-            <li id="active"><img src="/parametre.png" alt="">Settings</li>
-        </a>
-        <a href="/">
-            <li>Login</li>
-        </a>
-    </div>
+        <!-- État de chargement -->
+        <div class="profile p-[15px]">
+            <img src="/utilisateur.png" alt="">
+            <p>Loading...</p>
+        </div>
+        <div class="list">
+            {#each [
+                { href: "/home", icon: "majesticons:home", text: "Home" },
+                { href: "/chat/room", icon: "majesticons:chat", text: "Chat", badge: "4" },
+                { href: "/settings", icon: "ion:settings", text: "Settings" },
+                { href: "/", icon: "heroicons-outline:login", text: "Login" }
+            ] as item}
+                <a href={item.href}>
+                    <li class:active={item.href === "/settings"}>
+                        <Icon icon={item.icon} class="mr-[10px]" height="25px"/>
+                        {item.text}
+                        {#if item.badge}<span>{item.badge}</span>{/if}
+                    </li>
+                </a>
+            {/each}
+        </div>
     {/if}
 </div>
 
 <style>
     
     .left{
-        width: 25%;
-        height: 100%;
+        width: 20%;
     }
     .left{
         border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
-        padding: 15px;
+        padding: 10px;
         border-radius: 35px;
     }
     .profile{
@@ -146,14 +137,11 @@
         height: 40px;
         margin-right: 15px;
     }
-    hr{
-        border: 1px solid rgba(255, 255, 255, 0.057);
-    }
     .resp{
         display: none;
     }
     .list li{
-        /* border: 1px solid rgba(255, 255, 255, 0.094); */
+        /*border: 1px solid rgba(255, 255, 255, 0.094);*/
         margin: 0;
         padding: 15px;
         margin-top: 5px;
@@ -162,16 +150,8 @@
         display: flex;
         align-items: center;
     }
-    .list img{
-        height: 25px;
-        margin-right: 10px;
-    }
     .list li:hover{
         background-color: rgba(255, 255, 255, 0.097);
-    }
-    #active{
-        color: white;
-        background-color: green;
     }
     .list a{
         text-decoration: none;
@@ -188,6 +168,12 @@
         text-align: left;
         font-size: 17px;
     }
+    
+    .active{
+        color: white;
+        background-color: green;
+    }
+    
     .list span{
         margin-left: auto;
         color: white;
@@ -195,7 +181,7 @@
         padding: 5px;
         text-align: center;
         border-radius: 10px;
-        font-size: 17px;
+        font-size: 12px;
         font-weight: bold;
     }
     .alertLogout{
@@ -231,12 +217,12 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: rgba(0, 0, 0, 0.671); /* Couche sombre semi-transparente */
+        background-color: rgba(0, 0, 0, 0.671);
         z-index: 5;
     }
     @media screen and (max-width: 700px){
         .left {
-            width: 90%;
+            width: 100%;
             display: flex;
             align-items: center;
             border: none;
@@ -244,6 +230,9 @@
             height: auto;
             background-color: rgb(23, 23, 23);
             top: 0;
+            margin: 0;
+            padding: 0;
+            border-radius: 0px 0px 35px 35px;
         }
         .profile {
             display: block;
@@ -254,6 +243,7 @@
             margin-right: auto;
         }
         .profile p{
+            display: none;
             font-size: 15px;
             margin: 0;
         }
@@ -275,13 +265,6 @@
             display: flex;
             align-items: center;
         }
-        .list img{
-            height: 20px;
-            margin-right: 5px;
-        }
-        hr{
-            display: none;
-        }
         .list span{
             position: relative;
             color: white;
@@ -293,7 +276,7 @@
             top: -10px;
             font-family: cursive;
         }
-        #active{
+        .active{
             border: none;
         }
         .alertLogout{
