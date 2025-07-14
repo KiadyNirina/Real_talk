@@ -20,7 +20,7 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         <NavChat/>
         {#if currentUser}
             
@@ -92,14 +92,12 @@
         color: white;
     }
     .content{
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
+        font-size: 15px;
     }
     .right{
-        width: 75%;
-    }
-    .right{
+        width: 80%;
         border: 1px solid rgba(255, 255, 255, 0.057);
         margin: 5px;
         padding: 15px;
@@ -199,7 +197,7 @@
             padding: 0;
             height: 100%;
             padding: 10px;
-            margin-top: 100px;
+            margin-top: 80px;
         }
     }
 </style>

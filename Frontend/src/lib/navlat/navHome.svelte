@@ -181,8 +181,8 @@
         background: rgb(255, 35, 35);
         padding: 5px;
         text-align: center;
-        border-radius: 100%;
-        font-size: 17px;
+        border-radius: 10px;
+        font-size: 12px;
         font-weight: bold;
     }
     .alertLogout{
