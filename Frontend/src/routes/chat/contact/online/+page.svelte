@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import { getUserInfo } from "../../../../api/user";
     import { getUserFriendOnline } from "../../../../api/friend";
+    import Icon from "@iconify/svelte";
 
     let user = null;
     let alluser = [];
@@ -54,19 +55,19 @@
             </div>
                 <button class="add">
                     <a href="/chat/contact/all" >
-                        <img src="/all.png" alt="">
+                        <Icon icon="fa-solid:users" class="mr-[5px]"/>
                         <span>All users</span>
                     </a>
                 </button>
                 <button class="add">
-                    <a href="/chat/contact/friend" >
-                        <img src="/amis.png" alt="">
+                    <a href="/chat/contact/friend">
+                        <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                         <span>Contact</span>
                     </a>
                 </button>
                 <button class="add">
                     <a href="/chat/contact/online" class="active">
-                        <img src="/online-active.png" alt="">
+                        <Icon icon="mdi:account-online" class="mr-[5px]"/>
                         <span>Contact online</span>
                     </a>
                 </button>
@@ -104,19 +105,19 @@
             </div>
             <button class="add">
                 <a href="/chat/contact/all" >
-                    <img src="/all.png" alt="">
+                    <Icon icon="fa-solid:users" class="mr-[5px]"/>
                     <span>All users</span>
                 </a>
             </button>
             <button class="add">
-                <a href="/chat/contact/friend" >
-                    <img src="/amis.png" alt="">
+                <a href="/chat/contact/friend">
+                    <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                     <span>Contact</span>
                 </a>
             </button>
             <button class="add">
                 <a href="/chat/contact/online" class="active">
-                    <img src="/online-active.png" alt="">
+                    <Icon icon="mdi:account-online" class="mr-[5px]"/>
                     <span>Contact online</span>
                 </a>
             </button>
@@ -173,10 +174,6 @@
         background-color: transparent;
         padding: 0;
     }
-    .add img{
-        height: 20px;
-        margin-right: 5px;
-    }
     .add a{
         text-decoration: none;
         padding: 10px;
@@ -225,8 +222,8 @@
         font-weight: bold;
         font-size: 50px;
     }
-    .active span{
-        color: green;
+    .active {
+        color: green !important;
         font-weight: 900;
     }
     .input{

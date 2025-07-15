@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import { getUserInfo } from "../../../../api/user";
     import { getUserFriends } from "../../../../api/friend";
+    import Icon from "@iconify/svelte";
 
     let user = null;
     let friends = [];
@@ -45,19 +46,19 @@
             </div>
                 <button class="add">
                     <a href="/chat/contact/all" >
-                        <img src="/all.png" alt="">
+                        <Icon icon="fa-solid:users" class="mr-[5px]"/>
                         <span>All users</span>
                     </a>
                 </button>
                 <button class="add">
                     <a href="/chat/contact/friend" class="active">
-                        <img src="/amis-active.png" alt="">
+                        <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                         <span>Contact</span>
                     </a>
                 </button>
                 <button class="add">
                     <a href="/chat/contact/online" >
-                        <img src="/online.png" alt="">
+                        <Icon icon="mdi:account-online" class="mr-[5px]"/>
                         <span>Contact online</span>
                     </a>
                 </button>
@@ -100,19 +101,19 @@
             </div>
             <button class="add">
                 <a href="/chat/contact/all" >
-                    <img src="/all.png" alt="">
+                    <Icon icon="fa-solid:users" class="mr-[5px]"/>
                     <span>All users</span>
                 </a>
             </button>
             <button class="add">
                 <a href="/chat/contact/friend" class="active">
-                    <img src="/amis-active.png" alt="">
+                    <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                     <span>Contact</span>
                 </a>
             </button>
             <button class="add">
                 <a href="/chat/contact/online" >
-                    <img src="/online.png" alt="">
+                    <Icon icon="mdi:account-online" class="mr-[5px]"/>
                     <span>Contact online</span>
                 </a>
             </button>
@@ -233,8 +234,8 @@
         letter-spacing: 0.2px;
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
-    .active span{
-        color: green;
+    .active{
+        color: green !important;
         font-weight: 900;
     }
     .smallName span{
