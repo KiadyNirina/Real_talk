@@ -74,7 +74,7 @@
                             </p>
                             <p class="part">
                                 Friend
-                                <img src="/accepter.png" alt="">
+                                <Icon icon="dashicons:yes" height="20px" class="text-green-500"/>
                             </p>
                         </div>
                         {#if friend.is_online == true}
