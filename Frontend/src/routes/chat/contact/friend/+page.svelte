@@ -171,10 +171,6 @@
         background-color: transparent;
         padding: 0;
     }
-    .add img{
-        height: 20px;
-        margin-right: 5px;
-    }
     .add a{
         text-decoration: none;
         padding: 10px;
@@ -205,9 +201,6 @@
     }
     .list{
         margin-top: 10px;
-    }
-    .name{
-        line-height: 5px;
     }
     .part{
         font-size: 13px;
@@ -240,9 +233,9 @@
     }
     .smallName span{
         background: rgb(255, 31, 31);
-        padding: 3px;
+        padding: 1px 5px;
         border-radius: 100%;
-        font-size: 11px;
+        font-size: 9px;
         margin-left: 5px;
     }
     .input{
