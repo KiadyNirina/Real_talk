@@ -260,7 +260,7 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         {#if alertUnfriend}
             <div class="overlay"></div>
             <div class="alertLogout">
@@ -427,13 +427,11 @@
 <style>
     .body {
         color: white;
-        height: 100%;
     }
     .content {
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
-        height: 100%;
+        font-size: 15px;
     }
     .right {
         border: 1px solid rgba(255, 255, 255, 0.057);
@@ -441,8 +439,7 @@
         padding: 15px;
         border-radius: 35px;
         display: flex;
-        width: 75%;
-        height: 100%;
+        width: 80%;
     }
     .col1, .col2 {
         margin: 5px;
@@ -751,7 +748,7 @@
             padding: 0;
         }
         .right {
-            width: 92%;
+            width: 100%;
             padding: 0;
             margin-top: 100px;
             position: fixed;
