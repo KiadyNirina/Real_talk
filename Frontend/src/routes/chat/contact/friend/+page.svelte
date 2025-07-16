@@ -203,15 +203,10 @@
         margin-top: 10px;
     }
     .part{
-        font-size: 13px;
+        font-size: 12px;
         color: rgba(255, 255, 255, 0.575);
         display: flex;
         align-items: center;
-    }
-    .part img{
-        border: none;
-        height: 10px;
-        margin-left: 5px;
     }
     .onLine{
         color: rgb(0, 198, 0);

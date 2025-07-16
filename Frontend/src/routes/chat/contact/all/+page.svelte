@@ -73,13 +73,13 @@
                                 <p class="part">
                                     Friend
                                     {#if user.friend_status == "accepted"}
-                                        <img src="/accepter.png" alt="">
+                                        <Icon icon="dashicons:yes" height="20px" class="text-green-500 ml-[2px]"/>
                                     {:else if user.sender_id != currentUser.id && user.friend_status == "pending"}
                                         <img src="/invitation.png" alt="">
                                     {:else if user.sender_id == currentUser.id && user.friend_status == "pending"}
                                         <img src="/en_cours.png" alt="">
                                     {:else}
-                                        <img src="/refuser.png" alt="">
+                                        <Icon icon="dashicons:no" height="15px" class="text-red-500 ml-[2px]"/>
                                     {/if}
                                     
                                 </p>
@@ -204,8 +204,8 @@
         margin-top: 10px;
     }
     .part{
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.575);
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.502);
         display: flex;
         align-items: center;
     }
