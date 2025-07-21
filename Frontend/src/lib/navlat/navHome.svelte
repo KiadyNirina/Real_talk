@@ -194,11 +194,12 @@
         text-align: center;
         top: 40%;
         border-radius: 15px;
-        padding: 5px;
+        padding: 10px;
         z-index: 9;
     }
     .alertLogout .action{
         display: flex;
+        margin-top: 10px;
     }
     .alertLogout .action button{
         text-align: center;
