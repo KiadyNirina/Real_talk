@@ -443,7 +443,6 @@
     }
     .col1, .col2 {
         margin: 5px;
-        padding: 15px;
     }
     .col1 {
         width: 25%;
@@ -624,7 +623,6 @@
         background-color: #33333300;
         color: #fff;
         text-align: center;
-        padding: 10px 20px;
     }
     .input button {
         background-color: transparent;
@@ -723,7 +721,7 @@
         .message {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 200px;
+            margin-bottom: 13vh;
         }
         .content-message, .content-message-send {
             width: 80%;
@@ -748,10 +746,9 @@
             padding: 0;
         }
         .right {
-            width: 100%;
+            width: auto;
             padding: 0;
-            margin-top: 100px;
-            position: fixed;
+            margin-top: 80px;
         }
         .message {
             border: none;
@@ -759,6 +756,7 @@
             padding: 0px;
             height: auto;
             overflow-y: auto;
+            margin-bottom: 9vh;
         }
         .message p {
             font-size: 12px;

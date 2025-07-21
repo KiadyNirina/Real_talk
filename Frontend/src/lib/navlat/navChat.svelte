@@ -229,6 +229,7 @@
             margin: 0;
             padding: 0;
             border-radius: 0px 0px 35px 35px;
+            z-index: 9;
         }
         .profile {
             display: block;
