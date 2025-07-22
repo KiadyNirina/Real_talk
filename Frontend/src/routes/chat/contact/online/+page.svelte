@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import { getUserInfo } from "../../../../api/user";
     import { getUserFriendOnline } from "../../../../api/friend";
+    import Icon from "@iconify/svelte";
 
     let user = null;
     let alluser = [];
@@ -40,33 +41,33 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         <NavChat/>
         {#if user}
             
         <div class="right">
             <div class="nav">
-                <a href="/chat/room"><p>Room</p></a>
-                <a id="active" href="/chat/contact"><p>Contact</p></a>
+                <a style="padding: 15px;" href="/chat/room"><p>Room</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the user name">
             </div>
                 <button class="add">
                     <a href="/chat/contact/all" >
-                        <img src="/all.png" alt="">
+                        <Icon icon="fa-solid:users" class="mr-[5px]"/>
                         <span>All users</span>
                     </a>
                 </button>
                 <button class="add">
-                    <a href="/chat/contact/friend" >
-                        <img src="/amis.png" alt="">
+                    <a href="/chat/contact/friend">
+                        <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                         <span>Contact</span>
                     </a>
                 </button>
                 <button class="add">
                     <a href="/chat/contact/online" class="active">
-                        <img src="/online-active.png" alt="">
+                        <Icon icon="mdi:account-online" class="mr-[5px]"/>
                         <span>Contact online</span>
                     </a>
                 </button>
@@ -96,27 +97,27 @@
         {:else}
         <div class="right">
             <div class="nav">
-                <a href="/chat/room"><p>Room</p></a>
-                <a id="active" href="/chat/contact"><p>Contact</p></a>
+                <a style="padding: 15px;" href="/chat/room"><p>Room</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the user name">
             </div>
             <button class="add">
                 <a href="/chat/contact/all" >
-                    <img src="/all.png" alt="">
+                    <Icon icon="fa-solid:users" class="mr-[5px]"/>
                     <span>All users</span>
                 </a>
             </button>
             <button class="add">
-                <a href="/chat/contact/friend" >
-                    <img src="/amis.png" alt="">
+                <a href="/chat/contact/friend">
+                    <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                     <span>Contact</span>
                 </a>
             </button>
             <button class="add">
                 <a href="/chat/contact/online" class="active">
-                    <img src="/online-active.png" alt="">
+                    <Icon icon="mdi:account-online" class="mr-[5px]"/>
                     <span>Contact online</span>
                 </a>
             </button>
@@ -134,12 +135,12 @@
         color: white;
     }
     .content{
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
+        font-size: 15px;
     }
     .right{
-        width: 75%;
+        width: 80%;
     }
     .right{
         border: 1px solid rgba(255, 255, 255, 0.057);
@@ -173,10 +174,6 @@
         background-color: transparent;
         padding: 0;
     }
-    .add img{
-        height: 20px;
-        margin-right: 5px;
-    }
     .add a{
         text-decoration: none;
         padding: 10px;
@@ -208,9 +205,6 @@
     .list{
         margin-top: 10px;
     }
-    .name{
-        line-height: 5px;
-    }
     .part{
         font-size: 13px;
         color: rgba(255, 255, 255, 0.575);
@@ -228,8 +222,8 @@
         font-weight: bold;
         font-size: 50px;
     }
-    .active span{
-        color: green;
+    .active {
+        color: green !important;
         font-weight: 900;
     }
     .input{
@@ -257,9 +251,9 @@
         .right {
             width: auto;
             padding: 0;
-            height: 100%;
+            height: 100vh;
             padding: 10px;
-            margin-top: 100px;
+            margin-top: 80px;
         }
         .add a{
             padding: 2px;

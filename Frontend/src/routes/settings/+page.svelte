@@ -4,7 +4,7 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         <NavSettings/>
         <div class="right">
             <div class="list">
@@ -26,12 +26,12 @@
         color: white;
     }
     .content{
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
+        font-size: 15px;
     }
     .right{
-        width: 75%;
+        width: 80%;
     }
     .right{
         border: 1px solid rgba(255, 255, 255, 0.057);

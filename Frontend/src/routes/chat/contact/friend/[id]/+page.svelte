@@ -260,7 +260,7 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         {#if alertUnfriend}
             <div class="overlay"></div>
             <div class="alertLogout">
@@ -427,13 +427,11 @@
 <style>
     .body {
         color: white;
-        height: 100%;
     }
     .content {
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
-        height: 100%;
+        font-size: 15px;
     }
     .right {
         border: 1px solid rgba(255, 255, 255, 0.057);
@@ -441,12 +439,10 @@
         padding: 15px;
         border-radius: 35px;
         display: flex;
-        width: 75%;
-        height: 100%;
+        width: 80%;
     }
     .col1, .col2 {
         margin: 5px;
-        padding: 15px;
     }
     .col1 {
         width: 25%;
@@ -627,7 +623,6 @@
         background-color: #33333300;
         color: #fff;
         text-align: center;
-        padding: 10px 20px;
     }
     .input button {
         background-color: transparent;
@@ -726,7 +721,7 @@
         .message {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 200px;
+            margin-bottom: 13vh;
         }
         .content-message, .content-message-send {
             width: 80%;
@@ -751,10 +746,9 @@
             padding: 0;
         }
         .right {
-            width: 92%;
+            width: auto;
             padding: 0;
-            margin-top: 100px;
-            position: fixed;
+            margin-top: 80px;
         }
         .message {
             border: none;
@@ -762,6 +756,7 @@
             padding: 0px;
             height: auto;
             overflow-y: auto;
+            margin-bottom: 9vh;
         }
         .message p {
             font-size: 12px;

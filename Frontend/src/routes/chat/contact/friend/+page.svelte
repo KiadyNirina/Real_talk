@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import { getUserInfo } from "../../../../api/user";
     import { getUserFriends } from "../../../../api/friend";
+    import Icon from "@iconify/svelte";
 
     let user = null;
     let friends = [];
@@ -31,33 +32,33 @@
 </script>
 
 <div class="body">
-    <div class="content">
+    <div class="content h-[95vh]">
         <NavChat/>
         {#if user}
             
         <div class="right">
             <div class="nav">
-                <a href="/chat/room"><p>Room</p></a>
-                <a id="active" href="/chat/contact"><p>Contact</p></a>
+                <a style="padding: 15px;" href="/chat/room"><p>Room</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the user name">
             </div>
                 <button class="add">
                     <a href="/chat/contact/all" >
-                        <img src="/all.png" alt="">
+                        <Icon icon="fa-solid:users" class="mr-[5px]"/>
                         <span>All users</span>
                     </a>
                 </button>
                 <button class="add">
                     <a href="/chat/contact/friend" class="active">
-                        <img src="/amis-active.png" alt="">
+                        <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                         <span>Contact</span>
                     </a>
                 </button>
                 <button class="add">
                     <a href="/chat/contact/online" >
-                        <img src="/online.png" alt="">
+                        <Icon icon="mdi:account-online" class="mr-[5px]"/>
                         <span>Contact online</span>
                     </a>
                 </button>
@@ -73,7 +74,7 @@
                             </p>
                             <p class="part">
                                 Friend
-                                <img src="/accepter.png" alt="">
+                                <Icon icon="dashicons:yes" height="20px" class="text-green-500"/>
                             </p>
                         </div>
                         {#if friend.is_online == true}
@@ -92,27 +93,27 @@
         {:else}
         <div class="right">
             <div class="nav">
-                <a href="/chat/room"><p>Room</p></a>
-                <a id="active" href="/chat/contact"><p>Contact</p></a>
+                <a style="padding: 15px;" href="/chat/room"><p>Room</p></a>
+                <a style="padding: 15px;" id="active" href="/chat/contact"><p>Contact</p></a>
             </div>
             <div class="input">
                 <input type="search" name="" id="" placeholder="Enter the user name">
             </div>
             <button class="add">
                 <a href="/chat/contact/all" >
-                    <img src="/all.png" alt="">
+                    <Icon icon="fa-solid:users" class="mr-[5px]"/>
                     <span>All users</span>
                 </a>
             </button>
             <button class="add">
                 <a href="/chat/contact/friend" class="active">
-                    <img src="/amis-active.png" alt="">
+                    <Icon icon="fa-solid:user-friends" class="mr-[5px]"/>
                     <span>Contact</span>
                 </a>
             </button>
             <button class="add">
                 <a href="/chat/contact/online" >
-                    <img src="/online.png" alt="">
+                    <Icon icon="mdi:account-online" class="mr-[5px]"/>
                     <span>Contact online</span>
                 </a>
             </button>
@@ -130,13 +131,13 @@
         color: white;
     }
     .content{
-        padding: 15px;
+        padding: 5px;
         display: flex;
-        font-size: 20px;
+        font-size: 15px;
         flex: 1;
     }
     .right{
-        width: 75%;
+        width: 80%;
     }
     .right{
         border: 1px solid rgba(255, 255, 255, 0.057);
@@ -170,10 +171,6 @@
         background-color: transparent;
         padding: 0;
     }
-    .add img{
-        height: 20px;
-        margin-right: 5px;
-    }
     .add a{
         text-decoration: none;
         padding: 10px;
@@ -205,19 +202,11 @@
     .list{
         margin-top: 10px;
     }
-    .name{
-        line-height: 5px;
-    }
     .part{
-        font-size: 13px;
+        font-size: 12px;
         color: rgba(255, 255, 255, 0.575);
         display: flex;
         align-items: center;
-    }
-    .part img{
-        border: none;
-        height: 10px;
-        margin-left: 5px;
     }
     .onLine{
         color: rgb(0, 198, 0);
@@ -233,15 +222,15 @@
         letter-spacing: 0.2px;
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
-    .active span{
-        color: green;
+    .active{
+        color: green !important;
         font-weight: 900;
     }
     .smallName span{
         background: rgb(255, 31, 31);
-        padding: 3px;
+        padding: 1px 5px;
         border-radius: 100%;
-        font-size: 11px;
+        font-size: 9px;
         margin-left: 5px;
     }
     .input{
@@ -269,9 +258,9 @@
         .right {
             width: auto;
             padding: 0;
-            height: 100%;
+            height: 100vh;
             padding: 10px;
-            margin-top: 100px;
+            margin-top: 80px;
         }
         .add a{
             padding: 2px;
