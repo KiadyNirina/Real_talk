@@ -34,7 +34,7 @@
 <!-- Background avec dégradé radial bleu profond -->
 <div class="min-h-screen w-full flex items-center justify-center selection:bg-blue-500/30 overflow-hidden relative">
     
-    <div class="relative z-10 w-full max-w-md p-4">
+    <div class="relative z-10 w-full max-w-lg p-4">
         <!-- Carte principale avec effet Glassmorphism -->
         <div class="bg-black/20 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8 md:p-10">
             
