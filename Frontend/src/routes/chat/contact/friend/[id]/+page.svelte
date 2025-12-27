@@ -1,5 +1,5 @@
 <script>
-    import NavChat from "../../../../../lib/navlat/navChat.svelte";
+    import Sidebar from "../../../../../lib/Sidebar.svelte";
     import { onMount, tick } from "svelte";
     import { getUserInfo, getUserSelectedInfo } from "../../../../../api/user";
     import { getUserFriendOnline, checkFriend, sendInvitation, cancelInvitation, acceptInvitation, rejectInvitation, deleteFriend } from "../../../../../api/friend";
@@ -7,8 +7,8 @@
     import { page } from "$app/stores";
     import pusher from "../../../../../lib/pusher";
     import { writable } from "svelte/store";
+    import Icon from "@iconify/svelte";
 
-    // États réactifs
     let currentUser = null;
     let alluser = [];
     let userSelected = null;
@@ -26,25 +26,20 @@
     // Récupère l'ID de l'utilisateur sélectionné depuis l'URL
     $: userSelectedId = $page.params.id;
 
-    // Fonction pour recharger la page
     const reloadPage = () => location.reload();
 
-    // Fonction pour gérer les erreurs
     const handleError = (error, context) => {
         console.error(`Error in ${context}:`, error);
     };
 
-    // Récupère les informations de l'utilisateur connecté
     const fetchUser = async () => {
         try {
             currentUser = await getUserInfo();
-            console.log('User info fetched', currentUser);
         } catch (error) {
             handleError(error, 'fetching user data');
         }
     };
 
-    // Récupère la liste des utilisateurs en ligne
     const fetchAllUser = async () => {
         try {
             alluser = await getUserFriendOnline();
@@ -54,7 +49,6 @@
         }
     };
 
-    // Récupère les informations de l'utilisateur sélectionné
     const fetchUserSelected = async (id) => {
         try {
             userSelected = await getUserSelectedInfo(id);
@@ -64,7 +58,6 @@
         }
     };
 
-    // Récupère le statut de l'ami (ami, en attente, etc.)
     const fetchUserStatus = async (id) => {
         try {
             userSelectedStatus = await checkFriend(id);
@@ -74,7 +67,6 @@
         }
     };
 
-    // Envoie une invitation d'ami
     const sendFriendRequest = async () => {
         try {
             await sendInvitation({ receiver_id: userSelectedId });
@@ -85,7 +77,6 @@
         }
     };
 
-    // Annule une invitation d'ami
     const cancelFriendRequest = async () => {
         try {
             await cancelInvitation(userSelectedStatus.id);
@@ -96,46 +87,40 @@
         }
     };
 
-    // Accepte une invitation d'ami
     const acceptFriendRequest = async () => {
         try {
             await acceptInvitation(userSelectedStatus.id);
-            console.log('Friend request accepted successfully!');
             reloadPage();
         } catch (error) {
             handleError(error, 'accepting friend request');
         }
     };
 
-    // Rejette une invitation d'ami
     const rejectFriendRequest = async () => {
         try {
             await rejectInvitation(userSelectedStatus.id);
-            console.log('Friend request rejected successfully!');
             reloadPage();
         } catch (error) {
             handleError(error, 'rejecting friend request');
         }
     };
 
-    // Supprime un ami
     const removeFriend = async () => {
         try {
             await deleteFriend(userSelected.id);
-            console.log('Friend removed successfully!');
             reloadPage();
         } catch (error) {
             handleError(error, 'removing friend');
         }
     };
 
-    // Envoie un message
     const sendFriendMessage = async () => {
         try {
             if (!$newMessage.trim()) return;
 
+            const tempId = Date.now();
             const newMessageData = {
-                id: Date.now(), // ID temporaire
+                id: tempId,
                 sender_id: currentUser.id,
                 receiver_id: userSelectedId,
                 message: $newMessage,
@@ -143,36 +128,35 @@
                 updated_at: new Date().toISOString(),
             };
 
-            // Envoyer le message temporaire (si besoin d'un affichage immédiat)
             messages.update((msgs) => [...msgs, newMessageData]);
+            const textToSend = $newMessage;
+            newMessage.set('');
+            
+            await tick();
+            scrollToBottom();
 
             const response = await sendMessage({
                 receiver_id: userSelectedId,
-                message: $newMessage,
+                message: textToSend,
             });
 
             if (response.data && response.data.message) {
                 messages.update((msgs) =>
                     msgs.map((msg) =>
-                        msg.id === newMessageData.id ? response.data.message : msg
+                        msg.id === tempId ? response.data.message : msg
                     )
                 );
             }
-
-            newMessage.set('');
         } catch (error) {
             handleError(error, 'sending message');
             messages.update((msgs) => msgs.filter((msg) => msg.id !== newMessageData.id));
         }
     };
 
-    // Récupère les messages
     const fetchMessages = async (id) => {
         try {
             const response = await getMessage(id);
-
             if (response.messages && Array.isArray(response.messages)) {
-                // Tri des messages par date de création (les plus anciens en premier)
                 const sortedMessages = response.messages.sort((a, b) =>
                     new Date(a.created_at) - new Date(b.created_at)
                 );
@@ -186,7 +170,6 @@
         }
     };
 
-    // Définition du conteneur des messages pour le défilement
     let messageContainer;
     const scrollToBottom = () => {
         if (messageContainer) {
@@ -198,48 +181,30 @@
         const channel = pusher.subscribe(`chat.${userSelectedId}`);
         channel.bind('MessageSent', async (data) => {
             if (data.message) {
-                messages.update((msgs) => [...msgs, data.message]);
+                messages.update((msgs) => {
+                    if (msgs.find(m => m.id === data.message.id)) return msgs;
+                    return [...msgs, data.message];
+                });
+                await tick();
                 scrollToBottom();
-                console.log('Message received in real-time:', data);
-            } else {
-                console.error('Invalid message data received from Pusher:', data);
             }
         });
     };
 
-    // Fonction pour supprimer un message
     const deleteMessage = async (messageId) => {
         try {
-            // Appel à l'API pour supprimer le message
-            // await deleteMessageAPI(messageId);
             messages.update((msgs) => msgs.filter((msg) => msg.id !== messageId));
-            console.log('Message deleted successfully!');
+            messageMenuOpen = false;
         } catch (error) {
             handleError(error, 'deleting message');
         }
     };
 
-    // Fonction pour signaler un message
-    const reportMessage = async (messageId) => {
-        try {
-            // Appel à l'API pour signaler le message
-            // await reportMessageAPI(messageId);
-            console.log('Message reported successfully!');
-        } catch (error) {
-            handleError(error, 'reporting message');
-        }
+    const openMessageMenu = (messageId) => {
+        selectedMessageId = selectedMessageId === messageId && messageMenuOpen ? null : messageId;
+        messageMenuOpen = !!selectedMessageId;
     };
 
-    const openMessageMenu = (messageId, type) => {
-        if (selectedMessageId === messageId) {
-            messageMenuOpen = !messageMenuOpen;
-        } else {
-            messageMenuOpen = true;
-        }
-        selectedMessageId = messageId;
-    };
-
-    // Initialisation du composant
     onMount(async () => {
         await fetchUser();
         await fetchAllUser();
@@ -248,530 +213,222 @@
             await fetchUserSelected(userSelectedId);
             await fetchUserStatus(userSelectedId);
             await fetchMessages(userSelectedId);
-            await tick();          // Attendre que le DOM soit mis à jour après le rendu des messages
-            scrollToBottom();      // Défilement vers le dernier message
-            subscribeToPusher();   // Abonnement aux messages en temps réel
+            await tick();
+            scrollToBottom();
+            subscribeToPusher();
         }
     });
 
-    const openMenu = () => {
-        menu = !menu;
-    }
+    const toggleMenu = () => menu = !menu;
 </script>
 
-<div class="body">
-    <div class="content h-[95vh]">
-        {#if alertUnfriend}
-            <div class="overlay"></div>
-            <div class="alertLogout">
-                <p>Do you really want to unfriend this user?</p>
-                <div class="action">
-                    <button id="yes" on:click={removeFriend}>Yes</button>
-                    <button on:click={() => alertUnfriend = false}>No</button>
+<div class="min-h-screen text-white font-['Poppins']">
+    <!-- Overlay Suppression Ami -->
+    {#if alertUnfriend}
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div class="bg-[#1a1a1a] border border-white/10 p-8 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl">
+                <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Icon icon="solar:user-minus-bold" width="32" />
+                </div>
+                <h3 class="text-xl font-bold mb-2">Supprimer l'ami ?</h3>
+                <p class="text-gray-400 text-sm mb-8">Voulez-vous vraiment retirer {userSelected?.name} de vos contacts ?</p>
+                <div class="flex gap-3">
+                    <button on:click={() => alertUnfriend = false} class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 font-semibold transition-all border-none text-white cursor-pointer">Annuler</button>
+                    <button on:click={removeFriend} class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 font-semibold transition-all border-none text-white cursor-pointer">Supprimer</button>
                 </div>
             </div>
-        {/if}
-        <NavChat />
-        {#if currentUser}
-            <div class="right">
-                <div class="col1">
-                    <h1>Contact online</h1>
-                    <div class="list">
-                        {#if alluser.length > 0}
-                            {#each alluser as user}
-                                <a href="/chat/contact/friend/{user.id}" class="profile">
-                                    <img src="/utilisateur.png" alt="">
-                                    <div class="name">
-                                        <p>{user.name} {#if user.name === currentUser.name}(You){/if}</p>
-                                        <p class="part">online <img src="/accepter.png" alt=""></p>
-                                    </div>
-                                </a>
-                            {/each}
-                        {:else}
-                            <p>No user online</p>
-                        {/if}
-                    </div>
-                </div>
-                {#if userSelected && userSelectedStatus}
-                    <div class="col2">
-                        <div class="profile">
-                            <img src="/utilisateur.png" alt="">
-                            <p>{userSelected.name}</p>
-                            <button id="menu" on:click={openMenu}><img src="/menu.png" alt=""></button>
-                        </div>
-                        {#if menu}
-                            <div class="menu">
-                                <p>See profile</p>
-                                {#if userSelectedStatus.status === 'accepted'}
-                                    <p>Unfriend</p>
-                                {:else if userSelectedStatus.status === 'pending' && userSelectedStatus.sender_id === currentUser.id}
-                                    <p>Invitation sent</p>
-                                {:else if userSelectedStatus.status === 'pending' && userSelectedStatus.receiver_id === currentUser.id}
-                                    <p>Accept or refuse</p>
-                                {:else}
-                                    <p>Add</p>
-                                {/if}
-                                <p>Search</p>
-                                <p>Report</p>
-                                <p>Block</p>
-                                <p>Remove content</p>
-                            </div>
-                        {/if}
+        </div>
+    {/if}
 
-                        <div class="message" bind:this={messageContainer}>
-                            {#if $messages && $messages.length > 0}
-                                {#each $messages as message}
-                                    {#if message.sender_id === currentUser.id}
-                                        <div class="content-message-send">
-                                            <p>{message.message} <br><span>{message.created_at}</span></p>
-                                            <div class="message-menu">
-                                                <img src="/menu.png" alt="menu" on:click={() => openMessageMenu(message.id, 'sent')}>
-                                                {#if messageMenuOpen && selectedMessageId === message.id}
-                                                    <div class="message-menu-content">
-                                                        <p on:click={() => deleteMessage(message.id)}>Delete</p>
-                                                        <p on:click={() => reportMessage(message.id)}>Report</p>
-                                                    </div>
-                                                {/if}
-                                            </div>
-                                        </div>
-                                    {:else}
-                                        <div class="content-message">
-                                            <img src="/utilisateur.png" alt="">
-                                            <p>{message.message} <br><span>{message.created_at}</span></p>
-                                            <div class="message-menu">
-                                                <img src="/menu.png" alt="menu" on:click={() => openMessageMenu(message.id, 'received')}>
-                                                {#if messageMenuOpen && selectedMessageId === message.id}
-                                                    <div class="message-menu-content">
-                                                        <p on:click={() => reportMessage(message.id)}>Report</p>
-                                                    </div>
-                                                {/if}
-                                            </div>
-                                        </div>
+    <div class="flex flex-col lg:flex-row h-screen p-0 lg:p-5 gap-5">
+        
+        <Sidebar activePath="/chat/room"/>
+
+        <main class="flex-1 lg:mt-0 lg:ml-80 flex gap-5 overflow-hidden">
+            
+            <!-- Liste Online -->
+            <div class="hidden xl:flex flex-col w-72 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-6 shadow-2xl">
+                <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-6">Contacts en ligne</h2>
+                <div class="space-y-2 overflow-y-auto custom-scrollbar">
+                    {#if alluser.length === 0}
+                        <p class="text-sm text-gray-500">Aucun contact en ligne.</p>
+                    {/if}
+
+                    {#each alluser as user}
+                        <a href="/chat/contact/friend/{user.id}" class="flex items-center p-3 rounded-2xl hover:bg-white/5 transition-all no-underline group {user.id == userSelectedId ? 'bg-blue-600/10 border border-blue-500/20' : ''}">
+                            <div class="relative mr-3">
+                                <img src="https://ui-avatars.com/api/?name={user.name}&background=random" alt="" class="w-10 h-10 rounded-full" />
+                                <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a0a0a] rounded-full"></span>
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-sm font-semibold truncate {user.id == userSelectedId ? 'text-blue-400' : 'text-gray-300'}">{user.name}</p>
+                                <p class="text-[10px] text-green-500 font-medium">En ligne</p>
+                            </div>
+                        </a>
+                    {/each}
+                </div>
+            </div>
+
+            <!-- Fenêtre de Chat -->
+            <div class="flex-1 backdrop-blur-2xl border border-white/10 rounded-none lg:rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden relative">
+                
+                {#if userSelected && userSelectedStatus}
+                    <header class="p-4 lg:p-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+                        <div class="flex items-center">
+                            <div class="relative mr-4">
+                                <img src="https://ui-avatars.com/api/?name={userSelected.name}&background=0284c7&color=fff" alt="" class="w-12 h-12 rounded-2xl shadow-lg" />
+                                <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-4 border-[#0a0a0a] rounded-full"></span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg m-0">{userSelected.name}</h3>
+                                <p class="text-xs text-green-500 flex items-center font-medium m-0 mt-1">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                                    En ligne
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="relative">
+                            <button on:click={toggleMenu} class="p-3 hover:bg-white/5 rounded-xl transition-all border-none bg-transparent cursor-pointer text-gray-400">
+                                <Icon icon="solar:menu-dots-bold" width="24" />
+                            </button>
+                            
+                            {#if menu}
+                                <div class="absolute right-0 mt-2 w-56 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl z-50 py-2 overflow-hidden animate-in fade-in zoom-in duration-200">
+                                    <button class="w-full text-left px-4 py-3 text-sm hover:bg-white/5 flex items-center bg-transparent border-none text-white cursor-pointer transition-colors">
+                                        <Icon icon="solar:user-circle-linear" class="mr-3" width="18" /> Profil
+                                    </button>
+                                    {#if userSelectedStatus.status === 'accepted'}
+                                        <button on:click={() => { alertUnfriend = true; menu = false; }} class="w-full text-left px-4 py-3 text-sm hover:bg-red-500/10 text-red-400 flex items-center bg-transparent border-none cursor-pointer font-medium transition-colors">
+                                            <Icon icon="solar:user-minus-linear" class="mr-3" width="18" /> Supprimer l'ami
+                                        </button>
                                     {/if}
-                                {/each}
-                            {:else}
-                                <p>No message for the moment</p>
+                                    <button class="w-full text-left px-4 py-3 text-sm hover:bg-white/5 flex items-center bg-transparent border-none text-gray-500 cursor-pointer transition-colors">
+                                        <Icon icon="solar:shield-warning-linear" class="mr-3" width="18" /> Signaler
+                                    </button>
+                                </div>
                             {/if}
                         </div>
-                        {#if userSelectedStatus.status === "pending" && userSelectedStatus.sender_id === currentUser.id}
-                            <form>
-                                <div class="input">
-                                    <button id="cancel" on:click={cancelFriendRequest}>Invitation sent</button>
-                                </div>
-                            </form>
-                        {:else if userSelectedStatus.status === "pending" && userSelectedStatus.receiver_id === currentUser.id}
-                            <div class="input">
-                                {#if !$loading}
-                                    <button id="cancel" on:click={acceptFriendRequest}>Accept</button>
-                                    <button id="add" on:click={rejectFriendRequest}>Reject</button>
-                                {:else}
-                                    <button id="cancel">Loading...</button>
-                                    <button id="add">Loading...</button>
-                                {/if}
-                            </div>
-                        {:else if userSelectedStatus.status === "accepted"}
-                            <form on:submit|preventDefault={sendFriendMessage}>
-                                <div class="input">
-                                    <textarea bind:value={$newMessage} placeholder="Enter the message"></textarea>
-                                    <button><img src="/message-sender.png" alt=""></button>
-                                </div>
-                            </form>
-                        {:else}
-                            <form on:submit|preventDefault={sendFriendRequest}>
-                                <div class="input">
-                                    {#if !$loading}
-                                        <button id="add">Add</button>
-                                    {:else}
-                                        <button id="disable" disabled>Loading...</button>
+                    </header>
+
+                    <!-- Zone Messages -->
+                    <div 
+                        class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] bg-fixed"
+                        bind:this={messageContainer}
+                    >
+                    {#if $messages.length === 0}
+                        <p class="text-sm text-gray-500 text-center mt-10">Aucun message. Commencez la conversation !</p>
+                    {/if}
+
+                        {#each $messages as msg (msg.id)}
+                            <div class="flex {msg.sender_id == currentUser?.id ? 'justify-end' : 'justify-start'} group relative">
+                                <div class="max-w-[80%] lg:max-w-[60%] flex items-end gap-3">
+                                    {#if msg.sender_id != currentUser?.id}
+                                        <img src="https://ui-avatars.com/api/?name={userSelected.name}" alt="" class="w-8 h-8 rounded-full mb-1 border border-white/10" />
                                     {/if}
+                                    
+                                    <div class="relative group">
+                                        <div class="px-5 py-3 rounded-[1.5rem] text-sm leading-relaxed
+                                            {msg.sender_id == currentUser?.id 
+                                                ? 'bg-blue-600 text-white rounded-br-none shadow-lg shadow-blue-600/10' 
+                                                : 'bg-white/10 text-gray-200 rounded-bl-none backdrop-blur-md border border-white/5'}">
+                                            {msg.message}
+                                            <div class="text-[9px] mt-2 opacity-50 text-right font-medium">
+                                                {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                            </div>
+                                        </div>
+
+                                        <!-- Menu Message -->
+                                        <button 
+                                            class="absolute top-0 {msg.sender_id == currentUser?.id ? '-left-8' : '-right-8'} p-1 text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all border-none bg-transparent cursor-pointer"
+                                            on:click={() => openMessageMenu(msg.id)}
+                                        >
+                                            <Icon icon="solar:menu-dots-bold" width="14" />
+                                        </button>
+
+                                        {#if messageMenuOpen && selectedMessageId === msg.id}
+                                            <div class="absolute {msg.sender_id == currentUser?.id ? 'right-0' : 'left-0'} top-full mt-2 z-[60] bg-[#222] border border-white/10 rounded-xl py-2 shadow-2xl min-w-[120px]">
+                                                {#if msg.sender_id == currentUser?.id}
+                                                    <button on:click={() => deleteMessage(msg.id)} class="w-full text-left px-4 py-2 text-xs hover:bg-red-500/20 text-red-400 border-none bg-transparent cursor-pointer">Supprimer</button>
+                                                {/if}
+                                                <button class="w-full text-left px-4 py-2 text-xs hover:bg-white/10 text-white border-none bg-transparent cursor-pointer">Signaler</button>
+                                            </div>
+                                        {/if}
+                                    </div>
                                 </div>
-                            </form>
-                        {/if}
+                            </div>
+                        {/each}
                     </div>
+
+                    <!-- Input / Actions Statut -->
+                    <footer class="p-6 bg-white/[0.02] border-t border-white/10">
+                        {#if userSelectedStatus.status === "accepted"}
+                            <form on:submit|preventDefault={sendFriendMessage} class="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-2xl focus-within:border-blue-500/50 transition-all shadow-inner">
+                                <button type="button" class="p-3 text-gray-500 hover:text-white transition-colors bg-transparent border-none cursor-pointer">
+                                    <Icon icon="solar:paperclip-linear" width="22" />
+                                </button>
+                                <textarea 
+                                    bind:value={$newMessage}
+                                    placeholder="Écrivez votre message..." 
+                                    class="flex-1 bg-transparent border-none outline-none text-white text-sm py-2 resize-none max-h-32"
+                                    rows="1"
+                                    on:keydown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendFriendMessage())}
+                                ></textarea>
+                                <button 
+                                    type="submit"
+                                    disabled={!$newMessage.trim()}
+                                    class="p-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 disabled:text-gray-500 text-white rounded-xl transition-all border-none cursor-pointer shadow-lg shadow-blue-600/20"
+                                >
+                                    <Icon icon="solar:paper-plane-bold" width="20" />
+                                </button>
+                            </form>
+                        {:else if userSelectedStatus.status === "pending" && userSelectedStatus.sender_id === currentUser?.id}
+                            <div class="bg-blue-500/10 border border-blue-500/20 p-5 rounded-[1.5rem] flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center text-blue-400 text-sm">
+                                    <Icon icon="solar:info-circle-bold" class="mr-3" width="24" />
+                                    Invitation en attente de réponse.
+                                </div>
+                                <button on:click={cancelFriendRequest} class="px-6 py-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-xl text-xs font-bold border-none cursor-pointer transition-all">
+                                    Annuler l'invitation
+                                </button>
+                            </div>
+                        {:else if userSelectedStatus.status === "pending" && userSelectedStatus.receiver_id === currentUser?.id}
+                            <div class="flex flex-col gap-3">
+                                <p class="text-xs text-gray-400 text-center mb-1">{userSelected.name} vous a envoyé une invitation</p>
+                                <div class="flex gap-4">
+                                    <button on:click={acceptFriendRequest} class="flex-1 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-bold border-none text-white cursor-pointer transition-all shadow-lg shadow-blue-600/20">
+                                        Accepter
+                                    </button>
+                                    <button on:click={rejectFriendRequest} class="flex-1 py-4 bg-white/5 hover:bg-red-500/20 rounded-2xl font-bold border-none text-white cursor-pointer transition-all">
+                                        Refuser
+                                    </button>
+                                </div>
+                            </div>
+                        {:else}
+                            <button on:click={sendFriendRequest} class="w-full py-5 bg-blue-600 hover:bg-blue-500 rounded-2xl font-bold text-white cursor-pointer transition-all flex items-center justify-center shadow-lg shadow-blue-600/20">
+                                <Icon icon="solar:user-plus-bold" class="mr-3" width="24" />
+                                Ajouter aux amis
+                            </button>
+                        {/if}
+                    </footer>
                 {:else}
-                    <div class="col2">
-                        <div class="profile">
-                            <img src="/utilisateur.png" alt="">
-                            <p>User not found</p>
-                        </div>
-                        <div class="input">
-                            <textarea placeholder="Enter the message"></textarea>
-                            <button><img src="/message-sender.png" alt=""></button>
-                        </div>
+                    <div class="flex-1 flex flex-col items-center justify-center text-gray-600">
+                        <Icon icon="solar:ghost-linear" width="64" class="mb-4 opacity-20" />
+                        <p class="text-sm font-medium tracking-widest uppercase opacity-40">Sélectionnez une conversation</p>
                     </div>
                 {/if}
+
             </div>
-        {:else}
-            <div class="right">
-                <div class="col1">
-                    <h1>Contact online</h1>
-                    <div class="list">
-                        <p>Loading...</p>
-                    </div>
-                </div>
-                <div class="col2">
-                    <div class="profile">
-                        <img src="/utilisateur.png" alt="">
-                        <p>Loading...</p>
-                    </div>
-                    <div class="input">
-                        <textarea placeholder="Enter the message"></textarea>
-                        <button><img src="/message-sender.png" alt=""></button>
-                    </div>
-                </div>
-            </div>
-        {/if}
+        </main>
     </div>
 </div>
 
 <style>
-    .body {
-        color: white;
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
     }
-    .content {
-        padding: 5px;
-        display: flex;
-        font-size: 15px;
-    }
-    .right {
-        border: 1px solid rgba(255, 255, 255, 0.057);
-        margin: 5px;
-        padding: 15px;
-        border-radius: 35px;
-        display: flex;
-        width: 80%;
-    }
-    .col1, .col2 {
-        margin: 5px;
-    }
-    .col1 {
-        width: 25%;
-        border-right: 1px solid rgba(255, 255, 255, 0.071);
-    }
-    .col2 {
-        width: 75%;
-        height: auto;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-    }
-    h1 {
-        font-size: 20px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        color: rgba(255, 255, 255, 0.619);
-    }
-    .list {
-        margin-top: 10px;
-    }
-    .profile {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        color: white;
-        border-radius: 15px;
-        padding: 5px;
-    }
-    .profile img {
-        border: 1px solid rgba(255, 255, 255, 0.508);
-        border-radius: 100%;
-        height: 40px;
-        margin-right: 15px;
-    }
-    .profile button {
-        margin-left: auto;
-        background-color: rgb(59, 59, 254);
-        color: white;
-        font-size: small;
-        border: none;
-        padding: 7px;
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
-        cursor: pointer;
-    }
-    #menu {
-        background-color: transparent;
-    }
-    #menu img{
-        border: none;
-        height: 20px;
-        display: flex;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    #menu:hover {
-        background-color: rgba(255, 255, 255, 0.097);
-    }
-    .menu {
-        background-color: #202020;
-        position: absolute;
-        right: 60px;
-        z-index: 99;
-        font-size: 15px;
-        font-family: 'poppins';
-        border-radius: 10px;
-        padding: 10px 0px;
-        width: 200px;
-    }
-    .menu p{
-        margin: 0;
-        padding: 10px;
-    }
-    .menu p:hover{
-        background-color: rgb(48, 48, 48);
-        cursor: pointer;
-    }
-    .name {
-        line-height: 5px;
-    }
-    .part {
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.575);
-        display: flex;
-        align-items: center;
-    }
-    .part img {
-        border: none;
-        height: 10px;
-        margin-left: 5px;
-    }
-    .message {
-        flex: 1;
-        overflow-y: auto;
-        font-family: "poppins";
-    }
-    .content-message {
-        display: flex;
-        width: 60%;
-        position: relative;
-    }
-    .content-message img {
-        height: 40px;
-    }
-    .content-message p {
-        background-color: rgba(255, 255, 255, 0.404);
-        padding: 15px;
-        border-radius: 15px;
-        font-size: 13px;
-        margin: 5px;
-    }
-    .content-message-send p {
-        background-color: green;
-        padding: 15px;
-        border-radius: 15px;
-        font-size: 13px;
-        margin: 5px;
-    }
-    .content-message p span, .content-message-send p span {
-        font-size: 10px;
-        color: rgb(202, 202, 202);
-        position: relative;
-        top: 10px;
-        display: flex;
-        justify-content: right;
-    }
-    .content-message-send {
-        display: flex;
-        width: 60%;
-        justify-content: right;
-        margin-left: auto;
-        position: relative;
-    }
-    .message-menu {
-        display: none;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    .content-message:hover .message-menu {
-        display: block;
-        right: 10px;
-    }
-    .content-message-send:hover .message-menu {
-        display: block;
-        left: 10px;
-    }
-    .message-menu img {
-        height: 20px;
-        cursor: pointer;
-    }
-    .message-menu-content {
-        background-color: #202020;
-        position: absolute;
-        z-index: 99;
-        font-size: 15px;
-        font-family: 'poppins';
-        border-radius: 10px;
-        padding: 10px 0px;
-        width: 100px;
-        top: 30px;
-        right: 0;
-    }
-    .message-menu-content p {
-        margin: 0;
-        padding: 10px;
-    }
-    .message-menu-content p:hover {
-        background-color: rgb(48, 48, 48);
-        cursor: pointer;
-    }
-    .input {
-        display: flex;
-        align-items: center;
-        margin-top: 5px;
-        position: sticky;
-        bottom: 0;
-        width: 100%;
-        background-color: #33333300;
-        color: #fff;
-        text-align: center;
-    }
-    .input button {
-        background-color: transparent;
-        border: none;
-        border-radius: 15px;
-        margin-left: 5px;
-    }
-    .input img {
-        height: 30px;
-        padding: 8px;
-    }
-    .input button:hover {
-        background-color: rgb(36, 36, 36);
-        cursor: pointer;
-    }
-    .input textarea {
-        width: 100%;
-        border-radius: 15px;
-        background: rgb(45, 45, 45);
-        padding: 10px;
-        border: none;
-        color: white;
-    }
-    #add {
-        width: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.287);
-        padding: 10px;
-        color: white;
-        font-size: 15px;
-    }
-    #disable {
-        cursor: not-allowed;
-        color: grey;
-        width: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.287);
-        padding: 10px;
-        font-size: 15px;
-    }
-    #cancel {
-        width: 100%;
-        background: rgb(0, 81, 255);
-        padding: 10px;
-        color: white;
-        font-size: 15px;
-    }
-    .alertLogout {
-        position: fixed;
-        right: 40%;
-        left: 40%;
-        border: 1px solid rgba(255, 255, 255, 0.19);
-        background-color: rgb(37, 37, 37);
-        text-align: center;
-        top: 40%;
-        border-radius: 15px;
-        padding: 5px;
-        z-index: 9;
-    }
-    .alertLogout .action {
-        display: flex;
-    }
-    .alertLogout .action button {
-        text-align: center;
-        padding: 10px;
-        width: 50%;
-        background-color: transparent;
-        border: none;
-        color: white;
-    }
-    #yes:hover {
-        background-color: rgba(255, 0, 0, 0.496);
-    }
-    .alertLogout .action button:hover {
-        cursor: pointer;
-        background-color: rgba(128, 128, 128, 0.692);
-        border-radius: 15px;
-    }
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.671);
-        z-index: 5;
-    }
-    @media screen and (max-width: 1000px) {
-        .col1 {
-            display: none;
-        }
-        .col2 {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .message {
-            flex: 1;
-            overflow-y: auto;
-            margin-bottom: 13vh;
-        }
-        .content-message, .content-message-send {
-            width: 80%;
-        }
-        .input {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #1b1b1b;
-            color: #fff;
-            text-align: center;
-            padding: 5px;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-        }
-    }
-    @media screen and (max-width: 700px) {
-        .content {
-            display: block;
-            height: auto;
-            width: auto;
-            padding: 0;
-        }
-        .right {
-            width: auto;
-            padding: 0;
-            margin-top: 80px;
-        }
-        .message {
-            border: none;
-            border-radius: 10px;
-            padding: 0px;
-            height: auto;
-            overflow-y: auto;
-            margin-bottom: 9vh;
-        }
-        .message p {
-            font-size: 12px;
-            line-height: 17px;
-            padding: 10px;
-        }
-        .alertLogout {
-            right: 10%;
-            left: 10%;
-        }
-        .content-message p span, .content-message-send p span {
-            font-size: 8px;
-            color: rgb(202, 202, 202);
-            position: relative;
-            top: 0px;
-        }
     }
 </style>
