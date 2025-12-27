@@ -37,7 +37,7 @@
         
         <Sidebar activePath="/chat/room"/>
 
-        <main class="flex-1 mt-20 lg:mt-0 lg:ml-80">
+        <main class="flex-1 lg:mt-0 lg:ml-80">
             <div class="h-full backdrop-blur-2xl border border-white/10 rounded-none lg:rounded-[2.5rem] p-6 lg:p-8 shadow-2xl flex flex-col min-h-[90vh]">
                 
                 {#if user}
