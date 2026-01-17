@@ -114,7 +114,7 @@
                             <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-4 ml-2">Découvrir du monde</p>
                             {#if dataList.length > 0}
                                 {#each dataList as user}
-                                    <a href="/chat/contact/friend/{user.id}" class="flex items-center p-4 bg-white/[0.02] border border-white/5 hover:border-white/10 rounded-2xl transition-all">
+                                    <a href="/chat/messages/{user.id}" class="flex items-center p-4 bg-white/[0.02] border border-white/5 hover:border-white/10 rounded-2xl transition-all">
                                         <img src="https://ui-avatars.com/api/?name={user.name}&background=random" alt="" class="w-12 h-12 rounded-full border border-white/10 mr-4" />
                                         <div class="flex-1">
                                             <h4 class="text-white font-bold text-sm lg:text-base">{user.name}</h4>
@@ -146,7 +146,7 @@
                                                     <Icon icon="solar:user-plus-bold" width="18" />
                                                 </button>
                                             {:else if user.friend_status === "accepted"}
-                                                <a href="/chat/contact/friend/{user.id}" class="p-2.5 bg-blue-600/20 hover:bg-blue-600 rounded-xl transition-all text-blue-400 hover:text-white no-underline">
+                                                <a href="/chat/messages/{user.id}" class="p-2.5 bg-blue-600/20 hover:bg-blue-600 rounded-xl transition-all text-blue-400 hover:text-white no-underline">
                                                     <Icon icon="solar:chat-line-bold" width="18" />
                                                 </a>
                                             {/if}
@@ -161,7 +161,7 @@
                             <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-4 ml-2">Mes Amis ({dataList.length})</p>
                             {#if dataList.length > 0}
                                 {#each dataList as friend}
-                                    <a href="/chat/contact/friend/{friend.id}" class="flex items-center p-3 bg-white/[0.02] border border-white/5 hover:border-blue-500/30 hover:bg-white/[0.05] rounded-2xl transition-all no-underline group relative">
+                                    <a href="/chat/messages/{friend.id}" class="flex items-center p-3 bg-white/[0.02] border border-white/5 hover:border-blue-500/30 hover:bg-white/[0.05] rounded-2xl transition-all no-underline group relative">
                                         <div class="relative mr-4">
                                             <img src="https://ui-avatars.com/api/?name={friend.name}&background=1e293b&color=fff" alt="" class="w-12 h-12 rounded-xl border border-white/10 object-cover" />
                                             {#if friend.is_online}
@@ -209,7 +209,7 @@
                             </div>
                             {#if dataList.length > 0}
                                 {#each dataList as friend}
-                                    <a href="/chat/contact/friend/{friend.id}" class="flex items-center p-4 bg-white/[0.02] border border-white/5 hover:border-green-500/30 hover:bg-white/[0.05] rounded-2xl transition-all no-underline group">
+                                    <a href="/chat/messages/{friend.id}" class="flex items-center p-4 bg-white/[0.02] border border-white/5 hover:border-green-500/30 hover:bg-white/[0.05] rounded-2xl transition-all no-underline group">
                                         <div class="relative mr-4">
                                             <img src="https://ui-avatars.com/api/?name={friend.name}&background=065f46&color=fff" alt="" class="w-12 h-12 rounded-xl border border-white/10" />
                                             <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-4 border-[#0a0a0a] rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
