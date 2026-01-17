@@ -361,7 +361,7 @@
                     </div>
 
                     <!-- Input / Actions Statut -->
-                    <footer class="p-6 bg-white/[0.02] border-t border-white/10">
+                    <footer class="p-2 lg:p-6 bg-white/[0.02] border-t border-white/10 mb-[80px] lg:mb-0">
                         {#if userSelectedStatus.status === "accepted"}
                             <form on:submit|preventDefault={sendFriendMessage} class="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-2xl focus-within:border-blue-500/50 transition-all shadow-inner">
                                 <button type="button" class="p-3 text-gray-500 hover:text-white transition-colors bg-transparent border-none cursor-pointer">
