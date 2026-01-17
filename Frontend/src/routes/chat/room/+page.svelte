@@ -40,7 +40,7 @@
                             <Icon icon="solar:users-group-two-rounded-bold" class="mr-2" />
                             Rooms
                         </a>
-                        <a href="/chat/contact/friend" class="flex-1 flex items-center justify-center py-3 rounded-xl text-gray-400 hover:text-white transition-all no-underline font-medium">
+                        <a href="/chat/contact" class="flex-1 flex items-center justify-center py-3 rounded-xl text-gray-400 hover:text-white transition-all no-underline font-medium">
                             <Icon icon="solar:user-rounded-bold" class="mr-2" />
                             Contacts
                         </a>
